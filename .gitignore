@@ -1,0 +1,29 @@
+## General gitignores
+*DS_STORE
+.DS_Store
+._.DS_Store
+
+## Environment Variables
+#    never upload, but keep examples
+*.env
+!*.example.env
+*.init.json
+!*.example.init.json
+
+## Certs and Keys
+#   Do not save keys, ever
+*.crt
+*.key
+*.pem
+
+## Clients
+#    ignore all node modules
+**/node_modules/
+**/build/
+**/tests/
+
+
+# ignore node
+**/yarn-error.log
+**/yarn.lock
+**/package-lock.json
