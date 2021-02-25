@@ -1,7 +1,7 @@
 // little test runner
 // brian taylor vann
 
-import { Assertions } from "../../results_store/results_store";
+import { Assertions } from "../results_store";
 
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
