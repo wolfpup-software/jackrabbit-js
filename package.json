@@ -8,7 +8,7 @@
     "distributable/jackrabbit.js"
   ],
   "scripts": {
-    "format": "eslint --config ./.eslintrc.json --fix ./source && prettier --write ./source",
+    "format": "eslint --config ./.eslintrc.json --fix ./src && prettier --write ./src",
     "build": "tsc --p ./tsconfig.json && rollup --config ./rollup.config.js"
   },
   "dependencies": {
@@ -29,5 +29,7 @@
   "bugs": {
     "url": "https://github.com/taylor-vann/jackrabbit/issues"
   },
-  "homepage": "https://github.com/taylor-vann/jackrabbit"
+  "homepage": "https://github.com/taylor-vann/jackrabbit",
+  "main": "./lib/jackrabbit.js",
+  "types": "./lib/jackrabbit.d.ts"
 }
