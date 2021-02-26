@@ -19,7 +19,6 @@
 ## Clients
 #    ignore all node modules
 **/node_modules/
-**/build/
 
 # ignore node
 **/yarn-error.log

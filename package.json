@@ -5,7 +5,8 @@
   "description": "another test runner",
   "version": "0.1.0",
   "files": [
-    "distributable/jackrabbit.js"
+    "./lib/*",
+    "./src/*"
   ],
   "scripts": {
     "format": "eslint --config ./.eslintrc.json --fix ./src && prettier --write ./src",
