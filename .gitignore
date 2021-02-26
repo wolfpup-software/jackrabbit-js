@@ -20,8 +20,6 @@
 #    ignore all node modules
 **/node_modules/
 **/build/
-**/tests/
-
 
 # ignore node
 **/yarn-error.log

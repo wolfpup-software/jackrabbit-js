@@ -1,4 +1,4 @@
-// little test runner
+// jackrabbit
 // brian taylor vann
 
 import { Assertions, Test } from "../../results_store/results_store";

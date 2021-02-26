@@ -1,13 +1,13 @@
 export default [
   {
-    input: "./source/jackrabbit.js",
+    input: "./build/jackrabbit.js",
     output: {
-      file: "./distributable/jackrabbit.js",
+      file: "./dist/jackrabbit.js",
     },
   },  {
-    input: "./source/jackrabbit.test.js",
+    input: "./build/jackrabbit.test.js",
     output: {
-      file: "./tests/jackrabbit.test.js",
+      file: "./dist/jackrabbit.test.js",
     },
   },
 ];

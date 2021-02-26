@@ -32,14 +32,6 @@ const samestuff: SameStuff = (source, comparator) => {
   // compare source to comparator
   if (source instanceof Object && comparator instanceof Object) {
     for (const sourceKey in source) {
-      if (!source.hasOwnProperty(sourceKey)) {
-        continue;
-      }
-
-      if (!comparator.hasOwnProperty(sourceKey)) {
-        return false;
-      }
-
       // this is not ideal
       const typedSourceKey = sourceKey as keyof typeof source;
       const nextSource = source[typedSourceKey] as unknown;
@@ -52,14 +44,6 @@ const samestuff: SameStuff = (source, comparator) => {
 
     // compare comparator to source
     for (const comparatorKey in comparator) {
-      if (!comparator.hasOwnProperty(comparatorKey)) {
-        continue;
-      }
-
-      if (!source.hasOwnProperty(comparatorKey)) {
-        return false;
-      }
-
       // this is not ideal
       const typedComparatorKey = comparatorKey as keyof typeof comparator;
       const nextComparator = comparator[typedComparatorKey] as unknown;
