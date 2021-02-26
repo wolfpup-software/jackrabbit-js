@@ -1,4 +1,4 @@
-// Little Test Runner
+// jackrabbit
 // brian taylor vann
 
 // Create and run tests in the browser.

@@ -1,4 +1,4 @@
-// little test runner
+// jackrabbit
 // brian taylor vann
 
 import { ResultsStoreAction } from "../action_types/actions_types";

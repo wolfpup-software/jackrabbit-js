@@ -2,12 +2,12 @@ export default [
   {
     input: "./build/jackrabbit.js",
     output: {
-      file: "./distributable/jackrabbit.js",
+      file: "./dist/jackrabbit.js",
     },
   },  {
     input: "./build/jackrabbit.test.js",
     output: {
-      file: "./distributable/jackrabbit.test.js",
+      file: "./dist/jackrabbit.test.js",
     },
   },
 ];

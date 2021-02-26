@@ -199,6 +199,7 @@ const getResults = () => {
 };
 
 // brian taylor vann
+// PubSub
 class PubSub {
     constructor() {
         this.stub = 0;
@@ -246,7 +247,7 @@ const broadcast = (testRunState) => {
     pubSub.broadcast(testRunState);
 };
 
-// little test runner
+// jackrabbit
 const START_TEST_RUN = "START_TEST_RUN";
 const START_TEST_COLLECTION = "START_TEST_COLLECTION";
 const START_TEST = "START_TEST";
@@ -333,7 +334,7 @@ const updateStub = () => {
     return stub;
 };
 
-// little test runner
+// jackrabbit
 // brian taylor vann
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -425,7 +426,7 @@ const runTestsInOrder = ({ startTime, collectionID, tests, timeoutInterval, }) =
     }
 });
 
-// little test runner
+// jackrabbit
 // brian taylor vann
 var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
