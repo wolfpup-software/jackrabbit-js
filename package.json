@@ -4,7 +4,6 @@
   "license": "MIT",
   "description": "another test runner",
   "version": "0.1.0",
-  "type": "module",
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
@@ -17,9 +16,10 @@
   },
   "scripts": {
     "format": "eslint --config ./.eslintrc.json --fix ./src && prettier --write ./src",
-    "build": "tsc --p ./tsconfig.json"
+    "build": "tsc --p ./tsconfig.json && tsc --p ./tsconfig-nodejs.json"
   },
-  "main": "./lib/jackrabbit.js",
+  "main": "./nodejs/jackrabbit.js",
+  "module": "./lib/jackrabbit.js",
   "types": "./lib/jackrabbit.d.ts",
   "homepage": "https://github.com/taylor-vann/jackrabbit",
   "repository": {
