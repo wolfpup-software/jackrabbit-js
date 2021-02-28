@@ -12,12 +12,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cancelRun = exports.runTests = void 0;
+// TODO:
+// use performance.now() when nodejs is dead
 const results_store_1 = require("../results_store/results_store");
 const relay_results_1 = require("./relay_results/relay_results");
 Object.defineProperty(exports, "cancelRun", { enumerable: true, get: function () { return relay_results_1.cancelRun; } });
 const receipt_1 = require("./receipt/receipt");
 const run_tests_1 = require("./run_tests/run_tests");
-const get_now_as_milliseconds_1 = require("./get_now_as_milliseconds/get_now_as_milliseconds");
 // create a test collection
 const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __awaiter(void 0, void 0, void 0, function* () {
     relay_results_1.startTestRun({ testCollection, startTime, stub });
@@ -46,7 +47,7 @@ const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __aw
         if (stub < receipt_1.getStub()) {
             return;
         }
-        const endTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
+        const endTime = Date.now();
         relay_results_1.endTestCollection({
             collectionID,
             endTime,
@@ -56,12 +57,12 @@ const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __aw
     if (stub < receipt_1.getStub()) {
         return;
     }
-    const endTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
+    const endTime = Date.now();
     relay_results_1.endTestRun({ endTime });
 });
 // iterate through tests synchronously
 const runTests = (params) => __awaiter(void 0, void 0, void 0, function* () {
-    const startTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
+    const startTime = Date.now();
     const stub = receipt_1.updateStub();
     yield startLtrTestCollectionRun(Object.assign(Object.assign({}, params), { startTime, stub }));
     if (stub < receipt_1.getStub()) {

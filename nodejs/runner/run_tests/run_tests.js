@@ -14,7 +14,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.runTestsAllAtOnce = exports.runTestsInOrder = void 0;
 const relay_results_1 = require("../relay_results/relay_results");
 const receipt_1 = require("../receipt/receipt");
-const get_now_as_milliseconds_1 = require("../get_now_as_milliseconds/get_now_as_milliseconds");
 const sleep = (time) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -37,7 +36,7 @@ const buildTest = (params) => {
         if (issuedAt < receipt_1.getStub()) {
             return;
         }
-        const startTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
+        const startTime = Date.now();
         relay_results_1.startTest({
             collectionID,
             testID,
@@ -50,7 +49,7 @@ const buildTest = (params) => {
         if (issuedAt < receipt_1.getStub()) {
             return;
         }
-        const endTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
+        const endTime = Date.now();
         relay_results_1.sendTestResult({
             endTime,
             assertions,

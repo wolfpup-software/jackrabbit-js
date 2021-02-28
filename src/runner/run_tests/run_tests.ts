@@ -1,10 +1,12 @@
 // brian taylor vann
 // jackrabbit
 
+// TODO:
+// use performance.now() when nodejs is dead
+
 import { Assertions, Test } from "../../results_store/results_store";
 import { startTest, sendTestResult } from "../relay_results/relay_results";
 import { getStub } from "../receipt/receipt";
-import { getNowAsMilliseconds } from "../get_now_as_milliseconds/get_now_as_milliseconds";
 
 type CreateTestTimeout = (requestedInterval?: number) => Promise<Assertions>;
 type LtrTest = () => Promise<void>;
@@ -52,7 +54,7 @@ const buildTest: BuildLtrTest = (params) => {
       return;
     }
 
-    const startTime = getNowAsMilliseconds();
+    const startTime = Date.now();
     startTest({
       collectionID,
       testID,
@@ -67,7 +69,7 @@ const buildTest: BuildLtrTest = (params) => {
     if (issuedAt < getStub()) {
       return;
     }
-    const endTime = getNowAsMilliseconds();
+    const endTime = Date.now();
     sendTestResult({
       endTime,
       assertions,

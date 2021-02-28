@@ -1,6 +1,9 @@
 // brian taylor vann
 // jackrabbit
 
+// TODO:
+// use performance.now() when nodejs is dead
+
 import {
   Assertions,
   Test,
@@ -18,7 +21,6 @@ import {
 } from "./relay_results/relay_results";
 import { getStub, updateStub } from "./receipt/receipt";
 import { runTestsInOrder, runTestsAllAtOnce } from "./run_tests/run_tests";
-import { getNowAsMilliseconds } from "./get_now_as_milliseconds/get_now_as_milliseconds";
 
 interface StartLtrTestCollectionRunParams {
   testCollection: TestCollection;
@@ -73,7 +75,7 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
       return;
     }
 
-    const endTime = getNowAsMilliseconds();
+    const endTime = Date.now();
     endTestCollection({
       collectionID,
       endTime,
@@ -85,13 +87,13 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
   if (stub < getStub()) {
     return;
   }
-  const endTime = getNowAsMilliseconds();
+  const endTime = Date.now();
   endTestRun({ endTime });
 };
 
 // iterate through tests synchronously
 const runTests: StartLtrTestRun = async (params) => {
-  const startTime = getNowAsMilliseconds();
+  const startTime = Date.now();
   const stub = updateStub();
 
   await startLtrTestCollectionRun({ ...params, ...{ startTime, stub } });
