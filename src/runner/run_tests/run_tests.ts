@@ -1,9 +1,10 @@
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 
 import { Assertions, Test } from "../../results_store/results_store";
 import { startTest, sendTestResult } from "../relay_results/relay_results";
 import { getStub } from "../receipt/receipt";
+import { getNowAsMilliseconds } from "../get_now_as_milliseconds/get_now_as_milliseconds";
 
 type CreateTestTimeout = (requestedInterval?: number) => Promise<Assertions>;
 type LtrTest = () => Promise<void>;
@@ -51,7 +52,7 @@ const buildTest: BuildLtrTest = (params) => {
       return;
     }
 
-    const startTime = performance.now();
+    const startTime = getNowAsMilliseconds();
     startTest({
       collectionID,
       testID,
@@ -66,7 +67,7 @@ const buildTest: BuildLtrTest = (params) => {
     if (issuedAt < getStub()) {
       return;
     }
-    const endTime = performance.now();
+    const endTime = getNowAsMilliseconds();
     sendTestResult({
       endTime,
       assertions,

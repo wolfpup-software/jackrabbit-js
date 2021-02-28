@@ -1,6 +1,6 @@
 "use strict";
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getResults = exports.subscribe = exports.runTests = void 0;
 // Create and run tests in the browser.

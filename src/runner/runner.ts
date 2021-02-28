@@ -1,5 +1,5 @@
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 
 import {
   Assertions,
@@ -18,6 +18,7 @@ import {
 } from "./relay_results/relay_results";
 import { getStub, updateStub } from "./receipt/receipt";
 import { runTestsInOrder, runTestsAllAtOnce } from "./run_tests/run_tests";
+import { getNowAsMilliseconds } from "./get_now_as_milliseconds/get_now_as_milliseconds";
 
 interface StartLtrTestCollectionRunParams {
   testCollection: TestCollection;
@@ -72,7 +73,7 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
       return;
     }
 
-    const endTime = performance.now();
+    const endTime = getNowAsMilliseconds();
     endTestCollection({
       collectionID,
       endTime,
@@ -84,13 +85,13 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
   if (stub < getStub()) {
     return;
   }
-  const endTime = performance.now();
+  const endTime = getNowAsMilliseconds();
   endTestRun({ endTime });
 };
 
 // iterate through tests synchronously
 const runTests: StartLtrTestRun = async (params) => {
-  const startTime = performance.now();
+  const startTime = getNowAsMilliseconds();
   const stub = updateStub();
 
   await startLtrTestCollectionRun({ ...params, ...{ startTime, stub } });

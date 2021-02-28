@@ -1,6 +1,6 @@
 "use strict";
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dispatch = void 0;
 const state_store_1 = require("../state_store/state_store");

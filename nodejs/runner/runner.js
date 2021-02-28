@@ -1,6 +1,6 @@
 "use strict";
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17,6 +17,7 @@ const relay_results_1 = require("./relay_results/relay_results");
 Object.defineProperty(exports, "cancelRun", { enumerable: true, get: function () { return relay_results_1.cancelRun; } });
 const receipt_1 = require("./receipt/receipt");
 const run_tests_1 = require("./run_tests/run_tests");
+const get_now_as_milliseconds_1 = require("./get_now_as_milliseconds/get_now_as_milliseconds");
 // create a test collection
 const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __awaiter(void 0, void 0, void 0, function* () {
     relay_results_1.startTestRun({ testCollection, startTime, stub });
@@ -45,7 +46,7 @@ const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __aw
         if (stub < receipt_1.getStub()) {
             return;
         }
-        const endTime = performance.now();
+        const endTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
         relay_results_1.endTestCollection({
             collectionID,
             endTime,
@@ -55,12 +56,12 @@ const startLtrTestCollectionRun = ({ testCollection, startTime, stub, }) => __aw
     if (stub < receipt_1.getStub()) {
         return;
     }
-    const endTime = performance.now();
+    const endTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
     relay_results_1.endTestRun({ endTime });
 });
 // iterate through tests synchronously
 const runTests = (params) => __awaiter(void 0, void 0, void 0, function* () {
-    const startTime = performance.now();
+    const startTime = get_now_as_milliseconds_1.getNowAsMilliseconds();
     const stub = receipt_1.updateStub();
     yield startLtrTestCollectionRun(Object.assign(Object.assign({}, params), { startTime, stub }));
     if (stub < receipt_1.getStub()) {

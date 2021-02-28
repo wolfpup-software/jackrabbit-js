@@ -1,5 +1,5 @@
-// jackrabbit
 // brian taylor vann
+// jackrabbit
 
 import { ResultsStoreAction } from "../action_types/actions_types";
 import {
