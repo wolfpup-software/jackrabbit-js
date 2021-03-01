@@ -16,7 +16,7 @@
   },
   "scripts": {
     "format": "eslint --config ./.eslintrc.json --fix ./src && prettier --write ./src",
-    "build": "tsc --p ./tsconfig.json && tsc --p ./tsconfig-nodejs.json"
+    "build": "tsc --p ./tsconfig.json && tsc --p ./nodejs/tsconfig-nodejs.json"
   },
   "main": "./nodejs/jackrabbit.js",
   "module": "./lib/jackrabbit.js",
