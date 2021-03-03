@@ -1,9 +1,9 @@
-import { TestRunResults } from "../state_types/state_types";
-import { EndTestRunActionParams } from "../../action_types/actions_types";
+import type { TestRunResults } from "../state_types/state_types.ts";
+import type { EndTestRunActionParams } from "../../action_types/actions_types.ts";
 
 type CancelRun = (
   results: TestRunResults,
-  params: EndTestRunActionParams
+  params: EndTestRunActionParams,
 ) => TestRunResults;
 
 const cancelRunState: CancelRun = (runResults, params) => {

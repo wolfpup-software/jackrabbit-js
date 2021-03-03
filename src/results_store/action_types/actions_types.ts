@@ -1,6 +1,6 @@
 // brian taylor vann
 
-import { TestCollection } from "../test_types/test_types";
+import type { TestCollection } from "../test_types/test_types.ts";
 
 type StartTestRunActionParams = {
   testCollection: TestCollection;
@@ -72,12 +72,12 @@ type ResultsStoreAction =
   | EndTestCollectionAction
   | EndTestRunAction;
 
-export {
-  StartTestRunActionParams,
-  StartTestCollectionActionParams,
-  StartTestActionParams,
+export type {
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
   ResultsStoreAction,
+  StartTestActionParams,
+  StartTestCollectionActionParams,
+  StartTestRunActionParams,
 };

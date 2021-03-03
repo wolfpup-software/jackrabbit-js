@@ -4,9 +4,9 @@
 // TODO:
 // use performance.now() when nodejs is dead
 
-import { Assertions, Test } from "../../results_store/results_store";
-import { startTest, sendTestResult } from "../relay_results/relay_results";
-import { getStub } from "../receipt/receipt";
+import { Assertions, Test } from "../../results_store/results_store.ts";
+import { sendTestResult, startTest } from "../relay_results/relay_results.ts";
+import { getStub } from "../receipt/receipt.ts";
 
 type CreateTestTimeout = (requestedInterval?: number) => Promise<Assertions>;
 type LtrTest = () => Promise<void>;
@@ -40,7 +40,7 @@ const getTimeoutAssertions = (timeoutInterval: number) => [
 ];
 
 const createTestTimeout: CreateTestTimeout = async (
-  timeoutInterval?: number
+  timeoutInterval?: number,
 ) => {
   const interval = timeoutInterval ?? defaultTimeoutInterval;
   await sleep(interval);
@@ -96,7 +96,7 @@ const runTestsAllAtOnce: RunTests = async ({
         testFunc,
         testID,
         timeoutInterval,
-      })() // execute test before push
+      })(), // execute test before push
     );
     testID += 1;
   }
@@ -132,4 +132,4 @@ const runTestsInOrder: RunTests = async ({
   }
 };
 
-export { runTestsInOrder, runTestsAllAtOnce };
+export { runTestsAllAtOnce, runTestsInOrder };

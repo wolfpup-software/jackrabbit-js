@@ -1,17 +1,15 @@
-import {
+import type {
   Results,
   TestResults,
   TestRunResults,
-} from "../state_types/state_types";
-import { StartTestRunActionParams } from "../../action_types/actions_types";
+} from "../state_types/state_types.ts";
+import type { StartTestRunActionParams } from "../../action_types/actions_types.ts";
 
-// type buildCollectionState = (tests:  )
 type BuildResultsState = (params: StartTestRunActionParams) => TestRunResults;
 
 const buildResultsState: BuildResultsState = ({
   testCollection,
   startTime,
-  stub,
 }) => {
   const nextState: TestRunResults = {
     status: "submitted",

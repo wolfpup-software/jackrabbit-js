@@ -1,22 +1,24 @@
 // brian taylor vann
+// state store
 
-import { copycopy } from "../../copycopy/copycopy";
-import { TestRunResults } from "./state_types/state_types";
-import {
-  StartTestRunActionParams,
-  StartTestCollectionActionParams,
-  StartTestActionParams,
+import type { TestRunResults } from "./state_types/state_types.ts";
+import type {
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
-} from "../action_types/actions_types";
-import { buildResultsState } from "./build_state/build_state";
-import { startTestCollectionState } from "./start_test_collection_state/start_test_collection_state";
-import { startTestState } from "./start_test_state/start_test_state";
-import { cancelRunState } from "./cancel_run_state/cancel_run_state";
-import { endTestCollectionState } from "./end_test_collection_state/end_test_collection_state";
-import { endTestState } from "./end_test_state/end_test_state";
-import { endTestRunState } from "./end_test_run_state/end_test_run_state";
+  StartTestActionParams,
+  StartTestCollectionActionParams,
+  StartTestRunActionParams,
+} from "../action_types/actions_types.ts";
+
+import { copycopy } from "../../copycopy/copycopy.ts";
+import { buildResultsState } from "./build_state/build_state.ts";
+import { startTestCollectionState } from "./start_test_collection_state/start_test_collection_state.ts";
+import { startTestState } from "./start_test_state/start_test_state.ts";
+import { cancelRunState } from "./cancel_run_state/cancel_run_state.ts";
+import { endTestCollectionState } from "./end_test_collection_state/end_test_collection_state.ts";
+import { endTestState } from "./end_test_state/end_test_state.ts";
+import { endTestRunState } from "./end_test_run_state/end_test_run_state.ts";
 
 type BuildResults = (params: StartTestRunActionParams) => void;
 type StartTestCollection = (params: StartTestCollectionActionParams) => void;
@@ -74,11 +76,11 @@ const getResults: GetResults = () => {
 
 export {
   buildResults,
-  startTestCollection,
-  startTest,
   cancelRun,
   endTest,
   endTestCollection,
   endTestRun,
   getResults,
+  startTest,
+  startTestCollection,
 };

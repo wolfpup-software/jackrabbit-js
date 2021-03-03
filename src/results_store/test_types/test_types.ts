@@ -1,7 +1,7 @@
 // brian taylor vann
 // jackrabbit
 
-import { Assertions } from "../results_store";
+import type { Assertions } from "../results_store.ts";
 
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
@@ -14,4 +14,4 @@ type TestParams = {
 };
 type TestCollection = TestParams[];
 
-export { Test, TestParams, TestCollection };
+export type { Test, TestCollection, TestParams };

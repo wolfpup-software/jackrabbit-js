@@ -3,34 +3,33 @@
 import {
   Assertions,
   TestRunResults,
-} from "./state_store/state_types/state_types";
+} from "./state_store/state_types/state_types.ts";
 import {
-  StartTestRunActionParams,
-  StartTestCollectionActionParams,
-  StartTestActionParams,
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
-} from "./action_types/actions_types";
-import { Test, TestParams, TestCollection } from "./test_types/test_types";
+  StartTestActionParams,
+  StartTestCollectionActionParams,
+  StartTestRunActionParams,
+} from "./action_types/actions_types.ts";
+import { Test, TestCollection, TestParams } from "./test_types/test_types.ts";
 
-import { dispatch } from "./conductor/conductor";
-import { subscribe } from "./publisher/publisher";
-import { getResults } from "./state_store/state_store";
+import { dispatch } from "./conductor/conductor.ts";
+import { subscribe } from "./publisher/publisher.ts";
+import { getResults } from "./state_store/state_store.ts";
 
-export {
+export type {
   Assertions,
-  Test,
-  TestParams,
-  TestCollection,
-  TestRunResults,
-  StartTestRunActionParams,
-  StartTestCollectionActionParams,
-  StartTestActionParams,
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
-  dispatch,
-  subscribe,
-  getResults,
+  StartTestActionParams,
+  StartTestCollectionActionParams,
+  StartTestRunActionParams,
+  Test,
+  TestCollection,
+  TestParams,
+  TestRunResults,
 };
+
+export { dispatch, getResults, subscribe };
