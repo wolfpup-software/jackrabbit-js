@@ -1,9 +1,9 @@
-import type { TestRunResults } from "../state_types/state_types.ts";
-import type { EndTestActionParams } from "../../action_types/actions_types.ts";
+import type { TestRunResults } from "../state_types/state_types";
+import type { EndTestActionParams } from "../../action_types/actions_types";
 
 type EndTest = (
   results: TestRunResults,
-  params: EndTestActionParams,
+  params: EndTestActionParams
 ) => TestRunResults;
 
 const endTestState: EndTest = (runResults, params) => {

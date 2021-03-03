@@ -1,7 +1,7 @@
 // brian taylor vann
 // jackrabbit
 
-import type { Assertions } from "../results_store.ts";
+import type { Assertions } from "../results_store";
 
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;

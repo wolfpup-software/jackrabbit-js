@@ -1,7 +1,7 @@
 // brian taylor vann
 // context
 
-import { samestuff } from "./samestuff.ts";
+import { samestuff } from "./samestuff";
 
 const title = "samestuff";
 const runTestsAsynchronously = true;

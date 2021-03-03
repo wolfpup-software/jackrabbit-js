@@ -1,7 +1,7 @@
 // brian taylor vann
 // state store
 
-import type { TestRunResults } from "./state_types/state_types.ts";
+import type { TestRunResults } from "./state_types/state_types";
 import type {
   EndTestActionParams,
   EndTestCollectionActionParams,
@@ -9,16 +9,16 @@ import type {
   StartTestActionParams,
   StartTestCollectionActionParams,
   StartTestRunActionParams,
-} from "../action_types/actions_types.ts";
+} from "../action_types/actions_types";
 
-import { copycopy } from "../../copycopy/copycopy.ts";
-import { buildResultsState } from "./build_state/build_state.ts";
-import { startTestCollectionState } from "./start_test_collection_state/start_test_collection_state.ts";
-import { startTestState } from "./start_test_state/start_test_state.ts";
-import { cancelRunState } from "./cancel_run_state/cancel_run_state.ts";
-import { endTestCollectionState } from "./end_test_collection_state/end_test_collection_state.ts";
-import { endTestState } from "./end_test_state/end_test_state.ts";
-import { endTestRunState } from "./end_test_run_state/end_test_run_state.ts";
+import { copycopy } from "../../copycopy/copycopy";
+import { buildResultsState } from "./build_state/build_state";
+import { startTestCollectionState } from "./start_test_collection_state/start_test_collection_state";
+import { startTestState } from "./start_test_state/start_test_state";
+import { cancelRunState } from "./cancel_run_state/cancel_run_state";
+import { endTestCollectionState } from "./end_test_collection_state/end_test_collection_state";
+import { endTestState } from "./end_test_state/end_test_state";
+import { endTestRunState } from "./end_test_run_state/end_test_run_state";
 
 type BuildResults = (params: StartTestRunActionParams) => void;
 type StartTestCollection = (params: StartTestCollectionActionParams) => void;

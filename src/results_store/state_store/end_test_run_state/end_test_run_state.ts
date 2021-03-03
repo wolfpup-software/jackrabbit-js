@@ -1,20 +1,20 @@
 import type {
   CollectionResults,
   TestRunResults,
-} from "../state_types/state_types.ts";
-import type { EndTestRunActionParams } from "../../action_types/actions_types.ts";
+} from "../state_types/state_types";
+import type { EndTestRunActionParams } from "../../action_types/actions_types";
 
 type AllTestCollectionsHavePassed = (
-  collectionResults: CollectionResults,
+  collectionResults: CollectionResults
 ) => boolean;
 type EndTestRun = (
   results: TestRunResults,
-  params: EndTestRunActionParams,
+  params: EndTestRunActionParams
 ) => TestRunResults;
 
 // for test collection
 const allTestCollectionsHavePassed: AllTestCollectionsHavePassed = (
-  collectionResults,
+  collectionResults
 ) => {
   for (const collection of collectionResults) {
     if (collection.status === "failed") {
