@@ -30,12 +30,12 @@ type TestRunResults = {
   results?: CollectionResults;
 };
 
-export {
+export type {
   Assertions,
-  TestStatus,
+  CollectionResults,
   Result,
   Results,
   TestResults,
-  CollectionResults,
   TestRunResults,
+  TestStatus,
 };

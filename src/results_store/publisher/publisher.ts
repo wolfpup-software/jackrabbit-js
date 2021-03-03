@@ -1,9 +1,11 @@
-import { Subscription, PubSub } from "../../pubsub/pubsub";
-import { TestRunResults } from "../state_store/state_types/state_types";
+import type { TestRunResults } from "../state_store/state_types/state_types.ts";
+import type { Subscription } from "../../pubsub/pubsub.ts";
+
+import { PubSub } from "../../pubsub/pubsub.ts";
 
 type UnsubscribeToResults = () => void;
 type SubscribeToResults = (
-  resultsCallback: Subscription<TestRunResults>
+  resultsCallback: Subscription<TestRunResults>,
 ) => UnsubscribeToResults;
 type BroadcastResults = (testRunState: TestRunResults) => void;
 

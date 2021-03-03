@@ -1,15 +1,15 @@
 // brian taylor vann
 
 import {
-  StartTestRunActionParams,
-  StartTestCollectionActionParams,
-  StartTestActionParams,
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
-} from "../../results_store/results_store";
+  StartTestActionParams,
+  StartTestCollectionActionParams,
+  StartTestRunActionParams,
+} from "../../results_store/results_store.ts";
 
-import { dispatch } from "../../results_store/results_store";
+import { dispatch } from "../../results_store/results_store.ts";
 
 type StartTestRun = (params: StartTestRunActionParams) => void;
 type StartTestCollection = (params: StartTestCollectionActionParams) => void;
@@ -70,11 +70,11 @@ const endTestRun: EndTestRun = (params) => {
 };
 
 export {
-  startTestRun,
-  startTestCollection,
-  startTest,
   cancelRun,
-  sendTestResult,
   endTestCollection,
   endTestRun,
+  sendTestResult,
+  startTest,
+  startTestCollection,
+  startTestRun,
 };

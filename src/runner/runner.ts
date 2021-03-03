@@ -4,23 +4,26 @@
 // TODO:
 // use performance.now() when nodejs is dead
 
-import {
+import type {
   Assertions,
   Test,
-  TestParams,
   TestCollection,
+  TestParams,
   TestRunResults,
-  getResults,
-} from "../results_store/results_store";
+} from "../results_store/results_store.ts";
+
 import {
-  startTestRun,
-  startTestCollection,
+  getResults,
+} from "../results_store/results_store.ts";
+import {
   cancelRun,
   endTestCollection,
   endTestRun,
-} from "./relay_results/relay_results";
-import { getStub, updateStub } from "./receipt/receipt";
-import { runTestsInOrder, runTestsAllAtOnce } from "./run_tests/run_tests";
+  startTestCollection,
+  startTestRun,
+} from "./relay_results/relay_results.ts";
+import { getStub, updateStub } from "./receipt/receipt.ts";
+import { runTestsAllAtOnce, runTestsInOrder } from "./run_tests/run_tests.ts";
 
 interface StartLtrTestCollectionRunParams {
   testCollection: TestCollection;
@@ -28,14 +31,14 @@ interface StartLtrTestCollectionRunParams {
   stub: number;
 }
 type StartLtrTestCollectionRun = (
-  params: StartLtrTestCollectionRunParams
+  params: StartLtrTestCollectionRunParams,
 ) => Promise<void>;
 
 interface StartLtrTestRunParams {
   testCollection: TestCollection;
 }
 type StartLtrTestRun = (
-  params: StartLtrTestRunParams
+  params: StartLtrTestRunParams,
 ) => Promise<TestRunResults | undefined>;
 
 // create a test collection
@@ -104,4 +107,5 @@ const runTests: StartLtrTestRun = async (params) => {
   return getResults();
 };
 
-export { Assertions, Test, TestParams, TestCollection, runTests, cancelRun };
+export type { Assertions, Test, TestCollection, TestParams };
+export { cancelRun, runTests };

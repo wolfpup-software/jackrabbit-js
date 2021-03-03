@@ -46,4 +46,6 @@ class PubSub<T> {
   }
 }
 
-export { Subscription, PubSub };
+export type { Subscription };
+
+export { PubSub };
