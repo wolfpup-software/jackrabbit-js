@@ -1,10 +1,10 @@
-import type { Results, TestRunResults } from "../state_types/state_types.ts";
-import type { EndTestCollectionActionParams } from "../../action_types/actions_types.ts";
+import type { Results, TestRunResults } from "../state_types/state_types";
+import type { EndTestCollectionActionParams } from "../../action_types/actions_types";
 
 type AllTestsHavePassed = (testResults: Results) => boolean;
 type EndTestCollection = (
   results: TestRunResults,
-  params: EndTestCollectionActionParams,
+  params: EndTestCollectionActionParams
 ) => TestRunResults;
 
 const allTestsHavePassed: AllTestsHavePassed = (testResults: Results) => {

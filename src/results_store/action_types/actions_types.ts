@@ -1,6 +1,6 @@
 // brian taylor vann
 
-import type { TestCollection } from "../test_types/test_types.ts";
+import type { TestCollection } from "../test_types/test_types";
 
 type StartTestRunActionParams = {
   testCollection: TestCollection;

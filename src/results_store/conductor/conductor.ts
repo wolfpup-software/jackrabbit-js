@@ -1,7 +1,7 @@
 // brian taylor vann
 // jackrabbit
 
-import type { ResultsStoreAction } from "../action_types/actions_types.ts";
+import type { ResultsStoreAction } from "../action_types/actions_types";
 import {
   buildResults,
   cancelRun,
@@ -11,8 +11,8 @@ import {
   getResults,
   startTest,
   startTestCollection,
-} from "../state_store/state_store.ts";
-import { broadcast } from "../publisher/publisher.ts";
+} from "../state_store/state_store";
+import { broadcast } from "../publisher/publisher";
 
 type Consolidate = (action: ResultsStoreAction) => void;
 

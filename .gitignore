@@ -16,6 +16,10 @@
 *.key
 *.pem
 
+## Clients
+#    ignore all node modules
+**/node_modules/
+
 # ignore node
 **/yarn-error.log
 **/yarn.lock
