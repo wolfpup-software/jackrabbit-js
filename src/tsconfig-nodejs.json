@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "declaration": true,
+      "experimentalDecorators": true,
+      "lib": ["dom", "dom.iterable", "esnext"],
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "outDir": "../build-nodejs",
+      "strict": true,
+      "target": "es2015"
+    }
+  }
+  
