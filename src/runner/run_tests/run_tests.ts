@@ -4,9 +4,9 @@
 // TODO:
 // use performance.now() when nodejs is dead
 
-import { Assertions, Test } from "../../results_store/results_store";
-import { sendTestResult, startTest } from "../relay_results/relay_results";
-import { getStub } from "../receipt/receipt";
+import { Assertions, Test } from "../../results_store/results_store.ts";
+import { sendTestResult, startTest } from "../relay_results/relay_results.ts";
+import { getStub } from "../receipt/receipt.ts";
 
 type CreateTestTimeout = (requestedInterval?: number) => Promise<Assertions>;
 type LtrTest = () => Promise<void>;
@@ -26,7 +26,7 @@ interface RunTestsParams {
 }
 type RunTests = (params: RunTestsParams) => Promise<void>;
 
-const sleep = async (time: number) => {
+const sleep = (time: number) => {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       resolve();
