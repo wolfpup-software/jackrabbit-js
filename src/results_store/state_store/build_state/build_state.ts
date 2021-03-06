@@ -2,8 +2,8 @@ import type {
   Results,
   TestResults,
   TestRunResults,
-} from "../state_types/state_types";
-import type { StartTestRunActionParams } from "../../action_types/actions_types";
+} from "../state_types/state_types.ts";
+import type { StartTestRunActionParams } from "../../action_types/actions_types.ts";
 
 type BuildResultsState = (params: StartTestRunActionParams) => TestRunResults;
 

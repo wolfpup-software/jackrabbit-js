@@ -1,5 +1,5 @@
-import type { TestRunResults } from "../state_types/state_types";
-import type { EndTestActionParams } from "../../action_types/actions_types";
+import type { TestRunResults } from "../state_types/state_types.ts";
+import type { EndTestActionParams } from "../../action_types/actions_types.ts";
 
 type EndTest = (
   results: TestRunResults,

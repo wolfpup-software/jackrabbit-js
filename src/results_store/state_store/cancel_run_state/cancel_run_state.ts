@@ -1,5 +1,5 @@
-import type { TestRunResults } from "../state_types/state_types";
-import type { EndTestRunActionParams } from "../../action_types/actions_types";
+import type { TestRunResults } from "../state_types/state_types.ts";
+import type { EndTestRunActionParams } from "../../action_types/actions_types.ts";
 
 type CancelRun = (
   results: TestRunResults,

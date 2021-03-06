@@ -1,6 +1,4 @@
-// brian taylor vann
-// samestuff
-const samestuff = (source, comparator) => {
+const samestuff = (source, comparator)=>{
     if (source === null || comparator === null) {
         return source === comparator;
     }
@@ -19,10 +17,8 @@ const samestuff = (source, comparator) => {
     if (isSourceArray !== isComparatorArray) {
         return source === comparator;
     }
-    // compare source to comparator
     if (source instanceof Object && comparator instanceof Object) {
-        for (const sourceKey in source) {
-            // this is not ideal
+        for(const sourceKey in source){
             const typedSourceKey = sourceKey;
             const nextSource = source[typedSourceKey];
             const nextComparator = comparator[typedSourceKey];
@@ -30,9 +26,7 @@ const samestuff = (source, comparator) => {
                 return false;
             }
         }
-        // compare comparator to source
-        for (const comparatorKey in comparator) {
-            // this is not ideal
+        for(const comparatorKey in comparator){
             const typedComparatorKey = comparatorKey;
             const nextComparator = comparator[typedComparatorKey];
             const nextSource = source[typedComparatorKey];
@@ -43,20 +37,17 @@ const samestuff = (source, comparator) => {
     }
     return true;
 };
-
-// brian taylor vann
 const title = "samestuff";
-const runTestsAsynchronously = true;
-const compareDifferentPrimitives = () => {
+const compareDifferentPrimitives = ()=>{
     const assertions = [];
     const source = "a";
     const target = 1;
-    if (samestuff(source, target)) {
+    if (samestuff(source, 1)) {
         assertions.push('"a" not equal to 1');
     }
     return assertions;
 };
-const compareEqualPrimitives = () => {
+const compareEqualPrimitives = ()=>{
     const assertions = [];
     const source = "a";
     const target = "a";
@@ -65,91 +56,95 @@ const compareEqualPrimitives = () => {
     }
     return assertions;
 };
-const compareArrayAndObject = () => {
+const compareArrayAndObject = ()=>{
     const assertions = [];
-    const source = { hello: "world" };
-    const target = ["world"];
+    const source = {
+        hello: "world"
+    };
+    const target = [
+        "world"
+    ];
     if (samestuff(source, target)) {
         assertions.push("[] should not equal {}");
     }
     return assertions;
 };
-const compareObjects = () => {
+const compareObjects = ()=>{
     const assertions = [];
     const source = {
-        hello: "world",
+        hello: "world"
     };
     const target = {
-        hello: "friend!",
+        hello: "friend!"
     };
     if (samestuff(source, target)) {
         assertions.push("objects have different values");
     }
     return assertions;
 };
-const compareNullToObject = () => {
+const compareNullToObject = ()=>{
     const assertions = [];
     const source = {
-        hello: "world",
+        hello: "world"
     };
     const target = null;
-    if (samestuff(source, target)) {
+    if (samestuff(source, null)) {
         assertions.push("null is not equal to an object");
     }
     return assertions;
 };
-const compareSimilarObjects = () => {
+const compareSimilarObjects = ()=>{
     const assertions = [];
     const source = {
-        hello: "world",
+        hello: "world"
     };
     const target = {
-        hello: "world",
+        hello: "world"
     };
     if (!samestuff(source, target)) {
         assertions.push("objects have equal values");
     }
     return assertions;
 };
-const compareNestedObjects = () => {
+const compareNestedObjects = ()=>{
     const assertions = [];
     const source = {
         hello: "world",
         goodbye: {
-            captain: "kitty",
-        },
+            captain: "kitty"
+        }
     };
     const target = {
         hello: "world",
         goodbye: {
-            captain: "0w0",
-        },
+            captain: "0w0"
+        }
     };
     if (samestuff(source, target)) {
         assertions.push("objects have different nested values");
     }
     return assertions;
 };
-const compareNestedEqualObjects = () => {
+const compareNestedEqualObjects = ()=>{
     const assertions = [];
     const source = {
         hello: "world",
         goodbye: {
-            captain: "0w0",
-        },
+            captain: "0w0"
+        }
     };
     const target = {
         hello: "world",
         goodbye: {
-            captain: "0w0",
-        },
+            captain: "0w0"
+        }
     };
     if (!samestuff(source, target)) {
         assertions.push("objects have equal nested values");
     }
     return assertions;
 };
-const tests$1 = [
+const tests2 = [
     compareDifferentPrimitives,
     compareEqualPrimitives,
     compareArrayAndObject,
@@ -157,15 +152,14 @@ const tests$1 = [
     compareNullToObject,
     compareSimilarObjects,
     compareNestedObjects,
-    compareNestedEqualObjects,
+    compareNestedEqualObjects, 
 ];
 const unitTestSamestuff = {
     title,
-    tests: tests$1,
-    runTestsAsynchronously,
+    tests: tests2,
+    runTestsAsynchronously: true
 };
-
-// brian taylor vann
-const tests = [unitTestSamestuff];
-
-export { tests };
+const tests1 = [
+    unitTestSamestuff
+];
+export { tests1 as tests };

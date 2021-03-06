@@ -1,8 +1,8 @@
 import type {
   CollectionResults,
   TestRunResults,
-} from "../state_types/state_types";
-import type { EndTestRunActionParams } from "../../action_types/actions_types";
+} from "../state_types/state_types.ts";
+import type { EndTestRunActionParams } from "../../action_types/actions_types.ts";
 
 type AllTestCollectionsHavePassed = (
   collectionResults: CollectionResults

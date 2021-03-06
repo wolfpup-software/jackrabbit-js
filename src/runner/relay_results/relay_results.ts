@@ -1,15 +1,15 @@
 // brian taylor vann
 
-import {
+import type {
   EndTestActionParams,
   EndTestCollectionActionParams,
   EndTestRunActionParams,
   StartTestActionParams,
   StartTestCollectionActionParams,
   StartTestRunActionParams,
-} from "../../results_store/results_store";
+} from "../../results_store/results_store.ts";
 
-import { dispatch } from "../../results_store/results_store";
+import { dispatch } from "../../results_store/results_store.ts";
 
 type StartTestRun = (params: StartTestRunActionParams) => void;
 type StartTestCollection = (params: StartTestCollectionActionParams) => void;

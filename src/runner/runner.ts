@@ -10,18 +10,18 @@ import type {
   TestCollection,
   TestParams,
   TestRunResults,
-} from "../results_store/results_store";
+} from "../results_store/results_store.ts";
 
-import { getResults } from "../results_store/results_store";
+import { getResults } from "../results_store/results_store.ts";
 import {
   cancelRun,
   endTestCollection,
   endTestRun,
   startTestCollection,
   startTestRun,
-} from "./relay_results/relay_results";
-import { getStub, updateStub } from "./receipt/receipt";
-import { runTestsAllAtOnce, runTestsInOrder } from "./run_tests/run_tests";
+} from "./relay_results/relay_results.ts";
+import { getStub, updateStub } from "./receipt/receipt.ts";
+import { runTestsAllAtOnce, runTestsInOrder } from "./run_tests/run_tests.ts";
 
 interface StartLtrTestCollectionRunParams {
   testCollection: TestCollection;
