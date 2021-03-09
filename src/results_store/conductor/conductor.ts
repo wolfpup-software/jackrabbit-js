@@ -1,5 +1,5 @@
 // brian taylor vann
-// jackrabbit
+// conductor
 
 import type { ResultsStoreAction } from "../action_types/actions_types.ts";
 

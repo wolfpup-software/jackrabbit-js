@@ -16,12 +16,6 @@
 *.key
 *.pem
 
-## Clients
-#    ignore all node modules
-**/node_modules/
-**/build/
-**/build-nodejs/
-
 # ignore node
 **/yarn-error.log
 **/yarn.lock

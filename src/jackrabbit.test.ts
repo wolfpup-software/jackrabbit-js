@@ -1,5 +1,5 @@
 // brian taylor vann
-// bang
+// jackrabbit
 
 import { unitTestSamestuff } from "./samestuff/samestuff.test.ts";
 

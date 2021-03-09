@@ -1,17 +1,17 @@
 // brian taylor vann
-// jackrabbit
+// test tuypes
 
 import type { Assertions } from "../results_store.ts";
 
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
-type Test = SyncTest | AsyncTest;
+type TestUnit = SyncTest | AsyncTest;
 type TestParams = {
   title: string;
-  tests: Test[];
+  tests: TestUnit[];
   runTestsAsynchronously?: boolean;
   timeoutInterval?: number;
 };
 type TestCollection = TestParams[];
 
-export type { Test, TestCollection, TestParams };
+export type { TestUnit, TestCollection, TestParams };

@@ -1,10 +1,20 @@
-const START_TEST_RUN = "START_TEST_RUN";
-const START_TEST_COLLECTION = "START_TEST_COLLECTION";
-const START_TEST = "START_TEST";
-const CANCEL_RUN = "CANCEL_RUN";
-const END_TEST = "END_TEST";
-const END_TEST_COLLECTION = "END_TEST_COLLECTION";
-const END_TEST_RUN = "END_TEST_RUN";
+const copycopy = (atomToCopy)=>{
+    if (atomToCopy instanceof Object === false) {
+        return atomToCopy;
+    }
+    const entries = Array.isArray(atomToCopy) ? [
+        ...atomToCopy
+    ] : {
+        ...atomToCopy
+    };
+    for(const index in entries){
+        const entry = entries[index];
+        if (entries instanceof Object) {
+            entries[index] = copycopy(entry);
+        }
+    }
+    return entries;
+};
 const buildResultsState = ({ testCollection , startTime ,  })=>{
     const nextState = {
         status: "submitted",
@@ -36,33 +46,6 @@ const buildResultsState = ({ testCollection , startTime ,  })=>{
     }
     return nextState;
 };
-const buildResultsState1 = buildResultsState;
-const defaultResultsState = {
-    status: "unsubmitted"
-};
-let resultsState = {
-    ...defaultResultsState
-};
-const buildResults = (params)=>{
-    resultsState = buildResultsState1(params);
-};
-const copycopy = (atomToCopy)=>{
-    if (atomToCopy instanceof Object === false) {
-        return atomToCopy;
-    }
-    const entries = Array.isArray(atomToCopy) ? [
-        ...atomToCopy
-    ] : {
-        ...atomToCopy
-    };
-    for(const index in entries){
-        const entry = entries[index];
-        if (entries instanceof Object) {
-            entries[index] = copycopy(entry);
-        }
-    }
-    return entries;
-};
 const startTestCollectionState = (runResults, params)=>{
     if (runResults.results === undefined) {
         return runResults;
@@ -75,11 +58,6 @@ const startTestCollectionState = (runResults, params)=>{
     }
     return runResults;
 };
-const startTestCollectionState1 = startTestCollectionState;
-const startTestCollection = (params)=>{
-    const copyOfResults = copycopy(resultsState);
-    resultsState = startTestCollectionState1(copyOfResults, params);
-};
 const startTestState = (runResults, params)=>{
     if (runResults.results === undefined) {
         return runResults;
@@ -91,11 +69,6 @@ const startTestState = (runResults, params)=>{
         testResult.startTime = startTime;
     }
     return runResults;
-};
-const startTestState1 = startTestState;
-const startTest = (params)=>{
-    const copyOfResults = copycopy(resultsState);
-    resultsState = startTestState1(copyOfResults, params);
 };
 const cancelRunState = (runResults, params)=>{
     const { endTime  } = params;
@@ -118,36 +91,6 @@ const cancelRunState = (runResults, params)=>{
         }
     }
     return runResults;
-};
-const cancelRunState1 = cancelRunState;
-const cancelRun = (params)=>{
-    const copyOfResults = copycopy(resultsState);
-    resultsState = cancelRunState1(copyOfResults, params);
-};
-const endTestState = (runResults, params)=>{
-    if (runResults.results === undefined) {
-        return runResults;
-    }
-    const { assertions , endTime , collectionID , testID  } = params;
-    const testResult = runResults?.results?.[collectionID]?.results?.[testID];
-    if (testResult === undefined) {
-        return runResults;
-    }
-    testResult.status = "failed";
-    if (assertions === undefined) {
-        testResult.status = "passed";
-    }
-    if (assertions && assertions.length === 0) {
-        testResult.status = "passed";
-    }
-    testResult.assertions = assertions;
-    testResult.endTime = endTime;
-    return runResults;
-};
-const endTestState1 = endTestState;
-const endTest = (params)=>{
-    const copyOfResults = copycopy(resultsState);
-    resultsState = endTestState1(copyOfResults, params);
 };
 const allTestsHavePassed = (testResults)=>{
     for (const result of testResults){
@@ -174,10 +117,25 @@ const endTestCollectionState = (runResults, params)=>{
     }
     return runResults;
 };
-const endTestCollectionState1 = endTestCollectionState;
-const endTestCollection = (params)=>{
-    const copyOfResults = copycopy(resultsState);
-    resultsState = endTestCollectionState1(copyOfResults, params);
+const endTestState = (runResults, params)=>{
+    if (runResults.results === undefined) {
+        return runResults;
+    }
+    const { assertions , endTime , collectionID , testID  } = params;
+    const testResult = runResults?.results?.[collectionID]?.results?.[testID];
+    if (testResult === undefined) {
+        return runResults;
+    }
+    testResult.status = "failed";
+    if (assertions === undefined) {
+        testResult.status = "passed";
+    }
+    if (assertions && assertions.length === 0) {
+        testResult.status = "passed";
+    }
+    testResult.assertions = assertions;
+    testResult.endTime = endTime;
+    return runResults;
 };
 const allTestCollectionsHavePassed = (collectionResults)=>{
     for (const collection of collectionResults){
@@ -197,10 +155,38 @@ const endTestRunState = (runResults, params)=>{
     }
     return runResults;
 };
-const endTestRunState1 = endTestRunState;
+const defaultResultsState = {
+    status: "unsubmitted"
+};
+let resultsState = {
+    ...defaultResultsState
+};
+const buildResults = (params)=>{
+    resultsState = buildResultsState(params);
+};
+const startTestCollection = (params)=>{
+    const copyOfResults = copycopy(resultsState);
+    resultsState = startTestCollectionState(copyOfResults, params);
+};
+const startTest = (params)=>{
+    const copyOfResults = copycopy(resultsState);
+    resultsState = startTestState(copyOfResults, params);
+};
+const cancelRun = (params)=>{
+    const copyOfResults = copycopy(resultsState);
+    resultsState = cancelRunState(copyOfResults, params);
+};
+const endTest = (params)=>{
+    const copyOfResults = copycopy(resultsState);
+    resultsState = endTestState(copyOfResults, params);
+};
+const endTestCollection = (params)=>{
+    const copyOfResults = copycopy(resultsState);
+    resultsState = endTestCollectionState(copyOfResults, params);
+};
 const endTestRun = (params)=>{
     const copyOfResults = copycopy(resultsState);
-    resultsState = endTestRunState1(copyOfResults, params);
+    resultsState = endTestRunState(copyOfResults, params);
 };
 const getResults1 = ()=>{
     return copycopy(resultsState);
@@ -248,6 +234,13 @@ const subscribe1 = (resultsCallback)=>{
 const broadcast = (testRunState)=>{
     pubSub.broadcast(testRunState);
 };
+const START_TEST_RUN = "START_TEST_RUN";
+const START_TEST_COLLECTION = "START_TEST_COLLECTION";
+const START_TEST = "START_TEST";
+const CANCEL_RUN = "CANCEL_RUN";
+const END_TEST = "END_TEST";
+const END_TEST_COLLECTION = "END_TEST_COLLECTION";
+const END_TEST_RUN = "END_TEST_RUN";
 const consolidate = (action)=>{
     switch(action.action){
         case START_TEST_RUN:
@@ -350,7 +343,7 @@ const buildTest = (params)=>{
         if (issuedAt < getStub()) {
             return;
         }
-        const startTime = Date.now();
+        const startTime = performance.now();
         startTest1({
             collectionID,
             testID,
@@ -363,7 +356,7 @@ const buildTest = (params)=>{
         if (issuedAt < getStub()) {
             return;
         }
-        const endTime = Date.now();
+        const endTime = performance.now();
         sendTestResult({
             endTime,
             assertions,
@@ -437,7 +430,7 @@ const startLtrTestCollectionRun = async ({ testCollection , startTime , stub: st
         if (stub1 < getStub()) {
             return;
         }
-        const endTime = Date.now();
+        const endTime = performance.now();
         endTestCollection1({
             collectionID,
             endTime
@@ -447,13 +440,13 @@ const startLtrTestCollectionRun = async ({ testCollection , startTime , stub: st
     if (stub1 < getStub()) {
         return;
     }
-    const endTime = Date.now();
+    const endTime = performance.now();
     endTestRun1({
         endTime
     });
 };
 const runTests1 = async (params)=>{
-    const startTime = Date.now();
+    const startTime = performance.now();
     const stub1 = updateStub();
     await startLtrTestCollectionRun({
         ...params,

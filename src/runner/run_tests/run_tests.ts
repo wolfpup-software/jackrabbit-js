@@ -1,10 +1,10 @@
 // brian taylor vann
-// jackrabbit
+// run tests
 
 // TODO:
 // use performance.now() when nodejs is dead
 
-import { Assertions, Test } from "../../results_store/results_store.ts";
+import { Assertions, TestUnit } from "../../results_store/results_store.ts";
 import { sendTestResult, startTest } from "../relay_results/relay_results.ts";
 import { getStub } from "../receipt/receipt.ts";
 
@@ -13,14 +13,14 @@ type LtrTest = () => Promise<void>;
 type BuildLtrTestParams = {
   collectionID: number;
   issuedAt: number;
-  testFunc: Test;
+  testFunc: TestUnit;
   testID: number;
   timeoutInterval?: number;
 };
 type BuildLtrTest = (params: BuildLtrTestParams) => LtrTest;
 interface RunTestsParams {
   timeoutInterval?: number;
-  tests: Test[];
+  tests: TestUnit[];
   collectionID: number;
   startTime: number;
 }
@@ -54,7 +54,7 @@ const buildTest: BuildLtrTest = (params) => {
       return;
     }
 
-    const startTime = Date.now();
+    const startTime = performance.now();
     startTest({
       collectionID,
       testID,
@@ -69,7 +69,7 @@ const buildTest: BuildLtrTest = (params) => {
     if (issuedAt < getStub()) {
       return;
     }
-    const endTime = Date.now();
+    const endTime = performance.now();
     sendTestResult({
       endTime,
       assertions,
