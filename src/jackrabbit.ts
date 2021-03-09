@@ -8,7 +8,7 @@ import type { TestRunResults } from "./results_store/results_store.ts";
 
 import { runTests } from "./runner/runner.ts";
 import { getResults, subscribe } from "./results_store/results_store.ts";
-import { samestuff } from "./samestuff/samestuff.ts"
+import { samestuff } from "./samestuff/samestuff.ts";
 
 export type { TestCollection, TestParams, TestRunResults };
 

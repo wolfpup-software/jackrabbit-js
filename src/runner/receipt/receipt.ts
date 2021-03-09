@@ -1,4 +1,5 @@
 // brian taylor vann
+// receipt
 
 type GetStub = () => number;
 type UpdateStub = GetStub;

@@ -1,5 +1,5 @@
 // brian taylor vann
-// PubSub
+// pubsub
 
 // Dispatch a series of callbacks
 

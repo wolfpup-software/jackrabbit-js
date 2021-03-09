@@ -1,12 +1,9 @@
 // brian taylor vann
-// jackrabbit
-
-// TODO:
-// use performance.now() when nodejs is dead
+// runner
 
 import type {
   Assertions,
-  Test,
+  TestUnit,
   TestCollection,
   TestParams,
   TestRunResults,
@@ -76,7 +73,7 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
       return;
     }
 
-    const endTime = Date.now();
+    const endTime = performance.now();
     endTestCollection({
       collectionID,
       endTime,
@@ -88,13 +85,13 @@ const startLtrTestCollectionRun: StartLtrTestCollectionRun = async ({
   if (stub < getStub()) {
     return;
   }
-  const endTime = Date.now();
+  const endTime = performance.now();
   endTestRun({ endTime });
 };
 
 // iterate through tests synchronously
 const runTests: StartLtrTestRun = async (params) => {
-  const startTime = Date.now();
+  const startTime = performance.now();
   const stub = updateStub();
 
   await startLtrTestCollectionRun({ ...params, ...{ startTime, stub } });
@@ -105,5 +102,5 @@ const runTests: StartLtrTestRun = async (params) => {
   return getResults();
 };
 
-export type { Assertions, Test, TestCollection, TestParams };
+export type { Assertions, TestUnit, TestCollection, TestParams };
 export { cancelRun, runTests };

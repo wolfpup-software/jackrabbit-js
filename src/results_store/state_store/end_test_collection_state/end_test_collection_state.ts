@@ -1,3 +1,6 @@
+// brian taylor vann
+// end test collection state
+
 import type { Results, TestRunResults } from "../state_types/state_types.ts";
 import type { EndTestCollectionActionParams } from "../../action_types/actions_types.ts";
 

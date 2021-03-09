@@ -1,4 +1,5 @@
 // brian taylor vann
+// results store
 
 import type {
   Assertions,
@@ -12,7 +13,7 @@ import type {
   StartTestCollectionActionParams,
   StartTestRunActionParams,
 } from "./action_types/actions_types.ts";
-import type { Test, TestCollection, TestParams } from "./test_types/test_types.ts";
+import type { TestUnit, TestCollection, TestParams } from "./test_types/test_types.ts";
 
 import { dispatch } from "./conductor/conductor.ts";
 import { subscribe } from "./publisher/publisher.ts";
@@ -26,7 +27,7 @@ export type {
   StartTestActionParams,
   StartTestCollectionActionParams,
   StartTestRunActionParams,
-  Test,
+  TestUnit,
   TestCollection,
   TestParams,
   TestRunResults,
