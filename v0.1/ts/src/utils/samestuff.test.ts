@@ -1,5 +1,5 @@
 // brian taylor vann
-// samestuff
+// samestuff tests
 
 import { samestuff } from "./samestuff.ts";
 
