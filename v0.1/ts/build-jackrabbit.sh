@@ -11,3 +11,6 @@ test_esm_pathname=$current_dir/../esm/jackrabbit.test.js
 
 deno bundle --config $tsconfig_pathname $target_pathname $esm_pathname
 deno bundle --config $tsconfig_pathname $test_target_pathname $test_esm_pathname
+
+deno fmt $target_pathname
+deno fmt $esm_pathname

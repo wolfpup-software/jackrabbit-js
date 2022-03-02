@@ -1,9 +1,12 @@
 // brian taylor vann
 // broadcaster
 
-import type { Subscription, TestBroadcaster } from "../jackrabbit_types.ts";
+import type {
+  Broadcaster as XBroadcaster,
+  Subscription,
+} from "../jackrabbit_types.ts";
 
-class Broadcaster<T> implements TestBroadcaster<T> {
+class Broadcaster<T> implements XBroadcaster<T> {
   private receipt = -1;
   private subscriptions = new Map<number, Subscription<T>>();
 

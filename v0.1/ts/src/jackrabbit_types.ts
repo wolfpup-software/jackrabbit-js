@@ -1,8 +1,6 @@
 // brian taylor vann
 // jackrabbit types
 
-// tests
-
 type Assertions = string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
@@ -14,12 +12,9 @@ type Collection = {
   timeoutInterval: number;
 };
 
-type Run = Collection[];
-
 type UnitTestStatus =
   | "pending"
   | "submitted"
-  | "unresolved"
   | "passed"
   | "failed";
 
@@ -28,18 +23,18 @@ type Status =
   | "index_error"
   | "cancelled";
 
-type UnitTestResult = {
-  id: number;
-  testID: number;
+interface UnitTestResult {
+  unitTestResultID: number;
+  unitTestID: number;
   assertions: Assertions;
   endTime: number;
   name: string;
   startTime: number;
   status: UnitTestStatus;
-};
+}
 
-type CollectionResult = {
-  id: number;
+interface CollectionResult {
+  collectionResultID: number;
   endTime: number;
   title: string;
   indices: number[];
@@ -48,84 +43,151 @@ type CollectionResult = {
   runTestsAsynchronously: boolean;
   timeoutInterval: number;
   testTime: number;
-};
+}
 
-type RunResult = {
+interface RunResult {
   endTime: number;
-  id: number;
+  runResultID: number;
   indices: number[];
   startTime: number;
   status: Status;
-};
+  testTime: number;
+}
 
-interface Results {
+type ActionKind =
+  | "build_run"
+  | "start_run"
+  | "end_run"
+  | "cancel_run"
+  | "start_collection"
+  | "end_collection"
+  | "start_unit_test"
+  | "end_unit_test";
+
+interface BuildRunAction {
+  kind: "build_run";
+  runResultID: number;
+  run: Collection[];
+}
+
+interface BuildRunBroadcastAction {
+  kind: "build_run";
+  runResultID: number;
+}
+
+interface StartRunAction {
+  kind: "start_run";
+  runResultID: number;
+  startTime: number;
+}
+
+interface EndRunAction {
+  kind: "end_run";
+  runResultID: number;
+  endTime: number;
+}
+
+interface CancelRunAction {
+  kind: "cancel_run";
+  runResultID: number;
+  endTime: number;
+}
+
+interface StartCollectionAction {
+  kind: "start_collection";
+  collectionResultID: number;
+  startTime: number;
+}
+
+interface EndCollectionAction {
+  kind: "end_collection";
+  collectionResultID: number;
+  endTime: number;
+}
+
+interface StartUnitTestAction {
+  kind: "start_unit_test";
+  unitTestResultID: number;
+  startTime: number;
+}
+
+interface EndUnitTestAction {
+  kind: "end_unit_test";
+  unitTestResultID: number;
+  endTime: number;
+  assertions: string[];
+}
+
+type SharedAction =
+  | StartRunAction
+  | EndRunAction
+  | CancelRunAction
+  | StartCollectionAction
+  | EndCollectionAction
+  | StartUnitTestAction
+  | EndUnitTestAction;
+
+type StoreAction =
+  | SharedAction
+  | BuildRunAction;
+
+type BroadcastAction =
+  | SharedAction
+  | BuildRunBroadcastAction;
+
+interface BroadcastData {
   readonly testResults: UnitTestResult[];
   readonly collectionResults: CollectionResult[];
   readonly runResults: RunResult[];
 }
 
-type TestStore = Results & {
-  readonly unitTests: UnitTest[];
+interface ResultsBroadcast {
+  action: BroadcastAction;
+  data: BroadcastData;
+}
 
-  runIsCancelled(receipt: number): boolean | undefined;
+type Subscription<T = ResultsBroadcast> = (params: T) => void;
+
+interface Broadcaster<M = ResultsBroadcast> {
+  subscribe(subscription: Subscription<M>): number;
+  unsubscribe(receipt: number): void;
+  broadcast(message: M): void;
+}
+
+
+type StoreData = BroadcastData & {
+  readonly unitTests: UnitTest[];
 };
 
-interface TestStoreActions {
-  startRun(runID: number, startTime: number): void;
-  endRun(runID: number, endTime: number): void;
-  cancelRun(runID: number, endTime: number): void;
-  startCollection(collectionID: number, startTime: number): void;
-  endCollection(collectionID: number, endTime: number): void;
-  startUnitTest(unitTestID: number, startTime: number): void;
-  endUnitTest(assertions: string[], unitTestID: number, endTime: number): void;
-  buildRun(run: Run): number;
+interface Store<S = StoreData, A = StoreAction, R = ResultsBroadcast> {
+  readonly broadcaster: Broadcaster<R>;
+  readonly data: S;
+  dispatch(action: A): void;
 }
 
-type Subscription<T> = (params: T) => void;
+type Response = (store: StoreData, action: StoreAction) => void;
 
-interface TestBroadcaster<T> {
-  subscribe(resultsCallback: Subscription<T>): number;
-  unsubscribe(receipt: number): void;
-  broadcast(message: T): void;
-}
+type ResponseRecord = Record<ActionKind, Response>;
 
-const PENDING = "pending";
-const SUBMITTED = "submitted";
-const CANCELLED = "cancelled";
-
-interface StartRunAction {
-  kind: 'start_run';
-  runID: number;
-  startTime: number;
-}
-
-type Actions = StartRunAction
-
-type ActionMap = 
-interface ActionMap {
-  start_run(store: TestStore, params: StartRunAction): void
-}
 
 export type {
+  ActionKind,
   Assertions,
   AsyncTest,
+  BroadcastData,
+  Broadcaster,
+  BroadcastAction,
   Collection,
   CollectionResult,
-  Results,
-  Run,
+  Response,
+  ResponseRecord,
+  ResultsBroadcast,
   RunResult,
   Status,
+  Store,
+  StoreAction,
+  StoreData,
   Subscription,
-  TestBroadcaster,
-  TestStore,
-  TestStoreActions,
   UnitTest,
   UnitTestResult,
 };
-
-export {
-  PENDING,
-  SUBMITTED,
-  CANCELLED,
-};
-

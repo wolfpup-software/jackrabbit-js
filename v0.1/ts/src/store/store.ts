@@ -1,37 +1,67 @@
 // brian taylor vann
-// state store
+// store
 
 import type {
-  CollectionResult,
-  RunResult,
-  TestStore,
-  UnitTest,
-  UnitTestResult,
+  BroadcastData,
+  Collection,
+  ResultsBroadcast,
+  Store as XStore,
+  StoreAction,
+  StoreData,
 } from "../jackrabbit_types.ts";
 
-import { CANCELLED } from "../jackrabbit_types.ts";
+import { BUILD_RUN } from "../utils/constants.ts";
 
-class Store implements TestStore {
-  readonly unitTests: UnitTest[] = [];
-  readonly testResults: UnitTestResult[] = [];
-  readonly collectionResults: CollectionResult[] = [];
-  readonly runResults: RunResult[] = [];
+import { actions } from "./actions.ts";
+import { Broadcaster } from "./broadcaster.ts";
 
-  // the store has an action map
-  // the store has a dispatch available
-  // the store has a broadcast available
+/*
+  All store actions and ancillary functions must be syncronous
+*/
 
-  // 
+class Store implements XStore {
+  readonly broadcaster = new Broadcaster<ResultsBroadcast>();
+  readonly data: StoreData = {
+    unitTests: [],
+    testResults: [],
+    collectionResults: [],
+    runResults: [],
+  };
 
-  // dispatch(action: ActionStuff) {}
+  private actions = actions;
 
-  runIsCancelled(receipt: number): boolean | undefined {
-    const run = this.runResults[receipt];
-    if (run === undefined) {
-      return true;
+  buildRun(run: Collection[]): number {
+    const runResultID = this.data.runResults.length;
+
+    this.dispatch({
+      kind: BUILD_RUN,
+      runResultID,
+      run,
+    });
+
+    return runResultID;
+  }
+
+  dispatch(action: StoreAction) {
+    const response = this.actions[action.kind];
+    if (response === undefined) return;
+
+    response(this.data, action);
+
+    const data: BroadcastData = {
+      testResults: this.data.testResults,
+      collectionResults: this.data.collectionResults,
+      runResults: this.data.runResults,
+    };
+
+    // do not broadcast tests, only serializable results
+    if (action.kind === BUILD_RUN) {
+      const {runResultID} = action;
+      this.broadcaster.broadcast({ data, action: {kind: BUILD_RUN, runResultID} });
+
     }
 
-    return run.status === CANCELLED;
+    this.broadcaster.broadcast({ data, action });
   }
 }
 

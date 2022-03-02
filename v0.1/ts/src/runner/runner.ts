@@ -1,49 +1,36 @@
 // brian taylor vann
-// run tests
+// runner
 
-// TODO:
-// use performance.now() when nodejs is dead
+import type {
+  Collection,
+  ResultsBroadcast,
+  Subscription,
+} from "../jackrabbit_types.ts";
 
-// Results and tests are stored in arrays in the `../store/store.ts` module.
-// Results are retrieved and mutated. They are not pure or functional.
-// Mutations occur hereS
-
-import type { Results, Run } from "../jackrabbit_types.ts";
-import type { Subscription } from "../jackrabbit_types.ts";
-
-import { Broadcaster } from "../store/broadcaster.ts";
 import { Store } from "../store/store.ts";
-import { Actions as StoreActions } from "../store/actions.ts";
-import { Actions as RunnerActions } from "./actions.ts";
+import { cancelRun, execRun } from "./actions.ts";
 
-const TIMOUT_INTERVAL = 10000;
-
-class Runner<S = Results> {
-  private broadcaster = new Broadcaster<S>();
+class Runner {
   private store = new Store();
-  private storeActions = new StoreActions(this.store, this.broadcaster);
-  private runnerActions = new RunnerActions(
-    this.store,
-    this.storeActions,
-  );
 
-  startRun(run: Run) {
-    const receipt = this.storeActions.buildRun(run);
-    this.runnerActions.execResult(receipt);
+  buildRun(run: Collection[]): number {
+    return this.store.buildRun(run);
+  }
 
-    return receipt;
+  startRun(receipt: number) {
+    execRun(this.store, receipt);
   }
 
   cancelRun(receipt: number) {
-    this.storeActions.cancelRun(receipt, performance.now());
+    cancelRun(this.store, receipt);
   }
 
-  subscribe(subscription: Subscription<S>): number {
-    return this.broadcaster.subscribe(subscription);
+  subscribe(subscription: Subscription<ResultsBroadcast>): number {
+    return this.store.broadcaster.subscribe(subscription);
   }
 
   unsubscribe(receipt: number) {
-    return this.broadcaster.unsubscribe(receipt);
+    return this.store.broadcaster.unsubscribe(receipt);
   }
 }
 

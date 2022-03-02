@@ -2,19 +2,15 @@
 
 A portable test runner for everybody.
 
-## Abstract
+## About
 
 Jackrabbit is a portable test runner that logs tests in a json serializable
 format.
 
-## Tests
+## Build
 
-Jackrabbit is a portable test runner. Its test results are JSON friendly.
+Jackrabbit v0.1 is build with Deno
 
-Most tests are tightly coupled to their development environment making it
-difficult to share results.
-
-Jackrabbit tests are written without dependencies, including itself.
 
 ## License
 

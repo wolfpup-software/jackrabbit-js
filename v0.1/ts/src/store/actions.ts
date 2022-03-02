@@ -1,204 +1,286 @@
+// brian taylor vann
+// actions
+
 import type {
   Collection,
-  Results,
-  Run,
-  TestBroadcaster,
-  TestStore,
-  TestStoreActions,
+  CollectionResult,
+  ResponseRecord,
+  StoreAction,
+  StoreData,
+  RunResult,
   UnitTest,
 } from "../jackrabbit_types.ts";
 
 import {
-  PENDING,
-  SUBMITTED,
+  BUILD_RUN,
+  CANCEL_RUN,
   CANCELLED,
-} from "../jackrabbit_types.ts";
+  END_COLLECTION,
+  END_RUN,
+  END_UNIT_TEST,
+  FAILED,
+  INDEX_ERROR,
+  PASSED,
+  PENDING,
+  START_COLLECTION,
+  START_RUN,
+  START_UNIT_TEST,
+  SUBMITTED,
+} from "../utils/constants.ts";
 
-type ActionKeys = 'startRun';
+/*
+  All store actions and supporting functions must be syncronous
+*/
 
-interface StartRunAction {
-  kind: 'start_run';
-  runID: number;
-  startTime: number;
+const createUnitTestResults = (storeData: StoreData, tests: UnitTest[]) => {
+  const startIndex = storeData.testResults.length;
+  for (const test of tests) {
+    const unitTestID = storeData.unitTests.length;
+    storeData.unitTests.push(test);
+
+    const unitTestResultID = storeData.testResults.length;
+    storeData.testResults.push({
+      assertions: [],
+      endTime: -1,
+      name: test.name,
+      startTime: -1,
+      status: PENDING,
+      unitTestResultID,
+      unitTestID,
+    });
+  }
+
+  const endIndex = storeData.testResults.length;
+
+  return [startIndex, endIndex];
+};
+
+const createCollectionResults = (
+  storeData: StoreData,
+  collections: Collection[],
+) => {
+  const startIndex = storeData.collectionResults.length;
+
+  for (const collection of collections) {
+    const collectionResultID = storeData.collectionResults.length;
+    const { tests, title, runTestsAsynchronously, timeoutInterval } =
+      collection;
+    const indices = createUnitTestResults(storeData, tests);
+
+    storeData.collectionResults.push({
+      endTime: -1,
+      testTime: -1,
+      startTime: -1,
+      status: PENDING,
+      collectionResultID,
+      indices,
+      timeoutInterval,
+      runTestsAsynchronously,
+      title,
+    });
+  }
+
+  const endIndex = storeData.testResults.length;
+
+  return [startIndex, endIndex];
+};
+
+
+function updateRunResultProperties(storeData: StoreData, runResult: RunResult) {
+  // iterate over tests and generate updated properties
+  let { status } = runResult;
+  let testTime = 0;
+
+  const { indices } = runResult;
+
+  let index = indices[0];
+  const target = indices[1];
+  while (index < target) {
+    const collectionResult = storeData.collectionResults[index];
+    if (collectionResult === undefined) {
+      status = INDEX_ERROR;
+      break;
+    }
+
+    if (status === SUBMITTED && collectionResult.status === FAILED) {
+      status = FAILED;
+    }
+
+    const { startTime, endTime } = collectionResult;
+    if (startTime !== -1 && endTime !== -1) {
+      testTime += endTime - startTime;
+    }
+
+    index += 1;
+  }
+
+  // set updated properties
+  runResult.status = status === SUBMITTED ? PASSED : status;
+  runResult.testTime = testTime;
 }
 
-interface EndRunAction {
-  kind: 'end_run';
-  runID: number;
-  endTime: number;
+
+function updateCollectionResult(storeData: StoreData, collectionResult: CollectionResult) {
+  // iterate over tests and generate updated properties
+  let { status } = collectionResult;
+  let testTime = 0;
+
+  const { indices } = collectionResult;
+
+  let index = indices[0];
+  const target = indices[1];
+  while (index < target) {
+    const testResult = storeData.testResults[index];
+    if (testResult === undefined) {
+      status = INDEX_ERROR;
+      break;
+    }
+
+    if (status === SUBMITTED && testResult.status === FAILED) {
+      status = FAILED;
+    }
+
+    const { startTime, endTime } = testResult;
+    if (startTime !== -1 && endTime !== -1) {
+      testTime += endTime - startTime;
+    }
+
+    index += 1;
+  }
+
+  // set updated properties
+  collectionResult.status = status === SUBMITTED ? PASSED : status;
+  collectionResult.testTime = testTime;
 }
 
-type ActionStuff = StartRunAction | EndRunAction;
+/*
+  ACTIONS
+*/
 
-type Response = (store: TestStore, params: ActionStuff) => void;
+// empty action to dispatch test state
+function build_run(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== BUILD_RUN) return;
 
-type ActionMap = Record<string, Response>
+  const { runResultID, run } = action;
+  const indices = createCollectionResults(storeData, run);
 
+  storeData.runResults.push({
+    status: SUBMITTED,
+    endTime: -1,
+    startTime: -1,
+    testTime: -1,
+    runResultID,
+    indices,
+  });
+}
 
-const start_run: Response = (store, action) => {
-  if (action.kind !== 'start_run') return;
+function start_run(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== START_RUN) return;
 
-  const {runID, startTime} = action;
-  const run = store.runResults[runID];
-  if (run === undefined) {
+  const { runResultID, startTime } = action;
+  const runResults = storeData.runResults[runResultID];
+  if (runResults === undefined) {
     return;
   }
-  run.status = SUBMITTED;
-  run.startTime = startTime;
+
+  runResults.status = SUBMITTED;
+  runResults.startTime = startTime;
 }
 
-const actionMap: ActionMap = {
-  start_run
+function end_run(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== END_RUN) return;
+
+  const { runResultID } = action;
+  const runResult = storeData.runResults[runResultID];
+  if (runResult === undefined || runResult.status === CANCELLED) {
+    return;
+  }
+
+  // set known properties
+  runResult.endTime = action.endTime;
+
+  updateRunResultProperties(storeData, runResult)
 }
 
-class Actions<R = Results> implements TestStoreActions {
-  broadcaster: TestBroadcaster<R>;
-  store: TestStore;
-  actionMap: ActionMap = actionMap;
+function cancel_run(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== CANCEL_RUN) return;
 
-  constructor(store: TestStore, broadcaster: TestBroadcaster<R>) {
-    this.broadcaster = broadcaster;
-    this.store = store;
+  const { runResultID } = action;
+  const runResults = storeData.runResults[runResultID];
+  if (runResults === undefined) {
+    return;
   }
 
-  dispatch(action: ActionStuff) {
-    const response = actionMap[action.kind];
-    if (response === undefined) {
-      return;
-    }
-
-    response(this.store, action);
-
-    // broadcast
-    // (action, state) => {}
-  }
-
-  // below will be replaced by ActionMap
-  cancelRun(runID: number, endTime: number) {
-    const run = this.store.runResults[runID];
-    if (run === undefined) {
-      return;
-    }
-
-    // iterate through collecitons and add time
-    run.endTime = endTime;
-    run.status = CANCELLED;
-
-        // broadcast action, result
-  }
-
-  startCollection(collectionID: number, startTime: number) {
-    const collection = this.store.collectionResults[collectionID];
-    if (collection === undefined) {
-      return;
-    }
-    collection.status = SUBMITTED;
-    collection.startTime = startTime;
-
-        // broadcast action, result
-
-  }
-
-  endCollection(collectionID: number, endTime: number) {
-    const collection = this.store.collectionResults[collectionID];
-    if (collection === undefined) {
-      return;
-    }
-    // iterate through collection
-    // add all times
-    collection.endTime = endTime;
-
-        // broadcast action, result
-  }
-
-  startUnitTest(unitTestID: number, startTime: number) {
-    const collection = this.store.testResults[unitTestID];
-    if (collection === undefined) {
-      return;
-    }
-    collection.status = SUBMITTED;
-    collection.startTime = startTime;
-
-        // broadcast action, result
-  }
-
-  endUnitTest(assertions: string[], unitTestID: number, endTime: number) {
-    const unitTest = this.store.testResults[unitTestID];
-    if (unitTest === undefined) {
-      return;
-    }
-    unitTest.assertions = assertions;
-    unitTest.endTime = endTime;
-
-        // broadcast action, result
-  }
-
-  buildRun(run: Run) {
-    const id = this.store.runResults.length;
-    const indices = this.createCollectionResults(run);
-
-    this.store.runResults.push({
-      status: SUBMITTED,
-      endTime: -1,
-      startTime: -1,
-      id,
-      indices,
-    });
-
-        // broadcast action, result
-
-    return id;
-  }
-
-  private createUnitTestResults(tests: UnitTest[]) {
-    const startIndex = this.store.testResults.length;
-    for (const test of tests) {
-      const testID = this.store.unitTests.length;
-      this.store.unitTests.push(test);
-
-      const id = this.store.testResults.length;
-      this.store.testResults.push({
-        assertions: [],
-        endTime: -1,
-        name: test.name,
-        startTime: -1,
-        status: PENDING,
-        id,
-        testID,
-      });
-    }
-
-    const endIndex = this.store.testResults.length;
-
-    return [startIndex, endIndex];
-  }
-
-  private createCollectionResults(collections: Collection[]) {
-    const startIndex = this.store.collectionResults.length;
-
-    for (const collection of collections) {
-      const id = this.store.collectionResults.length;
-      const { tests, title, runTestsAsynchronously, timeoutInterval } =
-        collection;
-      const indices = this.createUnitTestResults(tests);
-
-      this.store.collectionResults.push({
-        endTime: -1,
-        testTime: -1,
-        startTime: -1,
-        status: PENDING,
-        id,
-        indices,
-        timeoutInterval,
-        runTestsAsynchronously,
-        title,
-      });
-    }
-
-    const endIndex = this.store.testResults.length - 1;
-
-    return [startIndex, endIndex];
-  }
+  runResults.endTime = action.endTime;
+  runResults.status = CANCELLED;
 }
 
-export { Actions };
+function start_collection(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== START_COLLECTION) return;
+
+  const { collectionResultID } = action;
+
+  const collectionResult = storeData.collectionResults[collectionResultID];
+  if (collectionResult === undefined) {
+    return;
+  }
+
+  collectionResult.startTime = action.startTime;
+  collectionResult.status = SUBMITTED;
+}
+
+function end_collection(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== END_COLLECTION) return;
+
+  const { collectionResultID } = action;
+  const collectionResult = storeData.collectionResults[collectionResultID];
+  if (collectionResult === undefined) {
+    return;
+  }
+
+  // set known properties
+  collectionResult.endTime = action.endTime;
+
+  // update properties
+  updateCollectionResult(storeData, collectionResult);
+}
+
+function start_unit_test(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== START_UNIT_TEST) return;
+
+  const { unitTestResultID, startTime } = action;
+  const testResult = storeData.testResults[unitTestResultID];
+  if (testResult === undefined) {
+    return;
+  }
+
+  testResult.status = SUBMITTED;
+  testResult.startTime = startTime;
+}
+
+function end_unit_test(storeData: StoreData, action: StoreAction) {
+  if (action.kind !== END_UNIT_TEST) return;
+
+  const { unitTestResultID, endTime, assertions } = action;
+  const testResult = storeData.testResults[unitTestResultID];
+  if (testResult === undefined) {
+    return;
+  }
+
+  testResult.assertions = assertions;
+  testResult.status = assertions.length === 0 ? PASSED : FAILED;
+  testResult.endTime = endTime;
+}
+
+const actions: ResponseRecord = {
+  build_run,
+  start_run,
+  end_run,
+  cancel_run,
+  start_collection,
+  end_collection,
+  start_unit_test,
+  end_unit_test,
+};
+
+export { actions };
