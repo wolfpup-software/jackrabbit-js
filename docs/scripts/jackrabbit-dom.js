@@ -20,9 +20,9 @@ const createUnitTestResults = (storeData, tests) => {
     const unitTestResultID = storeData.testResults.length;
     storeData.testResults.push({
       assertions: [],
-      endTime: -1,
+      endTime: 0,
       name: test.name,
-      startTime: -1,
+      startTime: 0,
       status: PENDING,
       unitTestResultID,
       unitTestID,
@@ -42,9 +42,9 @@ const createCollectionResults = (storeData, collections) => {
       collection;
     const indices = createUnitTestResults(storeData, tests);
     storeData.collectionResults.push({
-      endTime: -1,
-      testTime: -1,
-      startTime: -1,
+      endTime: 0,
+      testTime: 0,
+      startTime: 0,
       status: PENDING,
       collectionResultID,
       indices,
@@ -53,18 +53,17 @@ const createCollectionResults = (storeData, collections) => {
       title,
     });
   }
-  const endIndex = storeData.testResults.length;
+  const endIndex = storeData.collectionResults.length;
   return [
     startIndex,
     endIndex,
   ];
 };
 function updateRunResultProperties(storeData, runResult) {
-  let { status } = runResult;
-  let testTime = 0;
-  const { indices } = runResult;
-  let index = indices[0];
+  let { indices, status } = runResult;
   const target = indices[1];
+  let testTime = 0;
+  let index = indices[0];
   while (index < target) {
     const collectionResult = storeData.collectionResults[index];
     if (collectionResult === undefined) {
@@ -74,21 +73,17 @@ function updateRunResultProperties(storeData, runResult) {
     if (status === SUBMITTED && collectionResult.status === FAILED) {
       status = FAILED;
     }
-    const { startTime, endTime } = collectionResult;
-    if (startTime !== -1 && endTime !== -1) {
-      testTime += endTime - startTime;
-    }
+    testTime += collectionResult.testTime;
     index += 1;
   }
   runResult.status = status === SUBMITTED ? PASSED : status;
   runResult.testTime = testTime;
 }
 function updateCollectionResult(storeData, collectionResult) {
-  let { status } = collectionResult;
-  let testTime = 0;
-  const { indices } = collectionResult;
-  let index = indices[0];
+  let { indices, status } = collectionResult;
   const target = indices[1];
+  let testTime = 0;
+  let index = indices[0];
   while (index < target) {
     const testResult = storeData.testResults[index];
     if (testResult === undefined) {
@@ -99,9 +94,7 @@ function updateCollectionResult(storeData, collectionResult) {
       status = FAILED;
     }
     const { startTime, endTime } = testResult;
-    if (startTime !== -1 && endTime !== -1) {
-      testTime += endTime - startTime;
-    }
+    testTime += endTime - startTime;
     index += 1;
   }
   collectionResult.status = status === SUBMITTED ? PASSED : status;
@@ -113,9 +106,9 @@ function build_run(storeData, action) {
   const indices = createCollectionResults(storeData, run);
   storeData.runResults.push({
     status: SUBMITTED,
-    endTime: -1,
-    startTime: -1,
-    testTime: -1,
+    endTime: 0,
+    startTime: 0,
+    testTime: 0,
     runResultID,
     indices,
   });
@@ -281,13 +274,13 @@ async function execRun(store, receipt) {
     return;
   }
   const { indices, runResultID } = runResult;
+  const dest = indices[1];
+  let target = indices[0];
   store.dispatch({
     kind: START_RUN,
     runResultID,
     startTime: performance.now(),
   });
-  const dest = indices[1];
-  let target = indices[0];
   while (target < dest) {
     if (runIsCancelled(store, receipt)) {
       return;
@@ -300,35 +293,37 @@ async function execRun(store, receipt) {
     }
     target += 1;
   }
+  const endTime = performance.now();
   if (runIsCancelled(store, receipt)) {
     return;
   }
   store.dispatch({
     kind: END_RUN,
     runResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 async function execUnitTest(store, runreceipt, testResult, timeoutInterval) {
   const { unitTestResultID } = testResult;
+  const testFunc = store.data.unitTests[unitTestResultID];
   store.dispatch({
     kind: START_UNIT_TEST,
     unitTestResultID,
     startTime: performance.now(),
   });
-  const testFunc = store.data.unitTests[unitTestResultID];
   const assertions = testFunc !== undefined
     ? await Promise.race([
       createTimeout(timeoutInterval),
       testFunc(),
     ])
     : [];
+  const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
     kind: END_UNIT_TEST,
     unitTestResultID,
     assertions,
-    endTime: performance.now(),
+    endTime,
   });
 }
 async function execCollection(store, runreceipt, collectionResuilt) {
@@ -349,17 +344,18 @@ async function execCollection(store, runreceipt, collectionResuilt) {
     startTime: performance.now(),
   });
   await Promise.all(tests);
+  const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
     kind: END_COLLECTION,
     collectionResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 async function execCollectionOrdered(store, runreceipt, collectionResuilt) {
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
-  let target = indices[0];
   const dest = indices[1];
+  let target = indices[0];
   store.dispatch({
     kind: START_COLLECTION,
     collectionResultID,
@@ -373,11 +369,12 @@ async function execCollectionOrdered(store, runreceipt, collectionResuilt) {
     }
     target += 1;
   }
+  const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
     kind: END_COLLECTION,
     collectionResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 function cancelRun(store, receipt) {
@@ -412,4 +409,48 @@ class Runner {
     return this.store.broadcaster.unsubscribe(receipt);
   }
 }
-export { Runner as Jackrabbit };
+const root = document.querySelector("section");
+const jr = new Runner();
+const log = (broadcast) => {
+  const { action, data } = broadcast;
+  console.log("*******************");
+  console.log(action);
+  console.log(data);
+  if (root === null) {
+    return;
+  }
+  let message = "";
+  switch (action.kind) {
+    case "end_unit_test":
+      const testResult = data.testResults[action.unitTestResultID];
+      message = `test *${testResult.status}* in ${
+        testResult.endTime - testResult.startTime
+      }`;
+      break;
+    case "end_collection":
+      const collecitonResult =
+        data.collectionResults[action.collectionResultID];
+      message =
+        `collection *${collecitonResult.status}* in ${collecitonResult.testTime}`;
+      break;
+    case "end_run":
+      const runResult = data.runResults[action.runResultID];
+      message = `run *${runResult.status}* in ${runResult.testTime}`;
+      break;
+  }
+  const textNode = document.createTextNode(`${action.kind} : ${message}`);
+  const node = document.createElement("div");
+  node.appendChild(textNode);
+  if (root.firstChild === null) {
+    root.appendChild(node);
+  } else {
+    root.insertBefore(node, root.firstChild);
+  }
+};
+jr.subscribe(log);
+const loadAndRunTests = async () => {
+  const { tests } = await import("./jackrabbit.test.js");
+  const receipt = jr.buildRun(tests);
+  jr.startRun(receipt);
+};
+loadAndRunTests();

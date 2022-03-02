@@ -56,9 +56,11 @@ class Store implements XStore {
 
     // do not broadcast tests, only serializable results
     if (action.kind === BUILD_RUN) {
-      const {runResultID} = action;
-      this.broadcaster.broadcast({ data, action: {kind: BUILD_RUN, runResultID} });
-
+      const { runResultID } = action;
+      this.broadcaster.broadcast({
+        data,
+        action: { kind: BUILD_RUN, runResultID },
+      });
     }
 
     this.broadcaster.broadcast({ data, action });

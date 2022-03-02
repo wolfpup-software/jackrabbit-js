@@ -154,7 +154,6 @@ interface Broadcaster<M = ResultsBroadcast> {
   broadcast(message: M): void;
 }
 
-
 type StoreData = BroadcastData & {
   readonly unitTests: UnitTest[];
 };
@@ -169,14 +168,13 @@ type Response = (store: StoreData, action: StoreAction) => void;
 
 type ResponseRecord = Record<ActionKind, Response>;
 
-
 export type {
   ActionKind,
   Assertions,
   AsyncTest,
+  BroadcastAction,
   BroadcastData,
   Broadcaster,
-  BroadcastAction,
   Collection,
   CollectionResult,
   Response,

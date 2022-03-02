@@ -21,7 +21,7 @@ import {
 
 /*
   All asyncronous logic resides here.
-  
+
   Syncronous calls are made to the store from the asyncronus logic below.
 */
 
@@ -52,15 +52,15 @@ async function execRun(store: Store, receipt: number) {
   }
 
   const { indices, runResultID } = runResult;
+  const dest = indices[1];
+  let target = indices[0];
+
   store.dispatch({
     kind: START_RUN,
     runResultID,
     startTime: performance.now(),
   });
 
-  const dest = indices[1];
-
-  let target = indices[0];
   while (target < dest) {
     if (runIsCancelled(store, receipt)) {
       return;
@@ -76,6 +76,8 @@ async function execRun(store: Store, receipt: number) {
     target += 1;
   }
 
+  const endTime = performance.now();
+
   if (runIsCancelled(store, receipt)) {
     return;
   }
@@ -83,7 +85,7 @@ async function execRun(store: Store, receipt: number) {
   store.dispatch({
     kind: END_RUN,
     runResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 
@@ -94,6 +96,7 @@ async function execUnitTest(
   timeoutInterval: number,
 ) {
   const { unitTestResultID } = testResult;
+  const testFunc = store.data.unitTests[unitTestResultID];
 
   store.dispatch({
     kind: START_UNIT_TEST,
@@ -101,7 +104,7 @@ async function execUnitTest(
     startTime: performance.now(),
   });
 
-  const testFunc = store.data.unitTests[unitTestResultID];
+  // opportunity for index error
   const assertions = (testFunc !== undefined)
     ? await Promise.race([
       createTimeout(timeoutInterval),
@@ -109,13 +112,15 @@ async function execUnitTest(
     ])
     : [];
 
+  const endTime = performance.now();
+
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
     kind: END_UNIT_TEST,
     unitTestResultID,
     assertions,
-    endTime: performance.now(),
+    endTime,
   });
 }
 
@@ -148,12 +153,14 @@ async function execCollection(
 
   await Promise.all(tests);
 
+  const endTime = performance.now();
+
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
     kind: END_COLLECTION,
     collectionResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 
@@ -163,8 +170,8 @@ async function execCollectionOrdered(
   collectionResuilt: CollectionResult,
 ) {
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
-  let target = indices[0];
   const dest = indices[1];
+  let target = indices[0];
 
   store.dispatch({
     kind: START_COLLECTION,
@@ -183,12 +190,14 @@ async function execCollectionOrdered(
     target += 1;
   }
 
+  const endTime = performance.now();
+
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
     kind: END_COLLECTION,
     collectionResultID,
-    endTime: performance.now(),
+    endTime,
   });
 }
 

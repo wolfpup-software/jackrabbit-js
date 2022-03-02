@@ -5,9 +5,9 @@ import type {
   Collection,
   CollectionResult,
   ResponseRecord,
+  RunResult,
   StoreAction,
   StoreData,
-  RunResult,
   UnitTest,
 } from "../jackrabbit_types.ts";
 
@@ -41,9 +41,9 @@ const createUnitTestResults = (storeData: StoreData, tests: UnitTest[]) => {
     const unitTestResultID = storeData.testResults.length;
     storeData.testResults.push({
       assertions: [],
-      endTime: -1,
+      endTime: 0,
       name: test.name,
-      startTime: -1,
+      startTime: 0,
       status: PENDING,
       unitTestResultID,
       unitTestID,
@@ -68,9 +68,9 @@ const createCollectionResults = (
     const indices = createUnitTestResults(storeData, tests);
 
     storeData.collectionResults.push({
-      endTime: -1,
-      testTime: -1,
-      startTime: -1,
+      endTime: 0,
+      testTime: 0,
+      startTime: 0,
       status: PENDING,
       collectionResultID,
       indices,
@@ -80,21 +80,17 @@ const createCollectionResults = (
     });
   }
 
-  const endIndex = storeData.testResults.length;
+  const endIndex = storeData.collectionResults.length;
 
   return [startIndex, endIndex];
 };
 
-
 function updateRunResultProperties(storeData: StoreData, runResult: RunResult) {
-  // iterate over tests and generate updated properties
-  let { status } = runResult;
-  let testTime = 0;
-
-  const { indices } = runResult;
-
-  let index = indices[0];
+  let { indices, status } = runResult;
   const target = indices[1];
+
+  let testTime = 0;
+  let index = indices[0];
   while (index < target) {
     const collectionResult = storeData.collectionResults[index];
     if (collectionResult === undefined) {
@@ -106,10 +102,7 @@ function updateRunResultProperties(storeData: StoreData, runResult: RunResult) {
       status = FAILED;
     }
 
-    const { startTime, endTime } = collectionResult;
-    if (startTime !== -1 && endTime !== -1) {
-      testTime += endTime - startTime;
-    }
+    testTime += collectionResult.testTime;
 
     index += 1;
   }
@@ -119,16 +112,15 @@ function updateRunResultProperties(storeData: StoreData, runResult: RunResult) {
   runResult.testTime = testTime;
 }
 
-
-function updateCollectionResult(storeData: StoreData, collectionResult: CollectionResult) {
-  // iterate over tests and generate updated properties
-  let { status } = collectionResult;
-  let testTime = 0;
-
-  const { indices } = collectionResult;
-
-  let index = indices[0];
+function updateCollectionResult(
+  storeData: StoreData,
+  collectionResult: CollectionResult,
+) {
+  let { indices, status } = collectionResult;
   const target = indices[1];
+
+  let testTime = 0;
+  let index = indices[0];
   while (index < target) {
     const testResult = storeData.testResults[index];
     if (testResult === undefined) {
@@ -141,9 +133,7 @@ function updateCollectionResult(storeData: StoreData, collectionResult: Collecti
     }
 
     const { startTime, endTime } = testResult;
-    if (startTime !== -1 && endTime !== -1) {
-      testTime += endTime - startTime;
-    }
+    testTime += endTime - startTime;
 
     index += 1;
   }
@@ -166,9 +156,9 @@ function build_run(storeData: StoreData, action: StoreAction) {
 
   storeData.runResults.push({
     status: SUBMITTED,
-    endTime: -1,
-    startTime: -1,
-    testTime: -1,
+    endTime: 0,
+    startTime: 0,
+    testTime: 0,
     runResultID,
     indices,
   });
@@ -199,7 +189,7 @@ function end_run(storeData: StoreData, action: StoreAction) {
   // set known properties
   runResult.endTime = action.endTime;
 
-  updateRunResultProperties(storeData, runResult)
+  updateRunResultProperties(storeData, runResult);
 }
 
 function cancel_run(storeData: StoreData, action: StoreAction) {
