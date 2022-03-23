@@ -6,7 +6,7 @@ import type {
   CollectionResult,
   Store,
   UnitTestResult,
-} from "../jackrabbit_types.ts";
+} from "../utils/jackrabbit_types.ts";
 
 import {
   CANCEL_RUN,
@@ -29,6 +29,13 @@ type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
 
 const TIMOUT_INTERVAL = 10000;
+
+// store broadcaster implements storeinterface
+// has a store
+//
+// can disaptch to itself?
+// turn funcitons into actions
+// {store, timeout, 'exec_unit_test'}
 
 const sleep: Sleep = (time: number) => {
   return new Promise((resolve) => {
@@ -56,10 +63,11 @@ async function execRun(store: Store, receipt: number) {
   let target = indices[0];
 
   store.dispatch({
-    kind: START_RUN,
+    type: START_RUN,
     runResultID,
-    startTime: performance.now(),
   });
+
+  const startTime = performance.now();
 
   while (target < dest) {
     if (runIsCancelled(store, receipt)) {
@@ -83,8 +91,9 @@ async function execRun(store: Store, receipt: number) {
   }
 
   store.dispatch({
-    kind: END_RUN,
+    type: END_RUN,
     runResultID,
+    startTime,
     endTime,
   });
 }
@@ -99,10 +108,11 @@ async function execUnitTest(
   const testFunc = store.data.unitTests[unitTestResultID];
 
   store.dispatch({
-    kind: START_UNIT_TEST,
+    type: START_UNIT_TEST,
     unitTestResultID,
-    startTime: performance.now(),
   });
+
+  const startTime = performance.now();
 
   // opportunity for index error
   const assertions = (testFunc !== undefined)
@@ -117,9 +127,10 @@ async function execUnitTest(
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
-    kind: END_UNIT_TEST,
+    type: END_UNIT_TEST,
     unitTestResultID,
     assertions,
+    startTime,
     endTime,
   });
 }
@@ -146,10 +157,11 @@ async function execCollection(
   }
 
   store.dispatch({
-    kind: START_COLLECTION,
+    type: START_COLLECTION,
     collectionResultID,
-    startTime: performance.now(),
   });
+
+  const startTime = performance.now();
 
   await Promise.all(tests);
 
@@ -158,8 +170,9 @@ async function execCollection(
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
-    kind: END_COLLECTION,
+    type: END_COLLECTION,
     collectionResultID,
+    startTime,
     endTime,
   });
 }
@@ -174,10 +187,11 @@ async function execCollectionOrdered(
   let target = indices[0];
 
   store.dispatch({
-    kind: START_COLLECTION,
+    type: START_COLLECTION,
     collectionResultID,
-    startTime: performance.now(),
   });
+
+  const startTime = performance.now();
 
   while (target < dest) {
     if (runIsCancelled(store, runreceipt)) return;
@@ -195,15 +209,16 @@ async function execCollectionOrdered(
   if (runIsCancelled(store, runreceipt)) return;
 
   store.dispatch({
-    kind: END_COLLECTION,
+    type: END_COLLECTION,
     collectionResultID,
+    startTime,
     endTime,
   });
 }
 
 function cancelRun(store: Store, receipt: number) {
   store.dispatch({
-    kind: CANCEL_RUN,
+    type: CANCEL_RUN,
     runResultID: receipt,
     endTime: performance.now(),
   });

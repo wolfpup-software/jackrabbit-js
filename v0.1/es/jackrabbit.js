@@ -101,7 +101,7 @@ function updateCollectionResult(storeData, collectionResult) {
   collectionResult.testTime = testTime;
 }
 function build_run(storeData, action) {
-  if (action.kind !== BUILD_RUN) return;
+  if (action.type !== BUILD_RUN) return;
   const { runResultID, run } = action;
   const indices = createCollectionResults(storeData, run);
   storeData.runResults.push({
@@ -114,7 +114,7 @@ function build_run(storeData, action) {
   });
 }
 function start_run(storeData, action) {
-  if (action.kind !== START_RUN) return;
+  if (action.type !== START_RUN) return;
   const { runResultID, startTime } = action;
   const runResults = storeData.runResults[runResultID];
   if (runResults === undefined) {
@@ -124,7 +124,7 @@ function start_run(storeData, action) {
   runResults.startTime = startTime;
 }
 function end_run(storeData, action) {
-  if (action.kind !== END_RUN) return;
+  if (action.type !== END_RUN) return;
   const { runResultID } = action;
   const runResult = storeData.runResults[runResultID];
   if (runResult === undefined || runResult.status === CANCELLED) {
@@ -134,7 +134,7 @@ function end_run(storeData, action) {
   updateRunResultProperties(storeData, runResult);
 }
 function cancel_run(storeData, action) {
-  if (action.kind !== CANCEL_RUN) return;
+  if (action.type !== CANCEL_RUN) return;
   const { runResultID } = action;
   const runResults = storeData.runResults[runResultID];
   if (runResults === undefined) {
@@ -144,7 +144,7 @@ function cancel_run(storeData, action) {
   runResults.status = CANCELLED;
 }
 function start_collection(storeData, action) {
-  if (action.kind !== START_COLLECTION) return;
+  if (action.type !== START_COLLECTION) return;
   const { collectionResultID } = action;
   const collectionResult = storeData.collectionResults[collectionResultID];
   if (collectionResult === undefined) {
@@ -154,7 +154,7 @@ function start_collection(storeData, action) {
   collectionResult.status = SUBMITTED;
 }
 function end_collection(storeData, action) {
-  if (action.kind !== END_COLLECTION) return;
+  if (action.type !== END_COLLECTION) return;
   const { collectionResultID } = action;
   const collectionResult = storeData.collectionResults[collectionResultID];
   if (collectionResult === undefined) {
@@ -164,7 +164,7 @@ function end_collection(storeData, action) {
   updateCollectionResult(storeData, collectionResult);
 }
 function start_unit_test(storeData, action) {
-  if (action.kind !== START_UNIT_TEST) return;
+  if (action.type !== START_UNIT_TEST) return;
   const { unitTestResultID, startTime } = action;
   const testResult = storeData.testResults[unitTestResultID];
   if (testResult === undefined) {
@@ -174,7 +174,7 @@ function start_unit_test(storeData, action) {
   testResult.startTime = startTime;
 }
 function end_unit_test(storeData, action) {
-  if (action.kind !== END_UNIT_TEST) return;
+  if (action.type !== END_UNIT_TEST) return;
   const { unitTestResultID, endTime, assertions } = action;
   const testResult = storeData.testResults[unitTestResultID];
   if (testResult === undefined) {
@@ -223,14 +223,14 @@ class Store {
   buildRun(run) {
     const runResultID = this.data.runResults.length;
     this.dispatch({
-      kind: BUILD_RUN,
+      type: BUILD_RUN,
       runResultID,
       run,
     });
     return runResultID;
   }
   dispatch(action) {
-    const response = this.actions[action.kind];
+    const response = this.actions[action.type];
     if (response === undefined) return;
     response(this.data, action);
     const data = {
@@ -238,15 +238,16 @@ class Store {
       collectionResults: this.data.collectionResults,
       runResults: this.data.runResults,
     };
-    if (action.kind === BUILD_RUN) {
+    if (action.type === BUILD_RUN) {
       const { runResultID } = action;
       this.broadcaster.broadcast({
         data,
         action: {
-          kind: BUILD_RUN,
+          type: BUILD_RUN,
           runResultID,
         },
       });
+      return;
     }
     this.broadcaster.broadcast({
       data,
@@ -277,7 +278,7 @@ async function execRun(store, receipt) {
   const dest = indices[1];
   let target = indices[0];
   store.dispatch({
-    kind: START_RUN,
+    type: START_RUN,
     runResultID,
     startTime: performance.now(),
   });
@@ -298,7 +299,7 @@ async function execRun(store, receipt) {
     return;
   }
   store.dispatch({
-    kind: END_RUN,
+    type: END_RUN,
     runResultID,
     endTime,
   });
@@ -307,7 +308,7 @@ async function execUnitTest(store, runreceipt, testResult, timeoutInterval) {
   const { unitTestResultID } = testResult;
   const testFunc = store.data.unitTests[unitTestResultID];
   store.dispatch({
-    kind: START_UNIT_TEST,
+    type: START_UNIT_TEST,
     unitTestResultID,
     startTime: performance.now(),
   });
@@ -320,7 +321,7 @@ async function execUnitTest(store, runreceipt, testResult, timeoutInterval) {
   const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
-    kind: END_UNIT_TEST,
+    type: END_UNIT_TEST,
     unitTestResultID,
     assertions,
     endTime,
@@ -339,7 +340,7 @@ async function execCollection(store, runreceipt, collectionResuilt) {
     target += 1;
   }
   store.dispatch({
-    kind: START_COLLECTION,
+    type: START_COLLECTION,
     collectionResultID,
     startTime: performance.now(),
   });
@@ -347,7 +348,7 @@ async function execCollection(store, runreceipt, collectionResuilt) {
   const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
-    kind: END_COLLECTION,
+    type: END_COLLECTION,
     collectionResultID,
     endTime,
   });
@@ -357,7 +358,7 @@ async function execCollectionOrdered(store, runreceipt, collectionResuilt) {
   const dest = indices[1];
   let target = indices[0];
   store.dispatch({
-    kind: START_COLLECTION,
+    type: START_COLLECTION,
     collectionResultID,
     startTime: performance.now(),
   });
@@ -372,14 +373,14 @@ async function execCollectionOrdered(store, runreceipt, collectionResuilt) {
   const endTime = performance.now();
   if (runIsCancelled(store, runreceipt)) return;
   store.dispatch({
-    kind: END_COLLECTION,
+    type: END_COLLECTION,
     collectionResultID,
     endTime,
   });
 }
 function cancelRun(store, receipt) {
   store.dispatch({
-    kind: CANCEL_RUN,
+    type: CANCEL_RUN,
     runResultID: receipt,
     endTime: performance.now(),
   });

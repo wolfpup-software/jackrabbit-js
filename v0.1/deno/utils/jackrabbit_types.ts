@@ -54,66 +54,56 @@ interface RunResult {
   testTime: number;
 }
 
-type ActionKind =
-  | "build_run"
-  | "start_run"
-  | "end_run"
-  | "cancel_run"
-  | "start_collection"
-  | "end_collection"
-  | "start_unit_test"
-  | "end_unit_test";
-
 interface BuildRunAction {
-  kind: "build_run";
+  type: "build_run";
   runResultID: number;
   run: Collection[];
 }
 
 interface BuildRunBroadcastAction {
-  kind: "build_run";
+  type: "build_run";
   runResultID: number;
 }
 
 interface StartRunAction {
-  kind: "start_run";
+  type: "start_run";
   runResultID: number;
-  startTime: number;
 }
 
 interface EndRunAction {
-  kind: "end_run";
+  type: "end_run";
   runResultID: number;
+  startTime: number;
   endTime: number;
 }
 
 interface CancelRunAction {
-  kind: "cancel_run";
+  type: "cancel_run";
   runResultID: number;
   endTime: number;
 }
 
 interface StartCollectionAction {
-  kind: "start_collection";
+  type: "start_collection";
   collectionResultID: number;
-  startTime: number;
 }
 
 interface EndCollectionAction {
-  kind: "end_collection";
+  type: "end_collection";
   collectionResultID: number;
+  startTime: number;
   endTime: number;
 }
 
 interface StartUnitTestAction {
-  kind: "start_unit_test";
+  type: "start_unit_test";
   unitTestResultID: number;
-  startTime: number;
 }
 
 interface EndUnitTestAction {
-  kind: "end_unit_test";
+  type: "end_unit_test";
   unitTestResultID: number;
+  startTime: number;
   endTime: number;
   assertions: string[];
 }
@@ -146,46 +136,65 @@ interface ResultsBroadcast {
   data: BroadcastData;
 }
 
-type Subscription<T = ResultsBroadcast> = (params: T) => void;
-
-interface Broadcaster<M = ResultsBroadcast> {
-  subscribe(subscription: Subscription<M>): number;
-  unsubscribe(receipt: number): void;
-  broadcast(message: M): void;
-}
+type Subscription<T> = (params: T) => void;
 
 type StoreData = BroadcastData & {
   readonly unitTests: UnitTest[];
 };
 
-interface Store<S = StoreData, A = StoreAction, R = ResultsBroadcast> {
-  readonly broadcaster: Broadcaster<R>;
-  readonly data: S;
-  dispatch(action: A): void;
+interface Action {
+  type: string;
 }
 
-type Response = (store: StoreData, action: StoreAction) => void;
+type Reaction<S, A> = (storeData: S, action: A) => void;
+type AsyncReaction<S, A> = (storeData: S, action: A) => Promise<void>;
 
-type ResponseRecord = Record<ActionKind, Response>;
+
+interface Action {
+  type: string;
+}
+
+type ReactionRecord<S, A extends Action> = Record<string, Reaction<S, A>>;
+type AsyncReactionRecord<S, A extends Action> = Record<string, AsyncReaction<S, A>>;
+
+interface Store {
+  readonly data: StoreData;
+  dispatch(action: StoreAction): void;
+}
+
+interface StoreContext<D, A> {
+  data: D;
+  reactions: ReactionRecord<D, A>;
+}
+
+interface StoreInterface<D, A> {
+  dispatch(action: A): void;
+  getState(): D;
+}
+type Translate<D, B> = (source: D, target?: B) => B;
 
 export type {
-  ActionKind,
+  Action,
   Assertions,
   AsyncTest,
+  AsyncReaction,
+  AsyncReactionRecord,
   BroadcastAction,
   BroadcastData,
-  Broadcaster,
   Collection,
   CollectionResult,
-  Response,
-  ResponseRecord,
+  Reaction,
+  ReactionRecord,
   ResultsBroadcast,
   RunResult,
   Status,
   Store,
   StoreAction,
+  StoreContext,
   StoreData,
+  StoreInterface,
   Subscription,
+  Translate,
   UnitTest,
   UnitTestResult,
 };

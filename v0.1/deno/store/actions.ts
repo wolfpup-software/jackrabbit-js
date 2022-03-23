@@ -4,12 +4,12 @@
 import type {
   Collection,
   CollectionResult,
-  ResponseRecord,
+  ReactionRecord,
   RunResult,
   StoreAction,
   StoreData,
   UnitTest,
-} from "../jackrabbit_types.ts";
+} from "../utils/jackrabbit_types.ts";
 
 import {
   BUILD_RUN,
@@ -149,7 +149,7 @@ function updateCollectionResult(
 
 // empty action to dispatch test state
 function build_run(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== BUILD_RUN) return;
+  if (action.type !== BUILD_RUN) return;
 
   const { runResultID, run } = action;
   const indices = createCollectionResults(storeData, run);
@@ -165,7 +165,7 @@ function build_run(storeData: StoreData, action: StoreAction) {
 }
 
 function start_run(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== START_RUN) return;
+  if (action.type !== START_RUN) return;
 
   const { runResultID, startTime } = action;
   const runResults = storeData.runResults[runResultID];
@@ -174,11 +174,10 @@ function start_run(storeData: StoreData, action: StoreAction) {
   }
 
   runResults.status = SUBMITTED;
-  runResults.startTime = startTime;
 }
 
 function end_run(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== END_RUN) return;
+  if (action.type !== END_RUN) return;
 
   const { runResultID } = action;
   const runResult = storeData.runResults[runResultID];
@@ -186,14 +185,15 @@ function end_run(storeData: StoreData, action: StoreAction) {
     return;
   }
 
-  // set known properties
-  runResult.endTime = action.endTime;
+  const { startTime, endTime } = action;
+  runResult.startTime = startTime;
+  runResult.endTime = endTime;
 
   updateRunResultProperties(storeData, runResult);
 }
 
 function cancel_run(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== CANCEL_RUN) return;
+  if (action.type !== CANCEL_RUN) return;
 
   const { runResultID } = action;
   const runResults = storeData.runResults[runResultID];
@@ -206,7 +206,7 @@ function cancel_run(storeData: StoreData, action: StoreAction) {
 }
 
 function start_collection(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== START_COLLECTION) return;
+  if (action.type !== START_COLLECTION) return;
 
   const { collectionResultID } = action;
 
@@ -215,12 +215,11 @@ function start_collection(storeData: StoreData, action: StoreAction) {
     return;
   }
 
-  collectionResult.startTime = action.startTime;
   collectionResult.status = SUBMITTED;
 }
 
 function end_collection(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== END_COLLECTION) return;
+  if (action.type !== END_COLLECTION) return;
 
   const { collectionResultID } = action;
   const collectionResult = storeData.collectionResults[collectionResultID];
@@ -228,15 +227,16 @@ function end_collection(storeData: StoreData, action: StoreAction) {
     return;
   }
 
-  // set known properties
-  collectionResult.endTime = action.endTime;
+  const { startTime, endTime } = action;
+  collectionResult.startTime = startTime;
+  collectionResult.endTime = endTime;
 
   // update properties
   updateCollectionResult(storeData, collectionResult);
 }
 
 function start_unit_test(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== START_UNIT_TEST) return;
+  if (action.type !== START_UNIT_TEST) return;
 
   const { unitTestResultID, startTime } = action;
   const testResult = storeData.testResults[unitTestResultID];
@@ -245,24 +245,25 @@ function start_unit_test(storeData: StoreData, action: StoreAction) {
   }
 
   testResult.status = SUBMITTED;
-  testResult.startTime = startTime;
 }
 
 function end_unit_test(storeData: StoreData, action: StoreAction) {
-  if (action.kind !== END_UNIT_TEST) return;
+  if (action.type !== END_UNIT_TEST) return;
 
-  const { unitTestResultID, endTime, assertions } = action;
+  const { unitTestResultID } = action;
   const testResult = storeData.testResults[unitTestResultID];
   if (testResult === undefined) {
     return;
   }
 
+  const { assertions, startTime, endTime } = action;
+  testResult.startTime = startTime;
   testResult.assertions = assertions;
-  testResult.status = assertions.length === 0 ? PASSED : FAILED;
   testResult.endTime = endTime;
+  testResult.status = assertions.length === 0 ? PASSED : FAILED;
 }
 
-const actions: ResponseRecord = {
+const actions: ReactionRecord<StoreData, StoreAction> = {
   build_run,
   start_run,
   end_run,

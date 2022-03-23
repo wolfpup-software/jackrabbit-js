@@ -10,6 +10,9 @@ export type {
   StoreData,
   UnitTest,
   UnitTestResult,
-} from "./jackrabbit_types.ts";
+} from "./utils/jackrabbit_types.ts";
+
 
 export { Runner as Jackrabbit } from "./runner/runner.ts";
+
+// export { Runner as Jackrabbit } from "./runner/runner.ts";
