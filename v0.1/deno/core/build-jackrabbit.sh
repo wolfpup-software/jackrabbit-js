@@ -2,14 +2,14 @@
 
 current_dir=`dirname $0`
 
-target_pathname=$current_dir/jackrabbit.ts
+target_pathname=$current_dir/mod.ts
 
 es_dir=$current_dir/../es
 es_pathname=$es_dir/jackrabbit.js
 
-test_target_pathname=$current_dir/jackrabbit.test.ts
+test_target_pathname=$current_dir/mod.test.ts
 
-test_es_dir=$es_dir/jackrabbit.test.js 
+test_es_dir=$es_dir/mod.test.js 
 test_es_pathname=$es_dir/jackrabbit.test.js 
 
 deno bundle $target_pathname $es_pathname

@@ -11,8 +11,8 @@ const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";
 const START_COLLECTION = "start_collection";
 const END_COLLECTION = "end_collection";
-const START_UNIT_TEST = "start_unit_test";
-const END_UNIT_TEST = "end_unit_test";
+const START_TEST = "start_test";
+const END_TEST = "end_test";
 
 export {
   BUILD_RUN,
@@ -20,13 +20,13 @@ export {
   CANCELLED,
   END_COLLECTION,
   END_RUN,
-  END_UNIT_TEST,
+  END_TEST,
   FAILED,
   INDEX_ERROR,
   PASSED,
   PENDING,
   START_COLLECTION,
   START_RUN,
-  START_UNIT_TEST,
+  START_TEST,
   SUBMITTED,
 };

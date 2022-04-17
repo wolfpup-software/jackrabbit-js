@@ -4,14 +4,12 @@
 export type {
   Collection,
   CollectionResult,
-  ResultsBroadcast,
-  RunResult,
+  Result,
   StoreAction,
   StoreData,
-  UnitTest,
-  UnitTestResult,
+  Test,
+  TestResult,
 } from "./utils/jackrabbit_types.ts";
-
 
 export { Runner as Jackrabbit } from "./runner/runner.ts";
 

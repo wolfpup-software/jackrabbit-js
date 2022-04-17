@@ -4,8 +4,8 @@
 import type {
   Assertions,
   CollectionResult,
-  Store,
-  UnitTestResult,
+  StoreInterface,
+  TestResult,
 } from "../utils/jackrabbit_types.ts";
 
 import {
@@ -13,10 +13,10 @@ import {
   CANCELLED,
   END_COLLECTION,
   END_RUN,
-  END_UNIT_TEST,
+  END_TEST,
   START_COLLECTION,
   START_RUN,
-  START_UNIT_TEST,
+  START_TEST,
 } from "../utils/constants.ts";
 
 /*
@@ -29,13 +29,6 @@ type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
 
 const TIMOUT_INTERVAL = 10000;
-
-// store broadcaster implements storeinterface
-// has a store
-//
-// can disaptch to itself?
-// turn funcitons into actions
-// {store, timeout, 'exec_unit_test'}
 
 const sleep: Sleep = (time: number) => {
   return new Promise((resolve) => {
@@ -52,67 +45,56 @@ const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
   return [`timed out at: ${timeoutInterval}`];
 };
 
-async function execRun(store: Store, receipt: number) {
-  const runResult = store.data.runResults[receipt];
-  if (runResult === undefined) {
-    return;
-  }
-
-  const { indices, runResultID } = runResult;
-  const dest = indices[1];
-  let target = indices[0];
+async function execRun(store: StoreInterface) {
+  const startTime = performance.now();
 
   store.dispatch({
     type: START_RUN,
-    runResultID,
+    startTime,
   });
 
-  const startTime = performance.now();
-
-  while (target < dest) {
-    if (runIsCancelled(store, receipt)) {
+  for (const collectionResult of store.getState().collectionResults) {
+    if (runIsCancelled(store)) {
       return;
     }
-
-    const collection = store.data.collectionResults[target];
-    if (collection !== undefined) {
-      collection.runTestsAsynchronously
-        ? await execCollection(store, receipt, collection)
-        : await execCollectionOrdered(store, receipt, collection);
-    }
-
-    target += 1;
+    collectionResult.runTestsAsynchronously
+      ? await execCollection(store, collectionResult)
+      : await execCollectionOrdered(store, collectionResult);
   }
 
   const endTime = performance.now();
 
-  if (runIsCancelled(store, receipt)) {
+  if (runIsCancelled(store)) {
     return;
   }
 
   store.dispatch({
     type: END_RUN,
-    runResultID,
-    startTime,
     endTime,
   });
 }
 
-async function execUnitTest(
-  store: Store,
-  runreceipt: number,
-  testResult: UnitTestResult,
+function cancelRun(store: StoreInterface) {
+  store.dispatch({
+    type: CANCEL_RUN,
+    endTime: performance.now(),
+  });
+}
+
+async function execTest(
+  store: StoreInterface,
+  testResult: TestResult,
   timeoutInterval: number,
 ) {
-  const { unitTestResultID } = testResult;
-  const testFunc = store.data.unitTests[unitTestResultID];
-
-  store.dispatch({
-    type: START_UNIT_TEST,
-    unitTestResultID,
-  });
+  const { testResultID } = testResult;
+  const testFunc = store.getTest(testResultID);
 
   const startTime = performance.now();
+  store.dispatch({
+    type: START_TEST,
+    testResultID,
+    startTime,
+  });
 
   // opportunity for index error
   const assertions = (testFunc !== undefined)
@@ -124,20 +106,18 @@ async function execUnitTest(
 
   const endTime = performance.now();
 
-  if (runIsCancelled(store, runreceipt)) return;
+  if (runIsCancelled(store)) return;
 
   store.dispatch({
-    type: END_UNIT_TEST,
-    unitTestResultID,
+    type: END_TEST,
+    testResultID,
     assertions,
-    startTime,
     endTime,
   });
 }
 
 async function execCollection(
-  store: Store,
-  runreceipt: number,
+  store: StoreInterface,
   collectionResuilt: CollectionResult,
 ) {
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
@@ -146,59 +126,59 @@ async function execCollection(
   let target = indices[0];
   const dest = indices[1];
   while (target <= dest) {
-    const testResult = store.data.testResults[target];
+    const testResult = store.getState().testResults[target];
     if (testResult !== undefined) {
       tests.push(
-        execUnitTest(store, runreceipt, testResult, timeoutInterval),
+        execTest(store, testResult, timeoutInterval),
       );
     }
 
     target += 1;
   }
 
+  const startTime = performance.now();
+
   store.dispatch({
     type: START_COLLECTION,
     collectionResultID,
+    startTime,
   });
-
-  const startTime = performance.now();
 
   await Promise.all(tests);
 
   const endTime = performance.now();
 
-  if (runIsCancelled(store, runreceipt)) return;
+  if (runIsCancelled(store)) return;
 
   store.dispatch({
     type: END_COLLECTION,
     collectionResultID,
-    startTime,
     endTime,
   });
 }
 
 async function execCollectionOrdered(
-  store: Store,
-  runreceipt: number,
+  store: StoreInterface,
   collectionResuilt: CollectionResult,
 ) {
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
   const dest = indices[1];
   let target = indices[0];
 
+  const startTime = performance.now();
+
   store.dispatch({
     type: START_COLLECTION,
     collectionResultID,
+    startTime,
   });
 
-  const startTime = performance.now();
-
   while (target < dest) {
-    if (runIsCancelled(store, runreceipt)) return;
+    if (runIsCancelled(store)) return;
 
-    const testResult = store.data.testResults[target];
+    const testResult = store.getState().testResults[target];
     if (testResult !== undefined) {
-      await execUnitTest(store, runreceipt, testResult, timeoutInterval);
+      await execTest(store, testResult, timeoutInterval);
     }
 
     target += 1;
@@ -206,31 +186,17 @@ async function execCollectionOrdered(
 
   const endTime = performance.now();
 
-  if (runIsCancelled(store, runreceipt)) return;
+  if (runIsCancelled(store)) return;
 
   store.dispatch({
     type: END_COLLECTION,
     collectionResultID,
-    startTime,
     endTime,
   });
 }
 
-function cancelRun(store: Store, receipt: number) {
-  store.dispatch({
-    type: CANCEL_RUN,
-    runResultID: receipt,
-    endTime: performance.now(),
-  });
-}
-
-function runIsCancelled(store: Store, receipt: number): boolean | undefined {
-  const run = store.data.runResults[receipt];
-  if (run === undefined) {
-    return true;
-  }
-
-  return run.status === CANCELLED;
+function runIsCancelled(store: StoreInterface): boolean | undefined {
+  return store.getState().result.status === CANCELLED;
 }
 
 export { cancelRun, execRun };
