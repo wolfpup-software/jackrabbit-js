@@ -1,24 +1,22 @@
-const samestuff = (source, target) => {
+const samestuff = (source, target, safety = 256) => {
   if (source === target) {
-    return true;
-  }
-  if (source === null || target === null) {
     return true;
   }
   if (typeof source !== "object" || typeof target !== "object") {
     return source === target;
   }
-  return compareKeys(source, target);
-};
-const compareKeys = (source, target) => {
-  for (const sourceKey in source) {
-    if (source[sourceKey] !== target[sourceKey]) {
-      return false;
-    }
+  if (source === null || target === null) {
+    return source === target;
   }
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);
-  return sourceKeys.length !== targetKeys.length;
+  if (sourceKeys.length !== targetKeys.length) return false;
+  for (const sourceKey of sourceKeys) {
+    if (!samestuff(source[sourceKey], target[sourceKey], safety - 1)) {
+      return false;
+    }
+  }
+  return true;
 };
 const title = "samestuff";
 const compareDifferentPrimitives = () => {

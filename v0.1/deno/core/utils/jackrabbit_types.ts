@@ -13,14 +13,13 @@ type Collection = {
 };
 
 type TestStatus =
+  | "unsubmitted"
   | "pending"
-  | "submitted"
   | "passed"
   | "failed";
 
 type Status =
   | TestStatus
-  | "index_error"
   | "cancelled";
 
 interface TestResult {
@@ -140,6 +139,7 @@ export type {
   AsyncReactions,
   AsyncTest,
   BroadcastData,
+  BuildRun,
   Callback,
   Collection,
   CollectionResult,

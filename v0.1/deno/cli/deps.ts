@@ -1,0 +1,1 @@
+export {Jackrabbit, Datastore} from "../core/mod.ts";

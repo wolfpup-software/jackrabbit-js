@@ -1,15 +1,7 @@
 // brian taylor vann
 // samestuff
 
-// samestuff is intended for pojos, arrays, and primitives,
-// Limit usage to tests. Do no use in production.
-
 type SameStuff = (source: unknown, target: unknown, depth?: number) => boolean;
-type CompareKeys = (
-  source: Object,
-  target: Object,
-  depth: number,
-) => boolean;
 
 const SAFETY = 256;
 

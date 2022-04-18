@@ -5,7 +5,6 @@ import type {
   Collection,
   CollectionResult,
   Reactions,
-  Result,
   StoreAction,
   StoreData,
   Test,
@@ -19,13 +18,12 @@ import {
   END_RUN,
   END_TEST,
   FAILED,
-  INDEX_ERROR,
   PASSED,
   PENDING,
   START_COLLECTION,
   START_RUN,
   START_TEST,
-  SUBMITTED,
+  UNSUBMITTED,
 } from "../utils/constants.ts";
 
 /*
@@ -89,7 +87,7 @@ function updateResultProperties(storeData: StoreData) {
   // if not cancelled
 
   for (const collectionResult of storeData.collectionResults) {
-    if (status === SUBMITTED && collectionResult.status === FAILED) {
+    if (status === UNSUBMITTED && collectionResult.status === FAILED) {
       status = FAILED;
     }
 
@@ -97,7 +95,7 @@ function updateResultProperties(storeData: StoreData) {
   }
 
   // set updated properties
-  result.status = status === SUBMITTED ? PASSED : status;
+  result.status = status === UNSUBMITTED ? PASSED : status;
   result.testTime = testTime;
 }
 
@@ -105,30 +103,26 @@ function updateCollectionResult(
   storeData: StoreData,
   collectionResult: CollectionResult,
 ) {
-  let { indices, status } = collectionResult;
   let testTime = 0;
+  let { indices, status } = collectionResult;
 
   const target = indices[1];
   let index = indices[0];
   while (index < target) {
-    const testResult = storeData.testResults[index];
-    if (testResult === undefined) {
-      status = INDEX_ERROR;
-      break;
-    }
+    const { result } = storeData;
 
-    if (status === SUBMITTED && testResult.status === FAILED) {
+    if (status === UNSUBMITTED && result.status === FAILED) {
       status = FAILED;
     }
 
-    const { startTime, endTime } = testResult;
+    const { startTime, endTime } = result;
     testTime += endTime - startTime;
 
     index += 1;
   }
 
   // set updated properties
-  collectionResult.status = status === SUBMITTED ? PASSED : status;
+  collectionResult.status = status === UNSUBMITTED ? PASSED : status;
   collectionResult.testTime = testTime;
 }
 
@@ -150,7 +144,7 @@ function start_run(storeData: StoreData, action: StoreAction) {
   const { startTime } = action;
   const { result } = storeData;
 
-  result.status = SUBMITTED;
+  result.status = UNSUBMITTED;
   result.startTime = startTime;
 }
 
@@ -185,7 +179,7 @@ function start_collection(storeData: StoreData, action: StoreAction) {
     return;
   }
 
-  collectionResult.status = SUBMITTED;
+  collectionResult.status = UNSUBMITTED;
   collectionResult.startTime = startTime;
 }
 
@@ -214,7 +208,7 @@ function start_test(storeData: StoreData, action: StoreAction) {
     return;
   }
 
-  testResult.status = SUBMITTED;
+  testResult.status = UNSUBMITTED;
   testResult.startTime = startTime;
 }
 

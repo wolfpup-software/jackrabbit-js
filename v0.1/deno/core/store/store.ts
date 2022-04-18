@@ -10,39 +10,43 @@ import type {
   Test,
 } from "../utils/jackrabbit_types.ts";
 
-import { SUBMITTED } from "../utils/constants.ts";
-
+import { UNSUBMITTED } from "../utils/constants.ts";
 import { reactions } from "./reactions.ts";
 
-type Translate = (source: StoreData) => BroadcastData;
+function createInitialData(): StoreData {
+  return {
+    testResults: [],
+    collectionResults: [],
+    result: {
+      status: UNSUBMITTED,
+      endTime: 0,
+      startTime: 0,
+      testTime: 0,
+    },
+    tests: [],
+  };
+}
 
-const convert: Translate = (source) => {
+function translate(source: StoreData): BroadcastData {
   const { testResults, collectionResults, result } = source;
   return {
     testResults,
     collectionResults,
     result,
   };
-};
+}
 
 class Store implements StoreInterface {
   private data: StoreData;
   private broadcastData: BroadcastData;
-  private callback: Callback;
+  private callback: Callback = () => {};
 
-  constructor(callback: Callback) {
-    this.data = {
-      testResults: [],
-      collectionResults: [],
-      result: {
-        status: SUBMITTED,
-        endTime: 0,
-        startTime: 0,
-        testTime: 0,
-      },
-      tests: [],
-    };
-    this.broadcastData = convert(this.data);
+  constructor(data: StoreData) {
+    this.data = data;
+    this.broadcastData = translate(this.data);
+  }
+
+  setCallback(callback: Callback) {
     this.callback = callback;
   }
 
@@ -51,8 +55,7 @@ class Store implements StoreInterface {
     if (reaction === undefined) return;
 
     reaction(this.data, action);
-
-    this.broadcastData = convert(this.data);
+    this.broadcastData = translate(this.data);
 
     this.callback(this.broadcastData);
   }
@@ -60,9 +63,10 @@ class Store implements StoreInterface {
   getState(): BroadcastData {
     return this.broadcastData;
   }
+
   getTest(id: number): Test {
     return this.data.tests[id];
   }
 }
 
-export { Store };
+export { createInitialData, Store };

@@ -1,5 +1,5 @@
 const PENDING = "pending";
-const SUBMITTED = "submitted";
+const UNSUBMITTED = "unsubmitted";
 const CANCELLED = "cancelled";
 const PASSED = "passed";
 const FAILED = "failed";
@@ -28,5 +28,5 @@ export {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-  SUBMITTED,
+  UNSUBMITTED,
 };
