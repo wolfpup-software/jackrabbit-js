@@ -2,15 +2,15 @@
 // store
 
 import type {
-  BroadcastData,
   Callback,
+  Collection,
   StoreAction,
   StoreData,
   StoreInterface,
   Test,
 } from "../utils/jackrabbit_types.ts";
 
-import { UNSUBMITTED } from "../utils/constants.ts";
+import { PENDING, UNSUBMITTED } from "../utils/constants.ts";
 import { reactions } from "./reactions.ts";
 
 function createInitialData(): StoreData {
@@ -27,27 +27,64 @@ function createInitialData(): StoreData {
   };
 }
 
-function translate(source: StoreData): BroadcastData {
-  const { testResults, collectionResults, result } = source;
-  return {
-    testResults,
-    collectionResults,
-    result,
-  };
-}
+const createTestResults = (storeData: StoreData, tests: Test[]) => {
+  const startIndex = storeData.testResults.length;
+  for (const test of tests) {
+    const testID = storeData.tests.length;
+    storeData.tests.push(test);
 
-class Store implements StoreInterface {
-  private data: StoreData;
-  private broadcastData: BroadcastData;
-  private callback: Callback = () => {};
-
-  constructor(data: StoreData) {
-    this.data = data;
-    this.broadcastData = translate(this.data);
+    const testResultID = storeData.testResults.length;
+    storeData.testResults.push({
+      assertions: [],
+      endTime: 0,
+      name: test.name,
+      startTime: 0,
+      status: PENDING,
+      testResultID,
+      testID,
+    });
   }
 
-  setCallback(callback: Callback) {
+  const endIndex = storeData.testResults.length;
+
+  return [startIndex, endIndex];
+};
+
+const createCollectionResults = (
+  storeData: StoreData,
+  collections: Collection[],
+) => {
+  for (const collection of collections) {
+    const collectionResultID = storeData.collectionResults.length;
+    const { tests, title, runTestsAsynchronously, timeoutInterval } =
+      collection;
+    const indices = createTestResults(storeData, tests);
+
+    storeData.collectionResults.push({
+      endTime: 0,
+      testTime: 0,
+      startTime: 0,
+      status: PENDING,
+      collectionResultID,
+      indices,
+      timeoutInterval,
+      runTestsAsynchronously,
+      title,
+    });
+  }
+};
+
+class Store implements StoreInterface {
+  data: StoreData = createInitialData();
+  private callback: Callback | undefined;
+
+  setup(run: Collection[], callback?: Callback) {
+    createCollectionResults(this.data, run);
     this.callback = callback;
+  }
+
+  teardown() {
+    this.callback = undefined;
   }
 
   dispatch(action: StoreAction) {
@@ -55,17 +92,7 @@ class Store implements StoreInterface {
     if (reaction === undefined) return;
 
     reaction(this.data, action);
-    this.broadcastData = translate(this.data);
-
-    this.callback(this.broadcastData);
-  }
-
-  getState(): BroadcastData {
-    return this.broadcastData;
-  }
-
-  getTest(id: number): Test {
-    return this.data.tests[id];
+    this.callback?.(this.data, action);
   }
 }
 

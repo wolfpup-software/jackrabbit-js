@@ -5,7 +5,12 @@ type SameStuff = (source: unknown, target: unknown, depth?: number) => boolean;
 
 const SAFETY = 256;
 
-const samestuff: SameStuff = (source, target, safety = SAFETY) => {
+const samestuff: SameStuff = (source, target, depth = SAFETY) => {
+  if (depth < 1) {
+    console.warn("exceeded maximum depth of recursion");
+    return false;
+  }
+
   if (source === target) {
     return true;
   }
@@ -27,7 +32,7 @@ const samestuff: SameStuff = (source, target, safety = SAFETY) => {
       !samestuff(
         source[sourceKey as keyof typeof source],
         target[sourceKey as keyof typeof target],
-        safety - 1,
+        depth - 1,
       )
     ) {
       return false;

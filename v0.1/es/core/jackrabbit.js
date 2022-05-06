@@ -3,7 +3,6 @@ const UNSUBMITTED = "unsubmitted";
 const CANCELLED = "cancelled";
 const PASSED = "passed";
 const FAILED = "failed";
-const BUILD_RUN = "build_run";
 const START_RUN = "start_run";
 const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";
@@ -31,7 +30,7 @@ async function execRun(store) {
     type: START_RUN,
     startTime,
   });
-  for (const collectionResult of store.getState().collectionResults) {
+  for (const collectionResult of store.data.collectionResults) {
     if (runIsCancelled(store)) {
       return;
     }
@@ -56,7 +55,7 @@ function cancelRun(store) {
 }
 async function execTest(store, testResult, timeoutInterval) {
   const { testResultID } = testResult;
-  const testFunc = store.getTest(testResultID);
+  const testFunc = store.data.tests[testResultID];
   const startTime = performance.now();
   store.dispatch({
     type: START_TEST,
@@ -79,12 +78,13 @@ async function execTest(store, testResult, timeoutInterval) {
   });
 }
 async function execCollection(store, collectionResuilt) {
+  if (runIsCancelled(store)) return;
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
   const tests = [];
   let target = indices[0];
   const dest = indices[1];
   while (target <= dest) {
-    const testResult = store.getState().testResults[target];
+    const testResult = store.data.testResults[target];
     if (testResult !== undefined) {
       tests.push(execTest(store, testResult, timeoutInterval));
     }
@@ -106,6 +106,7 @@ async function execCollection(store, collectionResuilt) {
   });
 }
 async function execCollectionOrdered(store, collectionResuilt) {
+  if (runIsCancelled(store)) return;
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
   const dest = indices[1];
   let target = indices[0];
@@ -117,7 +118,7 @@ async function execCollectionOrdered(store, collectionResuilt) {
   });
   while (target < dest) {
     if (runIsCancelled(store)) return;
-    const testResult = store.getState().testResults[target];
+    const testResult = store.data.testResults[target];
     if (testResult !== undefined) {
       await execTest(store, testResult, timeoutInterval);
     }
@@ -132,63 +133,19 @@ async function execCollectionOrdered(store, collectionResuilt) {
   });
 }
 function runIsCancelled(store) {
-  return store.getState().result.status === CANCELLED;
+  return store.data.result.status === CANCELLED;
 }
 class Runner {
-  buildRun(store, run) {
-    store.dispatch({
-      type: "build_run",
-      run,
-    });
-  }
-  startRun(store) {
+  start(store) {
     execRun(store);
   }
-  cancelRun(store) {
+  cancel(store) {
     cancelRun(store);
   }
+  async run(store) {
+    await execRun(store);
+  }
 }
-const createTestResults = (storeData, tests) => {
-  const startIndex = storeData.testResults.length;
-  for (const test of tests) {
-    const testID = storeData.tests.length;
-    storeData.tests.push(test);
-    const testResultID = storeData.testResults.length;
-    storeData.testResults.push({
-      assertions: [],
-      endTime: 0,
-      name: test.name,
-      startTime: 0,
-      status: PENDING,
-      testResultID,
-      testID,
-    });
-  }
-  const endIndex = storeData.testResults.length;
-  return [
-    startIndex,
-    endIndex,
-  ];
-};
-const createCollectionResults = (storeData, collections) => {
-  for (const collection of collections) {
-    const collectionResultID = storeData.collectionResults.length;
-    const { tests, title, runTestsAsynchronously, timeoutInterval } =
-      collection;
-    const indices = createTestResults(storeData, tests);
-    storeData.collectionResults.push({
-      endTime: 0,
-      testTime: 0,
-      startTime: 0,
-      status: PENDING,
-      collectionResultID,
-      indices,
-      timeoutInterval,
-      runTestsAsynchronously,
-      title,
-    });
-  }
-};
 function updateResultProperties(storeData) {
   const { result } = storeData;
   let { status } = storeData.result;
@@ -218,11 +175,6 @@ function updateCollectionResult(storeData, collectionResult) {
   }
   collectionResult.status = status === UNSUBMITTED ? PASSED : status;
   collectionResult.testTime = testTime;
-}
-function build_run(storeData, action) {
-  if (action.type !== BUILD_RUN) return;
-  const { run } = action;
-  createCollectionResults(storeData, run);
 }
 function start_run(storeData, action) {
   if (action.type !== START_RUN) return;
@@ -289,7 +241,6 @@ function end_test(storeData, action) {
   testResult.status = assertions.length === 0 ? PASSED : FAILED;
 }
 const reactions = {
-  build_run,
   start_run,
   end_run,
   cancel_run,
@@ -298,39 +249,76 @@ const reactions = {
   start_test,
   end_test,
 };
-function translate(source) {
-  const { testResults, collectionResults, result } = source;
+function createInitialData() {
   return {
-    testResults,
-    collectionResults,
-    result,
+    testResults: [],
+    collectionResults: [],
+    result: {
+      status: UNSUBMITTED,
+      endTime: 0,
+      startTime: 0,
+      testTime: 0,
+    },
+    tests: [],
   };
 }
-class Store {
-  data;
-  broadcastData;
-  callback = () => {
-  };
-  constructor(data) {
-    this.data = data;
-    this.broadcastData = translate(this.data);
+const createTestResults = (storeData, tests) => {
+  const startIndex = storeData.testResults.length;
+  for (const test of tests) {
+    const testID = storeData.tests.length;
+    storeData.tests.push(test);
+    const testResultID = storeData.testResults.length;
+    storeData.testResults.push({
+      assertions: [],
+      endTime: 0,
+      name: test.name,
+      startTime: 0,
+      status: PENDING,
+      testResultID,
+      testID,
+    });
   }
-  setCallback(callback) {
+  const endIndex = storeData.testResults.length;
+  return [
+    startIndex,
+    endIndex,
+  ];
+};
+const createCollectionResults = (storeData, collections) => {
+  for (const collection of collections) {
+    const collectionResultID = storeData.collectionResults.length;
+    const { tests, title, runTestsAsynchronously, timeoutInterval } =
+      collection;
+    const indices = createTestResults(storeData, tests);
+    storeData.collectionResults.push({
+      endTime: 0,
+      testTime: 0,
+      startTime: 0,
+      status: PENDING,
+      collectionResultID,
+      indices,
+      timeoutInterval,
+      runTestsAsynchronously,
+      title,
+    });
+  }
+};
+class Store {
+  data = createInitialData();
+  callback;
+  setup(run, callback) {
+    createCollectionResults(this.data, run);
     this.callback = callback;
+  }
+  teardown() {
+    this.callback = undefined;
   }
   dispatch(action) {
     const reaction = reactions[action.type];
     if (reaction === undefined) return;
     reaction(this.data, action);
-    this.broadcastData = translate(this.data);
-    this.callback(this.broadcastData);
-  }
-  getState() {
-    return this.broadcastData;
-  }
-  getTest(id) {
-    return this.data.tests[id];
+    this.callback?.(this.data, action);
   }
 }
 export { Runner as Jackrabbit };
-export { Store as DataStore };
+export { Store as Store };

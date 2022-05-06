@@ -2,16 +2,13 @@
 // actions
 
 import type {
-  Collection,
   CollectionResult,
   Reactions,
   StoreAction,
   StoreData,
-  Test,
 } from "../utils/jackrabbit_types.ts";
 
 import {
-  BUILD_RUN,
   CANCEL_RUN,
   CANCELLED,
   END_COLLECTION,
@@ -19,7 +16,6 @@ import {
   END_TEST,
   FAILED,
   PASSED,
-  PENDING,
   START_COLLECTION,
   START_RUN,
   START_TEST,
@@ -30,61 +26,10 @@ import {
   All store actions and supporting functions must be syncronous
 */
 
-const createTestResults = (storeData: StoreData, tests: Test[]) => {
-  const startIndex = storeData.testResults.length;
-  for (const test of tests) {
-    const testID = storeData.tests.length;
-    storeData.tests.push(test);
-
-    const testResultID = storeData.testResults.length;
-    storeData.testResults.push({
-      assertions: [],
-      endTime: 0,
-      name: test.name,
-      startTime: 0,
-      status: PENDING,
-      testResultID,
-      testID,
-    });
-  }
-
-  const endIndex = storeData.testResults.length;
-
-  return [startIndex, endIndex];
-};
-
-const createCollectionResults = (
-  storeData: StoreData,
-  collections: Collection[],
-) => {
-  for (const collection of collections) {
-    const collectionResultID = storeData.collectionResults.length;
-    const { tests, title, runTestsAsynchronously, timeoutInterval } =
-      collection;
-    const indices = createTestResults(storeData, tests);
-
-    storeData.collectionResults.push({
-      endTime: 0,
-      testTime: 0,
-      startTime: 0,
-      status: PENDING,
-      collectionResultID,
-      indices,
-      timeoutInterval,
-      runTestsAsynchronously,
-      title,
-    });
-  }
-};
-
 function updateResultProperties(storeData: StoreData) {
   const { result } = storeData;
-
   let { status } = storeData.result;
-
   let testTime = 0;
-
-  // if not cancelled
 
   for (const collectionResult of storeData.collectionResults) {
     if (status === UNSUBMITTED && collectionResult.status === FAILED) {
@@ -129,14 +74,6 @@ function updateCollectionResult(
 /*
   ACTIONS
 */
-
-// empty action to dispatch test state
-function build_run(storeData: StoreData, action: StoreAction) {
-  if (action.type !== BUILD_RUN) return;
-
-  const { run } = action;
-  createCollectionResults(storeData, run);
-}
 
 function start_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== START_RUN) return;
@@ -228,7 +165,6 @@ function end_test(storeData: StoreData, action: StoreAction) {
 }
 
 const reactions: Reactions = {
-  build_run,
   start_run,
   end_run,
   cancel_run,

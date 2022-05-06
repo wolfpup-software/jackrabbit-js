@@ -53,7 +53,7 @@ async function execRun(store: StoreInterface) {
     startTime,
   });
 
-  for (const collectionResult of store.getState().collectionResults) {
+  for (const collectionResult of store.data.collectionResults) {
     if (runIsCancelled(store)) {
       return;
     }
@@ -87,7 +87,7 @@ async function execTest(
   timeoutInterval: number,
 ) {
   const { testResultID } = testResult;
-  const testFunc = store.getTest(testResultID);
+  const testFunc = store.data.tests[testResultID];
 
   const startTime = performance.now();
   store.dispatch({
@@ -120,13 +120,15 @@ async function execCollection(
   store: StoreInterface,
   collectionResuilt: CollectionResult,
 ) {
+  if (runIsCancelled(store)) return;
+
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
   const tests = [];
 
   let target = indices[0];
   const dest = indices[1];
   while (target <= dest) {
-    const testResult = store.getState().testResults[target];
+    const testResult = store.data.testResults[target];
     if (testResult !== undefined) {
       tests.push(
         execTest(store, testResult, timeoutInterval),
@@ -161,6 +163,8 @@ async function execCollectionOrdered(
   store: StoreInterface,
   collectionResuilt: CollectionResult,
 ) {
+  if (runIsCancelled(store)) return;
+
   const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
   const dest = indices[1];
   let target = indices[0];
@@ -176,7 +180,7 @@ async function execCollectionOrdered(
   while (target < dest) {
     if (runIsCancelled(store)) return;
 
-    const testResult = store.getState().testResults[target];
+    const testResult = store.data.testResults[target];
     if (testResult !== undefined) {
       await execTest(store, testResult, timeoutInterval);
     }
@@ -195,8 +199,8 @@ async function execCollectionOrdered(
   });
 }
 
-function runIsCancelled(store: StoreInterface): boolean | undefined {
-  return store.getState().result.status === CANCELLED;
+function runIsCancelled(store: StoreInterface): boolean {
+  return store.data.result.status === CANCELLED;
 }
 
 export { cancelRun, execRun };

@@ -2,6 +2,7 @@
 // jackrabbit
 
 export type {
+  Callback,
   Collection,
   CollectionResult,
   Result,
@@ -12,4 +13,4 @@ export type {
 } from "./utils/jackrabbit_types.ts";
 
 export { Runner as Jackrabbit } from "./runner/runner.ts";
-export { Store as DataStore } from "./store/store.ts";
+export { Store } from "./store/store.ts";

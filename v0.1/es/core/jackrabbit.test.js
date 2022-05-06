@@ -1,4 +1,8 @@
-const samestuff = (source, target, safety = 256) => {
+const samestuff = (source, target, depth = 256) => {
+  if (depth < 1) {
+    console.warn("exceeded maximum depth of recursion");
+    return false;
+  }
   if (source === target) {
     return true;
   }
@@ -12,7 +16,7 @@ const samestuff = (source, target, safety = 256) => {
   const targetKeys = Object.keys(target);
   if (sourceKeys.length !== targetKeys.length) return false;
   for (const sourceKey of sourceKeys) {
-    if (!samestuff(source[sourceKey], target[sourceKey], safety - 1)) {
+    if (!samestuff(source[sourceKey], target[sourceKey], depth - 1)) {
       return false;
     }
   }

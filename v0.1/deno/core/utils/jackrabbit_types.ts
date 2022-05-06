@@ -51,11 +51,6 @@ interface Result {
   testTime: number;
 }
 
-interface BuildRun {
-  type: "build_run";
-  run: Collection[];
-}
-
 interface StartRun {
   type: "start_run";
   startTime: number;
@@ -97,7 +92,6 @@ interface EndTest {
 }
 
 type StoreAction =
-  | BuildRun
   | StartRun
   | EndRun
   | CancelRun
@@ -106,16 +100,16 @@ type StoreAction =
   | StartTest
   | EndTest;
 
-interface BroadcastData {
-  readonly testResults: TestResult[];
-  readonly collectionResults: CollectionResult[];
-  readonly result: Result;
-}
+type Callback = (
+  data: StoreData,
+  action: StoreAction,
+) => void;
 
-type Callback = (params: BroadcastData) => void;
-
-type StoreData = BroadcastData & {
-  readonly tests: Test[];
+type StoreData = {
+  testResults: TestResult[];
+  collectionResults: CollectionResult[];
+  result: Result;
+  tests: Test[];
 };
 
 type Reaction = (storeData: StoreData, action: StoreAction) => void;
@@ -128,9 +122,13 @@ type AsyncReaction = (
 type AsyncReactions = Record<StoreAction["type"], AsyncReaction>;
 
 interface StoreInterface {
+  data: StoreData;
   dispatch(action: StoreAction): void;
-  getTest(id: number): Test;
-  getState(): BroadcastData;
+}
+
+interface RunnerInterface {
+  start(store: StoreInterface): void;
+  cancel(store: StoreInterface): void;
 }
 
 export type {
@@ -138,15 +136,13 @@ export type {
   AsyncReaction,
   AsyncReactions,
   AsyncTest,
-  BroadcastData,
-  BuildRun,
   Callback,
   Collection,
   CollectionResult,
   Reaction,
   Reactions,
   Result,
-  Status,
+  RunnerInterface,
   StoreAction,
   StoreData,
   StoreInterface,
