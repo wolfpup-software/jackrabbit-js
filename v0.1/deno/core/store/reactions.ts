@@ -31,11 +31,12 @@ function updateResultProperties(storeData: StoreData) {
   let { status } = storeData.result;
   let testTime = 0;
 
+  console.log("get results");
   for (const collectionResult of storeData.collectionResults) {
-    if (status === UNSUBMITTED && collectionResult.status === FAILED) {
+    if (collectionResult.status === FAILED) {
       status = FAILED;
     }
-
+    console.log("testTime", testTime);
     testTime += collectionResult.testTime;
   }
 
@@ -48,23 +49,25 @@ function updateCollectionResult(
   storeData: StoreData,
   collectionResult: CollectionResult,
 ) {
-  let testTime = 0;
-  let { indices, status } = collectionResult;
-
+  let { indices, status, startTime, endTime } = collectionResult;
+  let testTime = endTime - startTime;
   const target = indices[1];
   let index = indices[0];
-  while (index < target) {
-    const { result } = storeData;
+  console.log(index, target, startTime, endTime, testTime);
+  // while (index < target) {
+  //   const { result } = storeData;
 
-    if (status === UNSUBMITTED && result.status === FAILED) {
-      status = FAILED;
-    }
+  //   if (status === UNSUBMITTED || result.status === FAILED) {
+  //     status = FAILED;
+  //   }
 
-    const { startTime, endTime } = result;
-    testTime += endTime - startTime;
+  //   const { startTime, endTime } = result;
+  //   console.log("end time:", startTime, endTime);
+  //   testTime += endTime - startTime;
 
-    index += 1;
-  }
+  //   console.log("test time", testTime);
+  //   index += 1;
+  // }
 
   // set updated properties
   collectionResult.status = status === UNSUBMITTED ? PASSED : status;
@@ -123,13 +126,12 @@ function start_collection(storeData: StoreData, action: StoreAction) {
 function end_collection(storeData: StoreData, action: StoreAction) {
   if (action.type !== END_COLLECTION) return;
 
-  const { collectionResultID } = action;
+  const { collectionResultID, endTime } = action;
   const collectionResult = storeData.collectionResults[collectionResultID];
   if (collectionResult === undefined) {
     return;
   }
 
-  const { endTime } = action;
   collectionResult.endTime = endTime;
 
   // update properties
@@ -159,6 +161,7 @@ function end_test(storeData: StoreData, action: StoreAction) {
   }
 
   const { assertions, endTime } = action;
+  console.log("end test", endTime);
   testResult.assertions = assertions;
   testResult.endTime = endTime;
   testResult.status = assertions.length === 0 ? PASSED : FAILED;

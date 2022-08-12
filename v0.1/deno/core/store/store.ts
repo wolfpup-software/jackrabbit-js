@@ -19,9 +19,9 @@ function createInitialData(): StoreData {
     collectionResults: [],
     result: {
       status: UNSUBMITTED,
-      endTime: 0,
-      startTime: 0,
-      testTime: 0,
+      endTime: -1,
+      startTime: -1,
+      testTime: -1,
     },
     tests: [],
   };
@@ -36,9 +36,9 @@ const createTestResults = (storeData: StoreData, tests: Test[]) => {
     const testResultID = storeData.testResults.length;
     storeData.testResults.push({
       assertions: [],
-      endTime: 0,
+      endTime: -1,
       name: test.name,
-      startTime: 0,
+      startTime: -1,
       status: PENDING,
       testResultID,
       testID,
@@ -61,9 +61,9 @@ const createCollectionResults = (
     const indices = createTestResults(storeData, tests);
 
     storeData.collectionResults.push({
-      endTime: 0,
-      testTime: 0,
-      startTime: 0,
+      endTime: -1,
+      testTime: -1,
+      startTime: -1,
       status: PENDING,
       collectionResultID,
       indices,
@@ -78,7 +78,7 @@ class Store implements StoreInterface {
   data: StoreData = createInitialData();
   private callback: Callback | undefined;
 
-  setup(run: Collection[], callback?: Callback) {
+  setup(run: Collection[], callback: Callback) {
     createCollectionResults(this.data, run);
     this.callback = callback;
   }

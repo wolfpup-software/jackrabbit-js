@@ -118,11 +118,11 @@ async function execTest(
 
 async function execCollection(
   store: StoreInterface,
-  collectionResuilt: CollectionResult,
+  collectionResult: CollectionResult,
 ) {
   if (runIsCancelled(store)) return;
 
-  const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
+  const { indices, collectionResultID, timeoutInterval } = collectionResult;
   const tests = [];
 
   let target = indices[0];
@@ -161,13 +161,11 @@ async function execCollection(
 
 async function execCollectionOrdered(
   store: StoreInterface,
-  collectionResuilt: CollectionResult,
+  collectionResult: CollectionResult,
 ) {
   if (runIsCancelled(store)) return;
 
-  const { indices, collectionResultID, timeoutInterval } = collectionResuilt;
-  const dest = indices[1];
-  let target = indices[0];
+  const { indices, collectionResultID, timeoutInterval } = collectionResult;
 
   const startTime = performance.now();
 
@@ -177,6 +175,8 @@ async function execCollectionOrdered(
     startTime,
   });
 
+  const dest = indices[1];
+  let target = indices[0];
   while (target < dest) {
     if (runIsCancelled(store)) return;
 

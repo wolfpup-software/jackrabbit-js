@@ -6,8 +6,6 @@
  * callbacks for results
  */
 
-import { Callback, Result } from "../core/utils/jackrabbit_types.ts";
-
 interface Args {
   files: string[];
   addresses: string[];

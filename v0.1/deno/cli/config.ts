@@ -9,28 +9,22 @@ type Reaction = (config: Args, value?: string) => void;
 type Reactions = Record<string, Reaction>;
 
 function logConfig(config: Args, value?: string) {
-  if (value === undefined) {
-    return;
-  }
+  if (value === undefined) return;
 
   config.log = value;
 }
 
 function fileConfig(config: Args, value?: string) {
-  if (value === undefined) {
-    return;
-  }
+  if (value === undefined) return;
 
-  const files = value?.split(",");
+  const files = value.split(",");
   config.files = [...config.files, ...files];
 }
 
 function addressConfig(config: Args, value?: string) {
-  if (value === undefined) {
-    return;
-  }
+  if (value === undefined) return;
 
-  const addresses = value?.split(",");
+  const addresses = value.split(",");
   config.addresses = [...config.addresses, ...addresses];
 }
 
@@ -53,23 +47,20 @@ function iterateArgs(config: Args, args: string[]) {
   let index = 0;
   while (index < args.length) {
     const flag = args[index];
-
-    const valueIndex = index + 1;
-    const potentialValue = args[valueIndex];
-    const isFlag = reactions[potentialValue] !== undefined;
-    const value = isFlag ? undefined : potentialValue;
-
     const reaction = reactions[flag];
     if (reaction === undefined) {
-      console.error(`unrecognized argument: ${flag}`);
+      console.error(`unrecognized argument flag: ${flag}`);
       break;
     }
-    reaction(config, value);
 
-    index += 1;
-    if (!isFlag) {
-      index += 1;
+    const value = args[index + 1];
+    if (reactions[value]) {
+      console.error(`unrecognized argument value: ${value}`);
+      break;
     }
+
+    reaction(config, value);
+    index += 2;
   }
 }
 
