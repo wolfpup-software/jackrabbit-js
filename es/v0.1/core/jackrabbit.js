@@ -148,41 +148,50 @@ class Runner {
 }
 function updateResultProperties(storeData) {
     const { result  } = storeData;
-    let { status  } = storeData.result;
     let testTime = 0;
     console.log("get results");
     for (const collectionResult of storeData.collectionResults){
         if (collectionResult.status === FAILED) {
-            status = FAILED;
+            result.status = FAILED;
         }
         console.log("testTime", testTime);
         testTime += collectionResult.testTime;
     }
-    result.status = status === UNSUBMITTED ? PASSED : status;
+    if (result.status === UNSUBMITTED) {
+        result.status = PASSED;
+    }
     result.testTime = testTime;
 }
 function updateCollectionResult(storeData, collectionResult) {
-    let { indices , status , startTime , endTime  } = collectionResult;
+    let { indices , startTime , endTime  } = collectionResult;
     let testTime = endTime - startTime;
     const target = indices[1];
     let index = indices[0];
     console.log(index, target, startTime, endTime, testTime);
-    collectionResult.status = status === UNSUBMITTED ? PASSED : status;
+    while(index < target){
+        const { result  } = storeData;
+        if (result.status === FAILED) {
+            collectionResult.status = FAILED;
+            break;
+        }
+        index += 1;
+    }
+    if (collectionResult.status === UNSUBMITTED) {
+        collectionResult.status = PASSED;
+    }
     collectionResult.testTime = testTime;
 }
 function start_run(storeData, action) {
     if (action.type !== START_RUN) return;
-    const { startTime  } = action;
     const { result  } = storeData;
     result.status = UNSUBMITTED;
-    result.startTime = startTime;
+    result.startTime = action.startTime;
 }
 function end_run(storeData, action) {
     if (action.type !== END_RUN) return;
     const { result  } = storeData;
     if (result.status === CANCELLED) return;
-    const { endTime  } = action;
-    result.endTime = endTime;
+    result.endTime = action.endTime;
     updateResultProperties(storeData);
 }
 function cancel_run(storeData, action) {
@@ -229,7 +238,6 @@ function end_test(storeData, action) {
         return;
     }
     const { assertions , endTime  } = action;
-    console.log("end test", endTime);
     testResult.assertions = assertions;
     testResult.endTime = endTime;
     testResult.status = assertions.length === 0 ? PASSED : FAILED;
@@ -249,9 +257,9 @@ function createInitialData() {
         collectionResults: [],
         result: {
             status: UNSUBMITTED,
-            endTime: -1,
-            startTime: -1,
-            testTime: -1
+            endTime: 0,
+            startTime: 0,
+            testTime: 0
         },
         tests: []
     };
@@ -264,9 +272,9 @@ const createTestResults = (storeData, tests)=>{
         const testResultID = storeData.testResults.length;
         storeData.testResults.push({
             assertions: [],
-            endTime: -1,
+            endTime: 0,
             name: test.name,
-            startTime: -1,
+            startTime: 0,
             status: PENDING,
             testResultID,
             testID
@@ -284,9 +292,9 @@ const createCollectionResults = (storeData, collections)=>{
         const { tests , title , runTestsAsynchronously , timeoutInterval  } = collection;
         const indices = createTestResults(storeData, tests);
         storeData.collectionResults.push({
-            endTime: -1,
-            testTime: -1,
-            startTime: -1,
+            endTime: 0,
+            testTime: 0,
+            startTime: 0,
             status: PENDING,
             collectionResultID,
             indices,

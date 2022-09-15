@@ -28,20 +28,21 @@ import {
 
 function updateResultProperties(storeData: StoreData) {
   const { result } = storeData;
-  let { status } = storeData.result;
   let testTime = 0;
 
-  console.log("get results");
   for (const collectionResult of storeData.collectionResults) {
     if (collectionResult.status === FAILED) {
-      status = FAILED;
+      result.status = FAILED;
     }
-    console.log("testTime", testTime);
+
     testTime += collectionResult.testTime;
   }
 
   // set updated properties
-  result.status = status === UNSUBMITTED ? PASSED : status;
+  if (result.status === UNSUBMITTED) {
+    result.status = PASSED;
+  }
+
   result.testTime = testTime;
 }
 
@@ -49,28 +50,26 @@ function updateCollectionResult(
   storeData: StoreData,
   collectionResult: CollectionResult,
 ) {
-  let { indices, status, startTime, endTime } = collectionResult;
+  let { indices, startTime, endTime } = collectionResult;
   let testTime = endTime - startTime;
   const target = indices[1];
   let index = indices[0];
-  console.log(index, target, startTime, endTime, testTime);
-  // while (index < target) {
-  //   const { result } = storeData;
 
-  //   if (status === UNSUBMITTED || result.status === FAILED) {
-  //     status = FAILED;
-  //   }
+  while (index < target) {
+    const { result } = storeData;
 
-  //   const { startTime, endTime } = result;
-  //   console.log("end time:", startTime, endTime);
-  //   testTime += endTime - startTime;
+    if (result.status === FAILED) {
+      collectionResult.status = FAILED;
+      break;
+    }
 
-  //   console.log("test time", testTime);
-  //   index += 1;
-  // }
+    index += 1;
+  }
 
   // set updated properties
-  collectionResult.status = status === UNSUBMITTED ? PASSED : status;
+  if (collectionResult.status === UNSUBMITTED) {
+    collectionResult.status = PASSED;
+  }
   collectionResult.testTime = testTime;
 }
 
@@ -81,11 +80,9 @@ function updateCollectionResult(
 function start_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== START_RUN) return;
 
-  const { startTime } = action;
   const { result } = storeData;
-
   result.status = UNSUBMITTED;
-  result.startTime = startTime;
+  result.startTime = action.startTime;
 }
 
 function end_run(storeData: StoreData, action: StoreAction) {
@@ -94,8 +91,7 @@ function end_run(storeData: StoreData, action: StoreAction) {
   const { result } = storeData;
   if (result.status === CANCELLED) return;
 
-  const { endTime } = action;
-  result.endTime = endTime;
+  result.endTime = action.endTime;
 
   updateResultProperties(storeData);
 }
@@ -161,7 +157,6 @@ function end_test(storeData: StoreData, action: StoreAction) {
   }
 
   const { assertions, endTime } = action;
-  console.log("end test", endTime);
   testResult.assertions = assertions;
   testResult.endTime = endTime;
   testResult.status = assertions.length === 0 ? PASSED : FAILED;

@@ -7,15 +7,9 @@ const samestuff = (source, target, depth = 256)=>{
         console.warn("exceeded maximum depth of recursion");
         return false;
     }
-    if (source === target) {
-        return true;
-    }
-    if (typeof source !== "object" || typeof target !== "object") {
-        return source === target;
-    }
-    if (source === null || target === null) {
-        return source === target;
-    }
+    if (source === target) return true;
+    if (typeof source !== "object" || typeof target !== "object") return source === target;
+    if (source === null || target === null) return source === target;
     const sourceKeys = Object.keys(source);
     const targetKeys = Object.keys(target);
     if (sourceKeys.length !== targetKeys.length) return false;

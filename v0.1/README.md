@@ -1,1 +1,0 @@
-# Jackrabbit v0.1

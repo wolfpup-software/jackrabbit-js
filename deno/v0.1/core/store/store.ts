@@ -19,9 +19,9 @@ function createInitialData(): StoreData {
     collectionResults: [],
     result: {
       status: UNSUBMITTED,
-      endTime: -1,
-      startTime: -1,
-      testTime: -1,
+      endTime: 0,
+      startTime: 0,
+      testTime: 0,
     },
     tests: [],
   };
@@ -36,9 +36,9 @@ const createTestResults = (storeData: StoreData, tests: Test[]) => {
     const testResultID = storeData.testResults.length;
     storeData.testResults.push({
       assertions: [],
-      endTime: -1,
+      endTime: 0,
       name: test.name,
-      startTime: -1,
+      startTime: 0,
       status: PENDING,
       testResultID,
       testID,
@@ -61,9 +61,9 @@ const createCollectionResults = (
     const indices = createTestResults(storeData, tests);
 
     storeData.collectionResults.push({
-      endTime: -1,
-      testTime: -1,
-      startTime: -1,
+      endTime: 0,
+      testTime: 0,
+      startTime: 0,
       status: PENDING,
       collectionResultID,
       indices,
