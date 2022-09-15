@@ -11,17 +11,11 @@ const samestuff: SameStuff = (source, target, depth = SAFETY) => {
     return false;
   }
 
-  if (source === target) {
-    return true;
-  }
-
-  if (typeof source !== "object" || typeof target !== "object") {
-    return source === target;
-  }
-
-  if (source === null || target === null) {
-    return source === target;
-  }
+  if (source === target) return true;
+  if (
+    typeof source !== "object" || typeof target !== "object"
+  ) return source === target;
+  if (source === null || target === null) return source === target;
 
   const sourceKeys = Object.keys(source);
   const targetKeys = Object.keys(target);

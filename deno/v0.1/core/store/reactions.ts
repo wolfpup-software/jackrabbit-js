@@ -28,19 +28,21 @@ import {
 
 function updateResultProperties(storeData: StoreData) {
   const { result } = storeData;
-  let { status } = storeData.result;
   let testTime = 0;
 
   for (const collectionResult of storeData.collectionResults) {
-    if (status === UNSUBMITTED && collectionResult.status === FAILED) {
-      status = FAILED;
+    if (collectionResult.status === FAILED) {
+      result.status = FAILED;
     }
 
     testTime += collectionResult.testTime;
   }
 
   // set updated properties
-  result.status = status === UNSUBMITTED ? PASSED : status;
+  if (result.status === UNSUBMITTED) {
+    result.status = PASSED;
+  }
+
   result.testTime = testTime;
 }
 
@@ -48,26 +50,26 @@ function updateCollectionResult(
   storeData: StoreData,
   collectionResult: CollectionResult,
 ) {
-  let testTime = 0;
-  let { indices, status } = collectionResult;
-
+  let { indices, startTime, endTime } = collectionResult;
+  let testTime = endTime - startTime;
   const target = indices[1];
   let index = indices[0];
+
   while (index < target) {
     const { result } = storeData;
 
-    if (status === UNSUBMITTED && result.status === FAILED) {
-      status = FAILED;
+    if (result.status === FAILED) {
+      collectionResult.status = FAILED;
+      break;
     }
-
-    const { startTime, endTime } = result;
-    testTime += endTime - startTime;
 
     index += 1;
   }
 
   // set updated properties
-  collectionResult.status = status === UNSUBMITTED ? PASSED : status;
+  if (collectionResult.status === UNSUBMITTED) {
+    collectionResult.status = PASSED;
+  }
   collectionResult.testTime = testTime;
 }
 
@@ -78,11 +80,9 @@ function updateCollectionResult(
 function start_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== START_RUN) return;
 
-  const { startTime } = action;
   const { result } = storeData;
-
   result.status = UNSUBMITTED;
-  result.startTime = startTime;
+  result.startTime = action.startTime;
 }
 
 function end_run(storeData: StoreData, action: StoreAction) {
@@ -91,8 +91,7 @@ function end_run(storeData: StoreData, action: StoreAction) {
   const { result } = storeData;
   if (result.status === CANCELLED) return;
 
-  const { endTime } = action;
-  result.endTime = endTime;
+  result.endTime = action.endTime;
 
   updateResultProperties(storeData);
 }
@@ -123,13 +122,12 @@ function start_collection(storeData: StoreData, action: StoreAction) {
 function end_collection(storeData: StoreData, action: StoreAction) {
   if (action.type !== END_COLLECTION) return;
 
-  const { collectionResultID } = action;
+  const { collectionResultID, endTime } = action;
   const collectionResult = storeData.collectionResults[collectionResultID];
   if (collectionResult === undefined) {
     return;
   }
 
-  const { endTime } = action;
   collectionResult.endTime = endTime;
 
   // update properties

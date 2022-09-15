@@ -78,7 +78,7 @@ class Store implements StoreInterface {
   data: StoreData = createInitialData();
   private callback: Callback | undefined;
 
-  setup(run: Collection[], callback?: Callback) {
+  setup(run: Collection[], callback: Callback) {
     createCollectionResults(this.data, run);
     this.callback = callback;
   }
