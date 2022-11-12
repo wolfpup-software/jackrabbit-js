@@ -17,8 +17,11 @@ class Logs {
     if (action.type === "end_run") {
       const r = data.result;
       console.log(`
-status: ${r.status}
+start time: ${r.startTime}
+end time: ${r.endTime}
 duration: ${r.testTime}
+
+status: ${r.status}
       `);
     }
   }

@@ -133,7 +133,11 @@ const tests = [
     compareNullToObject,
     compareSimilarObjects,
     compareNestedObjects,
+<<<<<<< HEAD
+    compareNestedEqualObjects
+=======
     compareNestedEqualObjects, 
+>>>>>>> main
 ];
 const unitTestSamestuff = {
     title,
