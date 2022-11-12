@@ -66,7 +66,7 @@ async function execTest(store, testResult, timeoutInterval) {
     });
     const assertions = testFunc !== undefined ? await Promise.race([
         createTimeout(timeoutInterval),
-        testFunc(), 
+        testFunc()
     ]) : [];
     const endTime = performance.now();
     if (runIsCancelled(store)) return;
@@ -149,12 +149,10 @@ class Runner {
 function updateResultProperties(storeData) {
     const { result  } = storeData;
     let testTime = 0;
-    console.log("get results");
     for (const collectionResult of storeData.collectionResults){
         if (collectionResult.status === FAILED) {
             result.status = FAILED;
         }
-        console.log("testTime", testTime);
         testTime += collectionResult.testTime;
     }
     if (result.status === UNSUBMITTED) {
@@ -167,7 +165,6 @@ function updateCollectionResult(storeData, collectionResult) {
     let testTime = endTime - startTime;
     const target = indices[1];
     let index = indices[0];
-    console.log(index, target, startTime, endTime, testTime);
     while(index < target){
         const { result  } = storeData;
         if (result.status === FAILED) {
