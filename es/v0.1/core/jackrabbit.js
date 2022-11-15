@@ -66,7 +66,7 @@ async function execTest(store, testResult, timeoutInterval) {
     });
     const assertions = testFunc !== undefined ? await Promise.race([
         createTimeout(timeoutInterval),
-        testFunc(),
+        testFunc()
     ]) : [];
     const endTime = performance.now();
     if (runIsCancelled(store)) return;

@@ -1,7 +1,7 @@
 import type { ConfigInterface } from "./cli_types.ts";
 import type { Logs } from "./logs.ts";
 
-import { Jackrabbit, Store } from "./deps.ts";
+import { Runner, Store } from "./deps.ts";
 
 async function runCollections(files: string[], logs: Logs) {
   for (const file of files) {
@@ -10,7 +10,7 @@ async function runCollections(files: string[], logs: Logs) {
     const store = new Store();
     store.setup(tests, logs.log);
 
-    const jr = new Jackrabbit();
+    const jr = new Runner();
     await jr.run(store);
 
     store.teardown();

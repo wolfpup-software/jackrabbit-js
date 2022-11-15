@@ -1,11 +1,13 @@
-import { Config } from "./config.ts";
-import { Runner } from "./runner.ts";
-import { Logs } from "./logs.ts";
+export { Config } from "./config.ts";
+export { Runner } from "./runner.ts";
+export { Logs } from "./logs.ts";
 
+/*
 const config = new Config();
 config.setArgs(Deno.args);
 
-const logs = new Logs();
+const logs = new Logs(config);
 
 const runner = new Runner();
 runner.run(config, logs);
+*/

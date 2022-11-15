@@ -1,7 +1,7 @@
-import type { StoreAction, StoreData } from "./deps.ts";
+import type { Args, StoreAction, StoreData } from "./deps.ts";
 
 class Logs {
-  log(data: StoreData, action: StoreAction) {
+  log(args: Args, data: StoreData, action: StoreAction) {
     if (action.type === "end_test") {
       const r = data.testResults[action.testResultID];
       if (r.status === "FAILED") {

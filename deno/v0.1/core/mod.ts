@@ -12,5 +12,5 @@ export type {
   TestResult,
 } from "./utils/jackrabbit_types.ts";
 
-export { Runner as Jackrabbit } from "./runner/runner.ts";
+export { Runner } from "./runner/runner.ts";
 export { Store } from "./store/store.ts";
