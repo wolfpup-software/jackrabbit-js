@@ -66,7 +66,7 @@ async function execTest(store, testResult, timeoutInterval) {
     });
     const assertions = testFunc !== undefined ? await Promise.race([
         createTimeout(timeoutInterval),
-        testFunc(),
+        testFunc()
     ]) : [];
     const endTime = performance.now();
     if (runIsCancelled(store)) return;
@@ -302,21 +302,19 @@ const createCollectionResults = (storeData, collections)=>{
     }
 };
 class Store {
-    data = createInitialData();
+    data;
     callback;
-    setup(run, callback) {
-        createCollectionResults(this.data, run);
+    constructor(run, callback){
+        this.data = createInitialData();
         this.callback = callback;
-    }
-    teardown() {
-        this.callback = undefined;
+        createCollectionResults(this.data, run);
     }
     dispatch(action) {
         const reaction = reactions[action.type];
         if (reaction === undefined) return;
         reaction(this.data, action);
-        this.callback?.(this.data, action);
+        this.callback(this.data, action);
     }
 }
-export { Runner as Jackrabbit };
+export { Runner as Runner };
 export { Store as Store };

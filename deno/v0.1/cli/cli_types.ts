@@ -1,26 +1,17 @@
-/**
- * give more space for tests to run
- * an implementation of a test run
- * the args provided
- * what runner will be run
- * callbacks for results
- */
-
-interface Args {
-  files: string[];
-  addresses: string[];
-  log: string;
-  saveFile?: string;
-}
+import { StoreAction, StoreData } from "./deps.ts";
 
 interface ConfigInterface {
-  setArgs(args: string[]): void;
-  getConfig(): Args;
+  files: string[];
+  log_style: string;
 }
 
-interface RunnerInterface {
-  build(config: Args): void;
-  exec(): void;
+// Might need a separate 'fetch' command for remote stuff
+interface ImporterInterface {
+  load: (filename: string) => Promise<Collection>;
 }
 
-export type { Args, ConfigInterface, RunnerInterface };
+interface LogInterface {
+  log(args: Args, data: StoreData, action: StoreAction);
+}
+
+export type { ConfigInterface, ImporterInterface, LogInterface };

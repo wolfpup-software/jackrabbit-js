@@ -133,11 +133,7 @@ const tests = [
     compareNullToObject,
     compareSimilarObjects,
     compareNestedObjects,
-<<<<<<< HEAD
     compareNestedEqualObjects
-=======
-    compareNestedEqualObjects, 
->>>>>>> main
 ];
 const unitTestSamestuff = {
     title,
@@ -145,6 +141,6 @@ const unitTestSamestuff = {
     runTestsAsynchronously: true
 };
 const tests1 = [
-    unitTestSamestuff, 
+    unitTestSamestuff
 ];
 export { tests1 as tests };

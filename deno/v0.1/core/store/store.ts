@@ -75,16 +75,14 @@ const createCollectionResults = (
 };
 
 class Store implements StoreInterface {
-  data: StoreData = createInitialData();
-  private callback: Callback | undefined;
+  data: StoreData;
+  callback: Callback;
 
-  setup(run: Collection[], callback: Callback) {
-    createCollectionResults(this.data, run);
+  constructor(run: Collection[], callback: Callback) {
+    this.data = createInitialData();
     this.callback = callback;
-  }
 
-  teardown() {
-    this.callback = undefined;
+    createCollectionResults(this.data, run);
   }
 
   dispatch(action: StoreAction) {
@@ -92,8 +90,8 @@ class Store implements StoreInterface {
     if (reaction === undefined) return;
 
     reaction(this.data, action);
-    this.callback?.(this.data, action);
+    this.callback(this.data, action);
   }
 }
 
-export { createInitialData, Store };
+export { Store };
