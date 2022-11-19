@@ -1,6 +1,3 @@
-// brian taylor vann
-// runner
-
 import type {
   RunnerInterface,
   StoreInterface,

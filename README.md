@@ -15,23 +15,22 @@ That's what a test is in Jackrabbit: a function that returns assertions.
 
 ```JS
 function testTheThings() {
-    return ["test failed!"];
+  return ["test failed!"];
 }
 ```
 
-A test collection is a series of tests and some data about how tests should be run.
+A test collection is a series of tests and some data about how tests should be
+run.
 
 ```JS
 const collection = {
-    title: "Test All The Things",
-    runAsyncronously: true,
-    tests: [
-        testAllTheThings,
-    ]
-}
+  title: "Test All The Things",
+  runAsyncronously: true,
+  tests: [
+    testAllTheThings,
+  ],
+};
 ```
-
-
 
 ## License
 

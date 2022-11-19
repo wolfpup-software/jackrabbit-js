@@ -1,17 +1,17 @@
-interface Args {
-  files: string[];
-  addresses: string[];
-  log: string;
-}
+import { StoreAction, StoreData } from "./deps.ts";
 
 interface ConfigInterface {
-  setArgs(args: string[]): void;
-  getConfig(): Args;
+  files: string[];
+  log_style: string;
 }
 
-interface RunnerInterface {
-  build(config: Args): void;
-  exec(): void;
+// Might need a separate 'fetch' command for remote stuff
+interface ImporterInterface {
+  load: (filename: string) => Promise<Collection>;
 }
 
-export type { Args, ConfigInterface, RunnerInterface };
+interface LogInterface {
+  log(args: Args, data: StoreData, action: StoreAction);
+}
+
+export type { ConfigInterface, ImporterInterface, LogInterface };
