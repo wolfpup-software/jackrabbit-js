@@ -200,7 +200,7 @@ async function execCollectionOrdered(
 }
 
 function runIsCancelled(store: StoreInterface): boolean {
-  return store.data.result.status === CANCELLED;
+  return store.data.status === CANCELLED;
 }
 
 export { cancelRun, execRun };

@@ -22,13 +22,12 @@ class Logs implements LogInterface {
       }
     }
     if (action.type === "end_run") {
-      const r = data.result;
       console.log(`
-start time: ${r.startTime}
-end time: ${r.endTime}
-duration: ${r.testTime}
+start time: ${data.startTime}
+end time: ${data.endTime}
+duration: ${data.testTime}
 
-status: ${r.status}
+status: ${data.status}
       `);
     }
   }

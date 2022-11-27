@@ -10,8 +10,4 @@ interface ImporterInterface {
   load: (filename: string) => Promise<Collection>;
 }
 
-interface LogInterface {
-  log(args: Args, data: StoreData, action: StoreAction);
-}
-
-export type { ConfigInterface, ImporterInterface, LogInterface };
+export type { ConfigInterface, ImporterInterface };

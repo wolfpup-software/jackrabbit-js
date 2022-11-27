@@ -27,23 +27,22 @@ import {
 */
 
 function updateResultProperties(storeData: StoreData) {
-  const { result } = storeData;
   let testTime = 0;
 
   for (const collectionResult of storeData.collectionResults) {
     if (collectionResult.status === FAILED) {
-      result.status = FAILED;
+      storeData.status = FAILED;
     }
 
     testTime += collectionResult.testTime;
   }
 
   // set updated properties
-  if (result.status === UNSUBMITTED) {
-    result.status = PASSED;
+  if (storeData.status === UNSUBMITTED) {
+    storeData.status = PASSED;
   }
 
-  result.testTime = testTime;
+  storeData.testTime = testTime;
 }
 
 function updateCollectionResult(
@@ -56,9 +55,7 @@ function updateCollectionResult(
   let index = indices[0];
 
   while (index < target) {
-    const { result } = storeData;
-
-    if (result.status === FAILED) {
+    if (storeData.status === FAILED) {
       collectionResult.status = FAILED;
       break;
     }
@@ -80,18 +77,15 @@ function updateCollectionResult(
 function start_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== START_RUN) return;
 
-  const { result } = storeData;
-  result.status = UNSUBMITTED;
-  result.startTime = action.startTime;
+  storeData.status = UNSUBMITTED;
+  storeData.startTime = action.startTime;
 }
 
 function end_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== END_RUN) return;
+  if (storeData.status === CANCELLED) return;
 
-  const { result } = storeData;
-  if (result.status === CANCELLED) return;
-
-  result.endTime = action.endTime;
+  storeData.endTime = action.endTime;
 
   updateResultProperties(storeData);
 }
@@ -99,10 +93,8 @@ function end_run(storeData: StoreData, action: StoreAction) {
 function cancel_run(storeData: StoreData, action: StoreAction) {
   if (action.type !== CANCEL_RUN) return;
 
-  const { result } = storeData;
-
-  result.status = CANCELLED;
-  result.endTime = action.endTime;
+  storeData.status = CANCELLED;
+  storeData.endTime = action.endTime;
 }
 
 function start_collection(storeData: StoreData, action: StoreAction) {

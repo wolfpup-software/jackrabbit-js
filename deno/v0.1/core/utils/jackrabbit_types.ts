@@ -44,13 +44,6 @@ interface CollectionResult {
   testTime: number;
 }
 
-interface Result {
-  endTime: number;
-  startTime: number;
-  status: Status;
-  testTime: number;
-}
-
 interface StartRun {
   type: "start_run";
   startTime: number;
@@ -100,15 +93,13 @@ type StoreAction =
   | StartTest
   | EndTest;
 
-type Callback = (
-  data: StoreData,
-  action: StoreAction,
-) => void;
-
 type StoreData = {
   testResults: TestResult[];
   collectionResults: CollectionResult[];
-  result: Result;
+  endTime: number;
+  startTime: number;
+  status: Status;
+  testTime: number;
   tests: Test[];
 };
 
@@ -131,21 +122,31 @@ interface RunnerInterface {
   cancel(store: StoreInterface): void;
 }
 
+// Might need a separate 'fetch' command for remote stuff
+interface ImporterInterface {
+  load: (filename: string) => Promise<Collection>;
+}
+
+interface LoggerInterface {
+  log(data: StoreData, action: StoreAction): void;
+}
+
 export type {
   Assertions,
   AsyncReaction,
   AsyncReactions,
   AsyncTest,
-  Callback,
   Collection,
   CollectionResult,
+  ImporterInterface,
+  LoggerInterface,
   Reaction,
   Reactions,
-  Result,
   RunnerInterface,
   StoreAction,
   StoreData,
   StoreInterface,
   Test,
   TestResult,
+  TestStatus,
 };

@@ -2,10 +2,9 @@
 // jackrabbit
 
 export type {
-  Callback,
   Collection,
   CollectionResult,
-  Result,
+  LoggerInterface,
   StoreAction,
   StoreData,
   Test,

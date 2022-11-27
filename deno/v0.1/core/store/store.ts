@@ -2,8 +2,8 @@
 // store
 
 import type {
-  Callback,
   Collection,
+  LoggerInterface,
   StoreAction,
   StoreData,
   StoreInterface,
@@ -17,12 +17,10 @@ function createInitialData(): StoreData {
   return {
     testResults: [],
     collectionResults: [],
-    result: {
-      status: UNSUBMITTED,
-      endTime: 0,
-      startTime: 0,
-      testTime: 0,
-    },
+    status: UNSUBMITTED,
+    endTime: 0,
+    startTime: 0,
+    testTime: 0,
     tests: [],
   };
 }
@@ -76,11 +74,11 @@ const createCollectionResults = (
 
 class Store implements StoreInterface {
   data: StoreData;
-  callback: Callback;
+  logger: LoggerInterface;
 
-  constructor(run: Collection[], callback: Callback) {
+  constructor(run: Collection[], logger: LoggerInterface) {
     this.data = createInitialData();
-    this.callback = callback;
+    this.logger = logger;
 
     createCollectionResults(this.data, run);
   }
@@ -90,7 +88,7 @@ class Store implements StoreInterface {
     if (reaction === undefined) return;
 
     reaction(this.data, action);
-    this.callback(this.data, action);
+    this.logger.log(this.data, action);
   }
 }
 

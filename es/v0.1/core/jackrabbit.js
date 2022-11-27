@@ -133,7 +133,7 @@ async function execCollectionOrdered(store, collectionResult) {
     });
 }
 function runIsCancelled(store) {
-    return store.data.result.status === CANCELLED;
+    return store.data.status === CANCELLED;
 }
 class Runner {
     start(store) {
@@ -147,18 +147,17 @@ class Runner {
     }
 }
 function updateResultProperties(storeData) {
-    const { result  } = storeData;
     let testTime = 0;
     for (const collectionResult of storeData.collectionResults){
         if (collectionResult.status === FAILED) {
-            result.status = FAILED;
+            storeData.status = FAILED;
         }
         testTime += collectionResult.testTime;
     }
-    if (result.status === UNSUBMITTED) {
-        result.status = PASSED;
+    if (storeData.status === UNSUBMITTED) {
+        storeData.status = PASSED;
     }
-    result.testTime = testTime;
+    storeData.testTime = testTime;
 }
 function updateCollectionResult(storeData, collectionResult) {
     let { indices , startTime , endTime  } = collectionResult;
@@ -166,8 +165,7 @@ function updateCollectionResult(storeData, collectionResult) {
     const target = indices[1];
     let index = indices[0];
     while(index < target){
-        const { result  } = storeData;
-        if (result.status === FAILED) {
+        if (storeData.status === FAILED) {
             collectionResult.status = FAILED;
             break;
         }
@@ -180,22 +178,19 @@ function updateCollectionResult(storeData, collectionResult) {
 }
 function start_run(storeData, action) {
     if (action.type !== START_RUN) return;
-    const { result  } = storeData;
-    result.status = UNSUBMITTED;
-    result.startTime = action.startTime;
+    storeData.status = UNSUBMITTED;
+    storeData.startTime = action.startTime;
 }
 function end_run(storeData, action) {
     if (action.type !== END_RUN) return;
-    const { result  } = storeData;
-    if (result.status === CANCELLED) return;
-    result.endTime = action.endTime;
+    if (storeData.status === CANCELLED) return;
+    storeData.endTime = action.endTime;
     updateResultProperties(storeData);
 }
 function cancel_run(storeData, action) {
     if (action.type !== CANCEL_RUN) return;
-    const { result  } = storeData;
-    result.status = CANCELLED;
-    result.endTime = action.endTime;
+    storeData.status = CANCELLED;
+    storeData.endTime = action.endTime;
 }
 function start_collection(storeData, action) {
     if (action.type !== START_COLLECTION) return;
@@ -252,12 +247,10 @@ function createInitialData() {
     return {
         testResults: [],
         collectionResults: [],
-        result: {
-            status: UNSUBMITTED,
-            endTime: 0,
-            startTime: 0,
-            testTime: 0
-        },
+        status: UNSUBMITTED,
+        endTime: 0,
+        startTime: 0,
+        testTime: 0,
         tests: []
     };
 }
@@ -303,17 +296,17 @@ const createCollectionResults = (storeData, collections)=>{
 };
 class Store {
     data;
-    callback;
-    constructor(run, callback){
+    logger;
+    constructor(run, logger){
         this.data = createInitialData();
-        this.callback = callback;
+        this.logger = logger;
         createCollectionResults(this.data, run);
     }
     dispatch(action) {
         const reaction = reactions[action.type];
         if (reaction === undefined) return;
         reaction(this.data, action);
-        this.callback(this.data, action);
+        this.logger.log(this.data, action);
     }
 }
 export { Runner as Runner };
