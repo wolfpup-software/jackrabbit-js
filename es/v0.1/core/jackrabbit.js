@@ -28,6 +28,9 @@ const createTimeout = async (timeoutInterval)=>{
         `timed out at: ${timeoutInterval}`
     ];
 };
+function runIsCancelled(store) {
+    return store.data.status === CANCELLED;
+}
 async function execRun(store) {
     const startTime = performance.now();
     store.dispatch({
@@ -56,25 +59,25 @@ function cancelRun(store) {
     });
 }
 async function execTest(store, testResult, timeoutInterval) {
+    if (runIsCancelled(store)) return;
     const { testResultID  } = testResult;
     const testFunc = store.data.tests[testResultID];
-    const startTime = performance.now();
+    if (testFunc === undefined) return;
     store.dispatch({
         type: START_TEST,
         testResultID,
-        startTime
+        startTime: performance.now()
     });
-    const assertions = testFunc !== undefined ? await Promise.race([
+    const assertions = await Promise.race([
         createTimeout(timeoutInterval),
         testFunc()
-    ]) : [];
-    const endTime = performance.now();
+    ]);
     if (runIsCancelled(store)) return;
     store.dispatch({
         type: END_TEST,
         testResultID,
         assertions,
-        endTime
+        endTime: performance.now()
     });
 }
 async function execCollection(store, collectionResult) {
@@ -90,55 +93,47 @@ async function execCollection(store, collectionResult) {
         }
         target += 1;
     }
-    const startTime = performance.now();
     store.dispatch({
         type: START_COLLECTION,
-        collectionResultID,
-        startTime
+        startTime: performance.now(),
+        collectionResultID
     });
     await Promise.all(tests);
-    const endTime = performance.now();
     if (runIsCancelled(store)) return;
     store.dispatch({
         type: END_COLLECTION,
-        collectionResultID,
-        endTime
+        endTime: performance.now(),
+        collectionResultID
     });
 }
 async function execCollectionOrdered(store, collectionResult) {
     if (runIsCancelled(store)) return;
     const { indices , collectionResultID , timeoutInterval  } = collectionResult;
-    const startTime = performance.now();
+    performance.now();
     store.dispatch({
         type: START_COLLECTION,
-        collectionResultID,
-        startTime
+        startTime: performance.now(),
+        collectionResultID
     });
-    const dest = indices[1];
-    let target = indices[0];
-    while(target < dest){
+    let origin = indices[0];
+    const target = indices[1];
+    while(origin < target){
         if (runIsCancelled(store)) return;
-        const testResult = store.data.testResults[target];
+        const testResult = store.data.testResults[origin];
         if (testResult !== undefined) {
             await execTest(store, testResult, timeoutInterval);
         }
-        target += 1;
+        origin += 1;
     }
-    const endTime = performance.now();
+    performance.now();
     if (runIsCancelled(store)) return;
     store.dispatch({
         type: END_COLLECTION,
-        collectionResultID,
-        endTime
+        endTime: performance.now(),
+        collectionResultID
     });
 }
-function runIsCancelled(store) {
-    return store.data.status === CANCELLED;
-}
 class Runner {
-    start(store) {
-        execRun(store);
-    }
     cancel(store) {
         cancelRun(store);
     }
@@ -245,13 +240,13 @@ const reactions = {
 };
 function createInitialData() {
     return {
+        tests: [],
         testResults: [],
         collectionResults: [],
         status: UNSUBMITTED,
         endTime: 0,
         startTime: 0,
-        testTime: 0,
-        tests: []
+        testTime: 0
     };
 }
 const createTestResults = (storeData, tests)=>{

@@ -5,7 +5,7 @@ import type {
   Collection,
   LoggerInterface,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
   StoreInterface,
   Test,
 } from "../utils/jackrabbit_types.ts";
@@ -13,19 +13,22 @@ import type {
 import { PENDING, UNSUBMITTED } from "../utils/constants.ts";
 import { reactions } from "./reactions.ts";
 
-function createInitialData(): StoreData {
+function createInitialData(): StoreDataInterface {
   return {
+    tests: [],
     testResults: [],
     collectionResults: [],
     status: UNSUBMITTED,
     endTime: 0,
     startTime: 0,
     testTime: 0,
-    tests: [],
   };
 }
 
-const createTestResults = (storeData: StoreData, tests: Test[]) => {
+const createTestResults = (
+  storeData: StoreDataInterface,
+  tests: Test[],
+) => {
   const startIndex = storeData.testResults.length;
   for (const test of tests) {
     const testID = storeData.tests.length;
@@ -49,7 +52,7 @@ const createTestResults = (storeData: StoreData, tests: Test[]) => {
 };
 
 const createCollectionResults = (
-  storeData: StoreData,
+  storeData: StoreDataInterface,
   collections: Collection[],
 ) => {
   for (const collection of collections) {
@@ -73,7 +76,7 @@ const createCollectionResults = (
 };
 
 class Store implements StoreInterface {
-  data: StoreData;
+  data: StoreDataInterface;
   logger: LoggerInterface;
 
   constructor(run: Collection[], logger: LoggerInterface) {

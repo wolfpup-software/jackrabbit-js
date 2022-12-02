@@ -5,7 +5,7 @@ import type {
   CollectionResult,
   Reactions,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
 } from "../utils/jackrabbit_types.ts";
 
 import {
@@ -26,7 +26,7 @@ import {
   All store actions and supporting functions must be syncronous
 */
 
-function updateResultProperties(storeData: StoreData) {
+function updateResultProperties(storeData: StoreDataInterface) {
   let testTime = 0;
 
   for (const collectionResult of storeData.collectionResults) {
@@ -46,7 +46,7 @@ function updateResultProperties(storeData: StoreData) {
 }
 
 function updateCollectionResult(
-  storeData: StoreData,
+  storeData: StoreDataInterface,
   collectionResult: CollectionResult,
 ) {
   let { indices, startTime, endTime } = collectionResult;
@@ -74,14 +74,14 @@ function updateCollectionResult(
   ACTIONS
 */
 
-function start_run(storeData: StoreData, action: StoreAction) {
+function start_run(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== START_RUN) return;
 
   storeData.status = UNSUBMITTED;
   storeData.startTime = action.startTime;
 }
 
-function end_run(storeData: StoreData, action: StoreAction) {
+function end_run(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== END_RUN) return;
   if (storeData.status === CANCELLED) return;
 
@@ -90,14 +90,14 @@ function end_run(storeData: StoreData, action: StoreAction) {
   updateResultProperties(storeData);
 }
 
-function cancel_run(storeData: StoreData, action: StoreAction) {
+function cancel_run(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== CANCEL_RUN) return;
 
   storeData.status = CANCELLED;
   storeData.endTime = action.endTime;
 }
 
-function start_collection(storeData: StoreData, action: StoreAction) {
+function start_collection(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== START_COLLECTION) return;
 
   const { collectionResultID, startTime } = action;
@@ -111,7 +111,7 @@ function start_collection(storeData: StoreData, action: StoreAction) {
   collectionResult.startTime = startTime;
 }
 
-function end_collection(storeData: StoreData, action: StoreAction) {
+function end_collection(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== END_COLLECTION) return;
 
   const { collectionResultID, endTime } = action;
@@ -122,11 +122,10 @@ function end_collection(storeData: StoreData, action: StoreAction) {
 
   collectionResult.endTime = endTime;
 
-  // update properties
   updateCollectionResult(storeData, collectionResult);
 }
 
-function start_test(storeData: StoreData, action: StoreAction) {
+function start_test(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== START_TEST) return;
 
   const { testResultID, startTime } = action;
@@ -139,7 +138,7 @@ function start_test(storeData: StoreData, action: StoreAction) {
   testResult.startTime = startTime;
 }
 
-function end_test(storeData: StoreData, action: StoreAction) {
+function end_test(storeData: StoreDataInterface, action: StoreAction) {
   if (action.type !== END_TEST) return;
 
   const { testResultID } = action;

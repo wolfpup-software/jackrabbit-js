@@ -1,14 +1,14 @@
-import type { Config, LogInterface } from "./cli_types.ts";
-import type { StoreAction, StoreData } from "./deps.ts";
+import type { ConfigInterface, LogInterface } from "./cli_types.ts";
+import type { StoreAction, StoreDataInterface } from "./deps.ts";
 
 class Logs implements LogInterface {
-  logStyle: string;
+  config: ConfigInterface;
 
   constructor(config: Config) {
-    this.logStyle = config.log_style;
+    this.config = config;
   }
 
-  log(data: StoreData, action: StoreAction) {
+  log(data: StoreDataInterface, action: StoreAction) {
     if (action.type === "end_test") {
       const r = data.testResults[action.testResultID];
       if (r.status === "FAILED") {

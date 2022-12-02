@@ -5,12 +5,13 @@ type Assertions = string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
-type Collection = {
+
+interface Collection {
   title: string;
   tests: Test[];
   runTestsAsynchronously: boolean;
   timeoutInterval: number;
-};
+}
 
 type TestStatus =
   | "unsubmitted"
@@ -93,7 +94,7 @@ type StoreAction =
   | StartTest
   | EndTest;
 
-type StoreData = {
+interface StoreDataInterface {
   testResults: TestResult[];
   collectionResults: CollectionResult[];
   endTime: number;
@@ -101,50 +102,42 @@ type StoreData = {
   status: Status;
   testTime: number;
   tests: Test[];
-};
+}
 
-type Reaction = (storeData: StoreData, action: StoreAction) => void;
+type Reaction = (storeData: StoreDataInterface, action: StoreAction) => void;
 type Reactions = Record<StoreAction["type"], Reaction>;
 
 type AsyncReaction = (
-  storeData: StoreData,
+  storeData: StoreDataInterface,
   action: StoreAction,
 ) => Promise<void>;
 type AsyncReactions = Record<StoreAction["type"], AsyncReaction>;
 
 interface StoreInterface {
-  data: StoreData;
+  data: StoreDataInterface;
   dispatch(action: StoreAction): void;
 }
 
 interface RunnerInterface {
-  start(store: StoreInterface): void;
+  run(store: StoreInterface): Promise<void>;
   cancel(store: StoreInterface): void;
 }
 
-// Might need a separate 'fetch' command for remote stuff
-interface ImporterInterface {
-  load: (filename: string) => Promise<Collection>;
-}
-
 interface LoggerInterface {
-  log(data: StoreData, action: StoreAction): void;
+  log(data: StoreDataInterface, action: StoreAction): void;
 }
 
 export type {
   Assertions,
-  AsyncReaction,
   AsyncReactions,
-  AsyncTest,
   Collection,
   CollectionResult,
   ImporterInterface,
   LoggerInterface,
-  Reaction,
   Reactions,
   RunnerInterface,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
   StoreInterface,
   Test,
   TestResult,

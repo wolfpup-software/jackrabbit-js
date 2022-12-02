@@ -45,6 +45,10 @@ const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
   return [`timed out at: ${timeoutInterval}`];
 };
 
+function runIsCancelled(store: StoreInterface): boolean {
+  return store.data.status === CANCELLED;
+}
+
 async function execRun(store: StoreInterface) {
   const startTime = performance.now();
 
@@ -86,25 +90,23 @@ async function execTest(
   testResult: TestResult,
   timeoutInterval: number,
 ) {
+  if (runIsCancelled(store)) return;
+
   const { testResultID } = testResult;
   const testFunc = store.data.tests[testResultID];
+  if (testFunc === undefined) return;
 
-  const startTime = performance.now();
   store.dispatch({
     type: START_TEST,
     testResultID,
-    startTime,
+    startTime: performance.now(),
   });
 
   // opportunity for index error
-  const assertions = (testFunc !== undefined)
-    ? await Promise.race([
-      createTimeout(timeoutInterval),
-      testFunc(),
-    ])
-    : [];
-
-  const endTime = performance.now();
+  const assertions = await Promise.race([
+    createTimeout(timeoutInterval),
+    testFunc(),
+  ]);
 
   if (runIsCancelled(store)) return;
 
@@ -112,7 +114,7 @@ async function execTest(
     type: END_TEST,
     testResultID,
     assertions,
-    endTime,
+    endTime: performance.now(),
   });
 }
 
@@ -138,24 +140,20 @@ async function execCollection(
     target += 1;
   }
 
-  const startTime = performance.now();
-
   store.dispatch({
     type: START_COLLECTION,
+    startTime: performance.now(),
     collectionResultID,
-    startTime,
   });
 
   await Promise.all(tests);
-
-  const endTime = performance.now();
 
   if (runIsCancelled(store)) return;
 
   store.dispatch({
     type: END_COLLECTION,
+    endTime: performance.now(),
     collectionResultID,
-    endTime,
   });
 }
 
@@ -171,21 +169,21 @@ async function execCollectionOrdered(
 
   store.dispatch({
     type: START_COLLECTION,
+    startTime: performance.now(),
     collectionResultID,
-    startTime,
   });
 
-  const dest = indices[1];
-  let target = indices[0];
-  while (target < dest) {
+  let origin = indices[0];
+  const target = indices[1];
+  while (origin < target) {
     if (runIsCancelled(store)) return;
 
-    const testResult = store.data.testResults[target];
+    const testResult = store.data.testResults[origin];
     if (testResult !== undefined) {
       await execTest(store, testResult, timeoutInterval);
     }
 
-    target += 1;
+    origin += 1;
   }
 
   const endTime = performance.now();
@@ -194,13 +192,9 @@ async function execCollectionOrdered(
 
   store.dispatch({
     type: END_COLLECTION,
+    endTime: performance.now(),
     collectionResultID,
-    endTime,
   });
-}
-
-function runIsCancelled(store: StoreInterface): boolean {
-  return store.data.status === CANCELLED;
 }
 
 export { cancelRun, execRun };

@@ -1,9 +1,13 @@
-import type { Collection, Config, Importer } from "./deps.ts";
-import type { LogsInterface } from "./logs.ts";
+import type { Config, Importer } from "./cli_types.ts";
+import type { LoggerInterface } from "./logs.ts";
 
 import { Runner, Store } from "./deps.ts";
 
-async function run(config: Config, importer: Importer, logs: Logs) {
+async function run(
+	config: Config,
+	importer: Importer,
+	logs: LoggerInterface,
+) {
   for (const file of config.files) {
     const { tests } = await importer.load(file);
 

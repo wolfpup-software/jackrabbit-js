@@ -6,7 +6,7 @@ export type {
   CollectionResult,
   LoggerInterface,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
   Test,
   TestResult,
 } from "./utils/jackrabbit_types.ts";

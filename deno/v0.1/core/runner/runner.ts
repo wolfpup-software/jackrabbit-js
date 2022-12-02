@@ -6,10 +6,6 @@ import type {
 import { cancelRun, execRun } from "./async_reactions.ts";
 
 class Runner implements RunnerInterface {
-  start(store: StoreInterface) {
-    execRun(store);
-  }
-
   cancel(store: StoreInterface) {
     cancelRun(store);
   }

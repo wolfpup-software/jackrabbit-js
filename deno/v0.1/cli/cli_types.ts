@@ -1,4 +1,4 @@
-import { StoreAction, StoreData } from "./deps.ts";
+import { StoreAction, StoreDataInterface } from "./deps.ts";
 
 interface ConfigInterface {
   files: string[];
