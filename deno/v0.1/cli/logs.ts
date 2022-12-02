@@ -34,3 +34,4 @@ status: ${data.status}
 }
 
 export { Logs };
+

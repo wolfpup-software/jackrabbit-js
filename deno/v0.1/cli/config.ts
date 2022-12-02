@@ -60,3 +60,4 @@ class Config implements ConfigInterface {
 }
 
 export { Config };
+

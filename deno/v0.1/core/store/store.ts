@@ -96,3 +96,4 @@ class Store implements StoreInterface {
 }
 
 export { Store };
+
