@@ -4,9 +4,9 @@ import type { LoggerInterface } from "./logs.ts";
 import { Runner, Store } from "./deps.ts";
 
 async function run(
-	config: Config,
-	importer: Importer,
-	logs: LoggerInterface,
+  config: Config,
+  importer: Importer,
+  logs: LoggerInterface,
 ) {
   for (const file of config.files) {
     const { tests } = await importer.load(file);

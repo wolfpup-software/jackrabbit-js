@@ -95,13 +95,13 @@ type StoreAction =
   | EndTest;
 
 interface StoreDataInterface {
+  tests: Test[];
   testResults: TestResult[];
   collectionResults: CollectionResult[];
   endTime: number;
   startTime: number;
   status: Status;
   testTime: number;
-  tests: Test[];
 }
 
 type Reaction = (storeData: StoreDataInterface, action: StoreAction) => void;
@@ -132,7 +132,6 @@ export type {
   AsyncReactions,
   Collection,
   CollectionResult,
-  ImporterInterface,
   LoggerInterface,
   Reactions,
   RunnerInterface,
