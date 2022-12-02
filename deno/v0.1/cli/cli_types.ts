@@ -11,4 +11,3 @@ interface ImporterInterface {
 }
 
 export type { ConfigInterface, ImporterInterface };
-

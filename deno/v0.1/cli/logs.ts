@@ -1,7 +1,11 @@
-import type { ConfigInterface, LogInterface } from "./cli_types.ts";
-import type { StoreAction, StoreDataInterface } from "./deps.ts";
+import type { ConfigInterface } from "./cli_types.ts";
+import type {
+  LoggerInterface,
+  StoreAction,
+  StoreDataInterface,
+} from "./deps.ts";
 
-class Logs implements LogInterface {
+class Logs implements LoggerInterface {
   config: ConfigInterface;
 
   constructor(config: Config) {
@@ -34,4 +38,3 @@ status: ${data.status}
 }
 
 export { Logs };
-

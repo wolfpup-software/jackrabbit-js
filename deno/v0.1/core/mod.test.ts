@@ -8,4 +8,3 @@ const tests = [
 ];
 
 export { tests };
-

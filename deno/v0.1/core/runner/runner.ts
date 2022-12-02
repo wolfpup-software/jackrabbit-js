@@ -16,4 +16,3 @@ class Runner implements RunnerInterface {
 }
 
 export { Runner };
-

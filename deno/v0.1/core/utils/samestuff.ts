@@ -37,4 +37,3 @@ const samestuff: SameStuff = (source, target, depth = SAFETY) => {
 };
 
 export { samestuff };
-
