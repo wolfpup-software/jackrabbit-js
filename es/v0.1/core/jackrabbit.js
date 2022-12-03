@@ -304,5 +304,6 @@ class Store {
         this.logger.log(this.data, action);
     }
 }
+export { CANCEL_RUN as CANCEL_RUN, CANCELLED as CANCELLED, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, FAILED as FAILED, PASSED as PASSED, PENDING as PENDING, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST, UNSUBMITTED as UNSUBMITTED };
 export { Runner as Runner };
 export { Store as Store };

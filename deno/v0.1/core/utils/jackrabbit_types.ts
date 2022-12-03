@@ -127,11 +127,16 @@ interface LoggerInterface {
   log(data: StoreDataInterface, action: StoreAction): void;
 }
 
+interface ImporterInterface {
+  load: (filename: string) => Promise<Collection[]>;
+}
+
 export type {
   Assertions,
   AsyncReactions,
   Collection,
   CollectionResult,
+  ImporterInterface,
   LoggerInterface,
   Reactions,
   RunnerInterface,

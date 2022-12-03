@@ -1,3 +1,3 @@
-current_dir=`dirname $0`
+#!/bin/bash
 
-python3 -m http.server -d $current_dir
+deno run --allow-net --allow-read https://deno.land/std/http/file_server.ts
