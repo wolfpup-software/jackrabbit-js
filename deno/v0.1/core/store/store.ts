@@ -82,7 +82,6 @@ class Store implements StoreInterface {
   constructor(run: Collection[], logger: LoggerInterface) {
     this.data = createInitialData();
     this.logger = logger;
-
     createCollectionResults(this.data, run);
   }
 
