@@ -2,10 +2,10 @@
 // store
 
 import type {
-  Callback,
   Collection,
+  LoggerInterface,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
   StoreInterface,
   Test,
 } from "../utils/jackrabbit_types.ts";
@@ -13,21 +13,22 @@ import type {
 import { PENDING, UNSUBMITTED } from "../utils/constants.ts";
 import { reactions } from "./reactions.ts";
 
-function createInitialData(): StoreData {
+function createInitialData(): StoreDataInterface {
   return {
+    tests: [],
     testResults: [],
     collectionResults: [],
-    result: {
-      status: UNSUBMITTED,
-      endTime: 0,
-      startTime: 0,
-      testTime: 0,
-    },
-    tests: [],
+    status: UNSUBMITTED,
+    endTime: 0,
+    startTime: 0,
+    testTime: 0,
   };
 }
 
-const createTestResults = (storeData: StoreData, tests: Test[]) => {
+const createTestResults = (
+  storeData: StoreDataInterface,
+  tests: Test[],
+) => {
   const startIndex = storeData.testResults.length;
   for (const test of tests) {
     const testID = storeData.tests.length;
@@ -51,7 +52,7 @@ const createTestResults = (storeData: StoreData, tests: Test[]) => {
 };
 
 const createCollectionResults = (
-  storeData: StoreData,
+  storeData: StoreDataInterface,
   collections: Collection[],
 ) => {
   for (const collection of collections) {
@@ -75,13 +76,12 @@ const createCollectionResults = (
 };
 
 class Store implements StoreInterface {
-  data: StoreData;
-  callback: Callback;
+  data: StoreDataInterface;
+  logger: LoggerInterface;
 
-  constructor(run: Collection[], callback: Callback) {
+  constructor(run: Collection[], logger: LoggerInterface) {
     this.data = createInitialData();
-    this.callback = callback;
-
+    this.logger = logger;
     createCollectionResults(this.data, run);
   }
 
@@ -90,7 +90,7 @@ class Store implements StoreInterface {
     if (reaction === undefined) return;
 
     reaction(this.data, action);
-    this.callback(this.data, action);
+    this.logger.log(this.data, action);
   }
 }
 

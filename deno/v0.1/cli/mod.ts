@@ -1,3 +1,3 @@
 export { Config } from "./config.ts";
-export { Logs } from "./logs.ts";
+export { Logger } from "./logger.ts";
 export { run } from "./run.ts";

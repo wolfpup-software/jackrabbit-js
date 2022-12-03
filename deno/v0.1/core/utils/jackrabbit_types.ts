@@ -5,12 +5,13 @@ type Assertions = string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
-type Collection = {
+
+interface Collection {
   title: string;
   tests: Test[];
   runTestsAsynchronously: boolean;
   timeoutInterval: number;
-};
+}
 
 type TestStatus =
   | "unsubmitted"
@@ -41,13 +42,6 @@ interface CollectionResult {
   status: Status;
   runTestsAsynchronously: boolean;
   timeoutInterval: number;
-  testTime: number;
-}
-
-interface Result {
-  endTime: number;
-  startTime: number;
-  status: Status;
   testTime: number;
 }
 
@@ -100,52 +94,56 @@ type StoreAction =
   | StartTest
   | EndTest;
 
-type Callback = (
-  data: StoreData,
-  action: StoreAction,
-) => void;
-
-type StoreData = {
+interface StoreDataInterface {
+  tests: Test[];
   testResults: TestResult[];
   collectionResults: CollectionResult[];
-  result: Result;
-  tests: Test[];
-};
+  endTime: number;
+  startTime: number;
+  status: Status;
+  testTime: number;
+}
 
-type Reaction = (storeData: StoreData, action: StoreAction) => void;
+type Reaction = (storeData: StoreDataInterface, action: StoreAction) => void;
 type Reactions = Record<StoreAction["type"], Reaction>;
 
 type AsyncReaction = (
-  storeData: StoreData,
+  storeData: StoreDataInterface,
   action: StoreAction,
 ) => Promise<void>;
 type AsyncReactions = Record<StoreAction["type"], AsyncReaction>;
 
 interface StoreInterface {
-  data: StoreData;
+  data: StoreDataInterface;
   dispatch(action: StoreAction): void;
 }
 
 interface RunnerInterface {
-  start(store: StoreInterface): void;
+  run(store: StoreInterface): Promise<void>;
   cancel(store: StoreInterface): void;
+}
+
+interface LoggerInterface {
+  log(data: StoreDataInterface, action: StoreAction): void;
+}
+
+interface ImporterInterface {
+  load: (filename: string) => Promise<Collection[]>;
 }
 
 export type {
   Assertions,
-  AsyncReaction,
   AsyncReactions,
-  AsyncTest,
-  Callback,
   Collection,
   CollectionResult,
-  Reaction,
+  ImporterInterface,
+  LoggerInterface,
   Reactions,
-  Result,
   RunnerInterface,
   StoreAction,
-  StoreData,
+  StoreDataInterface,
   StoreInterface,
   Test,
   TestResult,
+  TestStatus,
 };

@@ -11,8 +11,6 @@ A test is a context that creates assertions about code.
 
 A function that returns assertions.
 
-That's what a test is in Jackrabbit: a function that returns assertions.
-
 ```JS
 function testTheThings() {
   return ["test failed!"];

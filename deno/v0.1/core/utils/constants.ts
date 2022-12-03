@@ -1,9 +1,11 @@
+// test status
 const PENDING = "pending";
 const UNSUBMITTED = "unsubmitted";
 const CANCELLED = "cancelled";
 const PASSED = "passed";
 const FAILED = "failed";
 
+// run types
 const START_RUN = "start_run";
 const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";
