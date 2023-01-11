@@ -30,6 +30,26 @@ const collection = {
 };
 ```
 
+Test collections are run by 
+
+## Why
+
+Testing is a by product of design.
+
+A shape or context or result or structure is expected from a chunk of code.
+
+Tests are a way of confirming that structures and shapes exist.
+
+However, it's difficult to find source material for building a test runners.
+
+It's difficult to find opinions about patterns used in test runners.
+
+Instead, what I've observed is philosophically dogmatic approaches to tests: behavioral, acceptance, etc.
+
+How the test runner works is rarely talked about. Which is suspect.
+
+This an attempt to show how a test runner can be created from first principles.
+
 ## License
 
 BSD 3-Clause License

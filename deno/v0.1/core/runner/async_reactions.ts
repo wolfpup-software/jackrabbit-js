@@ -3,9 +3,8 @@
 
 import type {
   Assertions,
-  CollectionResult,
-  StoreInterface,
-  TestResult,
+  Collection,
+  LoggerInterface,
 } from "../utils/jackrabbit_types.ts";
 
 import {
@@ -28,7 +27,7 @@ import {
 type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
 
-const TIMOUT_INTERVAL = 10000;
+const TIMEOUT_INTERVAL = 10000;
 
 const sleep: Sleep = (time: number) => {
   return new Promise((resolve) => {
@@ -39,161 +38,145 @@ const sleep: Sleep = (time: number) => {
 };
 
 const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
-  const interval = timeoutInterval === -1 ? TIMOUT_INTERVAL : timeoutInterval;
+  const interval = timeoutInterval === -1 ? TIMEOUT_INTERVAL : timeoutInterval;
   await sleep(interval);
 
   return [`timed out at: ${timeoutInterval}`];
 };
 
-function runIsCancelled(store: StoreInterface): boolean {
-  return store.data.status === CANCELLED;
+function runIsCancelled(logger: LoggerInterface): boolean {
+  return logger.cancelled;
 }
 
-async function execRun(store: StoreInterface) {
-  const startTime = performance.now();
-
-  store.dispatch({
-    type: START_RUN,
-    startTime,
-  });
-
-  for (const collectionResult of store.data.collectionResults) {
-    if (runIsCancelled(store)) {
-      return;
-    }
-    collectionResult.runTestsAsynchronously
-      ? await execCollection(store, collectionResult)
-      : await execCollectionOrdered(store, collectionResult);
-  }
-
-  const endTime = performance.now();
-
-  if (runIsCancelled(store)) {
-    return;
-  }
-
-  store.dispatch({
-    type: END_RUN,
-    endTime,
-  });
-}
-
-function cancelRun(store: StoreInterface) {
-  store.dispatch({
-    type: CANCEL_RUN,
-    endTime: performance.now(),
-  });
-}
-
+// test ID
+// collection
 async function execTest(
-  store: StoreInterface,
-  testResult: TestResult,
-  timeoutInterval: number,
+  collections: Collection[],
+  logger: LoggerInterface,
+  collectionId: number,
+  testId: number,
 ) {
-  if (runIsCancelled(store)) return;
+  if (runIsCancelled(logger)) return;
+  logger.log(
+    collections,
+    {
+      type: START_TEST,
+      testId,
+      collectionId,
+      time: performance.now(),
+    },
+  );
+  
+  // get test
+  // 
 
-  const { testResultID } = testResult;
-  const testFunc = store.data.tests[testResultID];
-  if (testFunc === undefined) return;
-
-  store.dispatch({
-    type: START_TEST,
-    testResultID,
-    startTime: performance.now(),
-  });
-
-  // opportunity for index error
+  const startTime = performance.now();
   const assertions = await Promise.race([
     createTimeout(timeoutInterval),
     testFunc(),
   ]);
+  const endTime = performance.now();
 
-  if (runIsCancelled(store)) return;
-
-  store.dispatch({
+  if (runIsCancelled(logger)) return;
+  logger.log(collections, {
     type: END_TEST,
-    testResultID,
+    testId,
+    collectionId,
     assertions,
-    endTime: performance.now(),
+    endTime,
+    startTime,
   });
 }
 
 async function execCollection(
-  store: StoreInterface,
-  collectionResult: CollectionResult,
+  collections: Collection[],
+  logger: LoggerInterface,
+  collectionId: number,
 ) {
-  if (runIsCancelled(store)) return;
+  if (runIsCancelled(logger)) return;
 
-  const { indices, collectionResultID, timeoutInterval } = collectionResult;
-  const tests = [];
-
-  let target = indices[0];
-  const dest = indices[1];
-  while (target <= dest) {
-    const testResult = store.data.testResults[target];
-    if (testResult !== undefined) {
-      tests.push(
-        execTest(store, testResult, timeoutInterval),
-      );
-    }
-
-    target += 1;
-  }
-
-  store.dispatch({
+  logger.log(collections, {
     type: START_COLLECTION,
-    startTime: performance.now(),
-    collectionResultID,
+    time: performance.now(),
+    collectionId,
   });
 
-  await Promise.all(tests);
+  // wrap tests
+  const results = await Promise.all(tests);
 
-  if (runIsCancelled(store)) return;
+  // iterate through tests
 
-  store.dispatch({
+  if (runIsCancelled(logger)) return;
+
+  logger.log(collections, {
     type: END_COLLECTION,
     endTime: performance.now(),
-    collectionResultID,
+    collectionId,
   });
 }
 
 async function execCollectionOrdered(
-  store: StoreInterface,
-  collectionResult: CollectionResult,
+  collections: Collection[],
+  logger: LoggerInterface,
+  collectionId: number,
 ) {
-  if (runIsCancelled(store)) return;
+  if (runIsCancelled(logger)) return;
 
-  const { indices, collectionResultID, timeoutInterval } = collectionResult;
-
-  const startTime = performance.now();
-
-  store.dispatch({
+  logger.log(collections, {
     type: START_COLLECTION,
-    startTime: performance.now(),
-    collectionResultID,
+    time: performance.now(),
+    collectionId,
   });
 
-  let origin = indices[0];
-  const target = indices[1];
-  while (origin < target) {
-    if (runIsCancelled(store)) return;
+  // iterate through tests and track id
+  let index = 0;
+  while (index < collections[collectionId].tests.length) {
+    if (runIsCancelled(logger)) return;
 
-    const testResult = store.data.testResults[origin];
-    if (testResult !== undefined) {
-      await execTest(store, testResult, timeoutInterval);
-    }
+    await execTest(collections, logger, collectionId, index);
 
-    origin += 1;
+    index += 1;
   }
 
-  const endTime = performance.now();
+  if (runIsCancelled(logger)) return;
 
-  if (runIsCancelled(store)) return;
-
-  store.dispatch({
+  logger.log(collections, {
     type: END_COLLECTION,
-    endTime: performance.now(),
-    collectionResultID,
+    time: performance.now(),
+    collectionId,
+  });
+}
+
+// logger meets loader : logger
+async function execRun(collections: Collection[], logger: LoggerInterface) {
+  logger.log(collections, {
+    type: START_RUN,
+    time: performance.now(),
+  });
+
+  let index = 0;
+  while (index < collections.length) {
+    if (runIsCancelled(logger)) return;
+
+    const collection = collections[index];
+    collection.runTestsAsynchronously
+      ? await execCollection(collections, logger, index)
+      : await execCollectionOrdered(collections, logger, index);
+
+    index += 1;
+  }
+
+  if (runIsCancelled(logger)) return;
+  logger.log(collections, {
+    type: END_RUN,
+    time: performance.now(),
+  });
+}
+
+function cancelRun(collections: Collection[], logger: LoggerInterface) {
+  logger.log(collections, {
+    type: CANCEL_RUN,
+    time: performance.now(),
   });
 }
 

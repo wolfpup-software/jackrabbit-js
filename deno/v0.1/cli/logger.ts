@@ -17,8 +17,8 @@ class Logger implements LoggerInterface {
   log(data: StoreDataInterface, action: StoreAction) {
     if (action.type === END_TEST) {
       const r = data.testResults[action.testResultID];
-      if (r.status === "FAILED") {
-        console.log(r.status, r.name);
+      if (r.assertions?.length) {
+        console.log("FAILED:", r.name);
         console.log(r.assertions);
       }
     }

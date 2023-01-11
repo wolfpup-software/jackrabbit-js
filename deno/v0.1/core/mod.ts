@@ -3,13 +3,9 @@
 
 export type {
   Collection,
-  CollectionResult,
   ImporterInterface,
   LoggerInterface,
-  StoreAction,
-  StoreDataInterface,
   Test,
-  TestResult,
 } from "./utils/jackrabbit_types.ts";
 
 export {
@@ -27,5 +23,4 @@ export {
   UNSUBMITTED,
 } from "./utils/constants.ts";
 
-export { Runner } from "./runner/runner.ts";
-export { Store } from "./store/store.ts";
+export { cancelRun, execRun } from "./runner/runner.ts";

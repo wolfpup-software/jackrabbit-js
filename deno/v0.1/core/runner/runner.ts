@@ -1,18 +1,22 @@
 import type {
+  Collection,
+  LoggerInterface,
   RunnerInterface,
-  StoreInterface,
 } from "../utils/jackrabbit_types.ts";
 
 import { cancelRun, execRun } from "./async_reactions.ts";
 
+// we instantiate here with logger
+// we dont need a store to dispatch
+//
 class Runner implements RunnerInterface {
-  cancel(store: StoreInterface) {
-    cancelRun(store);
+  cancel(collections: Collections[], logger: LoggerInterface) {
+    cancelRun(collections, logger);
   }
 
-  async run(store: StoreInterface) {
-    await execRun(store);
+  async run(collections: Collection[], logger: LoggerInterface) {
+    execRun(collections, logger);
   }
 }
 
-export { Runner };
+export { cancelRun, execRun, Runner };

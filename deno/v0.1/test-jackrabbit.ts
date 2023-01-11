@@ -1,4 +1,3 @@
-// HEAD
 /*
   jackrabbit cli
 
@@ -9,6 +8,7 @@
   	- logs (callbacks)
   	- how tests are run
 */
+
 import type { ImporterInterface } from "./cli/mod.ts";
 
 import { Config, Logger, run } from "./cli/mod.ts";
