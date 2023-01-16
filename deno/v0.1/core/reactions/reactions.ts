@@ -44,6 +44,42 @@ const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
   return [`timed out at: ${timeoutInterval}`];
 };
 
+const createWrappedTest = async (
+  collections: Collection[],
+  logger: LoggerInterface,
+  collectionId: number,
+  testId: number,
+) => {
+  if (runIsCancelled(logger)) return;
+  logger.log(
+    collections,
+    {
+      type: START_TEST,
+      testId,
+      collectionId,
+      time: performance.now(),
+    },
+  );
+
+  const testFunc = collections[collectionId].tests[testId];
+  const startTime = performance.now();
+  const assertions = await Promise.race([
+    createTimeout(collections[collectionId].timeoutInterval),
+    testFunc(),
+  ]);
+  const endTime = performance.now();
+
+  if (runIsCancelled(logger)) return;
+  logger.log(collections, {
+    type: END_TEST,
+    testId,
+    collectionId,
+    assertions,
+    endTime,
+    startTime,
+  });
+};
+
 function runIsCancelled(logger: LoggerInterface): boolean {
   return logger.cancelled;
 }
@@ -61,18 +97,17 @@ async function execTest(
     collections,
     {
       type: START_TEST,
+      time: performance.now(),
       testId,
       collectionId,
-      time: performance.now(),
     },
   );
-  
-  // get test
-  // 
+
+  const testFunc = collections[collectionId].tests[testId];
 
   const startTime = performance.now();
   const assertions = await Promise.race([
-    createTimeout(timeoutInterval),
+    createTimeout(collections[collectionId].timeoutInterval),
     testFunc(),
   ]);
   const endTime = performance.now();
@@ -93,26 +128,16 @@ async function execCollection(
   logger: LoggerInterface,
   collectionId: number,
 ) {
-  if (runIsCancelled(logger)) return;
+  const wrappedTests = [];
+  let testId = 0;
+  const length = collections[collectionId].tests.length;
+  while (testId < length) {
+    wrappedTests.push(
+      createWrappedTest(collections, logger, collectionId, testId),
+    );
+  }
 
-  logger.log(collections, {
-    type: START_COLLECTION,
-    time: performance.now(),
-    collectionId,
-  });
-
-  // wrap tests
-  const results = await Promise.all(tests);
-
-  // iterate through tests
-
-  if (runIsCancelled(logger)) return;
-
-  logger.log(collections, {
-    type: END_COLLECTION,
-    endTime: performance.now(),
-    collectionId,
-  });
+  await Promise.all(wrappedTests);
 }
 
 async function execCollectionOrdered(
@@ -120,15 +145,6 @@ async function execCollectionOrdered(
   logger: LoggerInterface,
   collectionId: number,
 ) {
-  if (runIsCancelled(logger)) return;
-
-  logger.log(collections, {
-    type: START_COLLECTION,
-    time: performance.now(),
-    collectionId,
-  });
-
-  // iterate through tests and track id
   let index = 0;
   while (index < collections[collectionId].tests.length) {
     if (runIsCancelled(logger)) return;
@@ -137,33 +153,37 @@ async function execCollectionOrdered(
 
     index += 1;
   }
-
-  if (runIsCancelled(logger)) return;
-
-  logger.log(collections, {
-    type: END_COLLECTION,
-    time: performance.now(),
-    collectionId,
-  });
 }
 
-// logger meets loader : logger
 async function execRun(collections: Collection[], logger: LoggerInterface) {
+  if (runIsCancelled(logger)) return;
   logger.log(collections, {
     type: START_RUN,
     time: performance.now(),
   });
 
-  let index = 0;
-  while (index < collections.length) {
+  let collectionId = 0;
+  while (collectionId < collections.length) {
     if (runIsCancelled(logger)) return;
+    logger.log(collections, {
+      type: START_COLLECTION,
+      time: performance.now(),
+      collectionId,
+    });
 
-    const collection = collections[index];
+    const collection = collections[collectionId];
     collection.runTestsAsynchronously
-      ? await execCollection(collections, logger, index)
-      : await execCollectionOrdered(collections, logger, index);
+      ? await execCollection(collections, logger, collectionId)
+      : await execCollectionOrdered(collections, logger, collectionId);
 
-    index += 1;
+    if (runIsCancelled(logger)) return;
+    logger.log(collections, {
+      type: END_COLLECTION,
+      time: performance.now(),
+      collectionId,
+    });
+
+    collectionId += 1;
   }
 
   if (runIsCancelled(logger)) return;
