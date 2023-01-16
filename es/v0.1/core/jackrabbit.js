@@ -2,11 +2,6 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
-const PENDING = "pending";
-const UNSUBMITTED = "unsubmitted";
-const CANCELLED = "cancelled";
-const PASSED = "passed";
-const FAILED = "failed";
 const START_RUN = "start_run";
 const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";
@@ -29,7 +24,7 @@ const createTimeout = async (timeoutInterval)=>{
     ];
 };
 const createWrappedTest = async (collections, logger, collectionId, testId)=>{
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: START_TEST,
         testId,
@@ -43,7 +38,7 @@ const createWrappedTest = async (collections, logger, collectionId, testId)=>{
         testFunc()
     ]);
     const endTime = performance.now();
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: END_TEST,
         testId,
@@ -53,11 +48,8 @@ const createWrappedTest = async (collections, logger, collectionId, testId)=>{
         startTime
     });
 };
-function runIsCancelled(logger) {
-    return logger.cancelled;
-}
 async function execTest(collections, logger, collectionId, testId) {
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: START_TEST,
         time: performance.now(),
@@ -71,7 +63,7 @@ async function execTest(collections, logger, collectionId, testId) {
         testFunc()
     ]);
     const endTime = performance.now();
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: END_TEST,
         testId,
@@ -93,28 +85,27 @@ async function execCollection(collections, logger, collectionId) {
 async function execCollectionOrdered(collections, logger, collectionId) {
     let index = 0;
     while(index < collections[collectionId].tests.length){
-        if (runIsCancelled(logger)) return;
+        if (logger.cancelled) return;
         await execTest(collections, logger, collectionId, index);
         index += 1;
     }
 }
 async function execRun(collections, logger) {
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: START_RUN,
         time: performance.now()
     });
     let collectionId = 0;
     while(collectionId < collections.length){
-        if (runIsCancelled(logger)) return;
+        if (logger.cancelled) return;
         logger.log(collections, {
             type: START_COLLECTION,
             time: performance.now(),
             collectionId
         });
-        const collection = collections[collectionId];
-        collection.runTestsAsynchronously ? await execCollection(collections, logger, collectionId) : await execCollectionOrdered(collections, logger, collectionId);
-        if (runIsCancelled(logger)) return;
+        collections[collectionId].runTestsAsynchronously ? await execCollection(collections, logger, collectionId) : await execCollectionOrdered(collections, logger, collectionId);
+        if (logger.cancelled) return;
         logger.log(collections, {
             type: END_COLLECTION,
             time: performance.now(),
@@ -122,7 +113,7 @@ async function execRun(collections, logger) {
         });
         collectionId += 1;
     }
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: END_RUN,
         time: performance.now()
@@ -134,5 +125,5 @@ function cancelRun(collections, logger) {
         time: performance.now()
     });
 }
-export { CANCEL_RUN as CANCEL_RUN, CANCELLED as CANCELLED, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, FAILED as FAILED, PASSED as PASSED, PENDING as PENDING, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST, UNSUBMITTED as UNSUBMITTED };
+export { CANCEL_RUN as CANCEL_RUN, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST };
 export { cancelRun as cancelRun, execRun as execRun };

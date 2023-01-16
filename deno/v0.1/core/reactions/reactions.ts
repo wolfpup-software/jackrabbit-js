@@ -9,7 +9,6 @@ import type {
 
 import {
   CANCEL_RUN,
-  CANCELLED,
   END_COLLECTION,
   END_RUN,
   END_TEST,
@@ -50,7 +49,7 @@ const createWrappedTest = async (
   collectionId: number,
   testId: number,
 ) => {
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(
     collections,
     {
@@ -69,7 +68,7 @@ const createWrappedTest = async (
   ]);
   const endTime = performance.now();
 
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(collections, {
     type: END_TEST,
     testId,
@@ -92,7 +91,7 @@ async function execTest(
   collectionId: number,
   testId: number,
 ) {
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(
     collections,
     {
@@ -112,7 +111,7 @@ async function execTest(
   ]);
   const endTime = performance.now();
 
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(collections, {
     type: END_TEST,
     testId,
@@ -147,7 +146,7 @@ async function execCollectionOrdered(
 ) {
   let index = 0;
   while (index < collections[collectionId].tests.length) {
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
 
     await execTest(collections, logger, collectionId, index);
 
@@ -156,7 +155,7 @@ async function execCollectionOrdered(
 }
 
 async function execRun(collections: Collection[], logger: LoggerInterface) {
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(collections, {
     type: START_RUN,
     time: performance.now(),
@@ -164,19 +163,18 @@ async function execRun(collections: Collection[], logger: LoggerInterface) {
 
   let collectionId = 0;
   while (collectionId < collections.length) {
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
       type: START_COLLECTION,
       time: performance.now(),
       collectionId,
     });
 
-    const collection = collections[collectionId];
-    collection.runTestsAsynchronously
+    collections[collectionId].runTestsAsynchronously
       ? await execCollection(collections, logger, collectionId)
       : await execCollectionOrdered(collections, logger, collectionId);
 
-    if (runIsCancelled(logger)) return;
+    if (logger.cancelled) return;
     logger.log(collections, {
       type: END_COLLECTION,
       time: performance.now(),
@@ -186,7 +184,7 @@ async function execRun(collections: Collection[], logger: LoggerInterface) {
     collectionId += 1;
   }
 
-  if (runIsCancelled(logger)) return;
+  if (logger.cancelled) return;
   logger.log(collections, {
     type: END_RUN,
     time: performance.now(),
