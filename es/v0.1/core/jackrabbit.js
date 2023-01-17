@@ -20,7 +20,7 @@ const createTimeout = async (timeoutInterval)=>{
     const interval = timeoutInterval === -1 ? 10000 : timeoutInterval;
     await sleep(interval);
     return [
-        `timed out at: ${timeoutInterval}`
+        `timed out at: ${interval}`
     ];
 };
 const createWrappedTest = async (collections, logger, collectionId, testId)=>{
@@ -79,12 +79,14 @@ async function execCollection(collections, logger, collectionId) {
     const length = collections[collectionId].tests.length;
     while(testId < length){
         wrappedTests.push(createWrappedTest(collections, logger, collectionId, testId));
+        testId += 1;
     }
     await Promise.all(wrappedTests);
 }
 async function execCollectionOrdered(collections, logger, collectionId) {
+    const numTests = collections[collectionId].tests.length;
     let index = 0;
-    while(index < collections[collectionId].tests.length){
+    while(index < numTests){
         if (logger.cancelled) return;
         await execTest(collections, logger, collectionId, index);
         index += 1;
@@ -97,7 +99,8 @@ async function execRun(collections, logger) {
         time: performance.now()
     });
     let collectionId = 0;
-    while(collectionId < collections.length){
+    const numCollections = collections.length;
+    while(collectionId < numCollections){
         if (logger.cancelled) return;
         logger.log(collections, {
             type: START_COLLECTION,

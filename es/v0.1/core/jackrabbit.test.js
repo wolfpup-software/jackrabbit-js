@@ -125,6 +125,11 @@ const compareNestedEqualObjects = ()=>{
     }
     return assertions;
 };
+const intentionalFail = ()=>{
+    return [
+        "fail fail fail"
+    ];
+};
 const tests = [
     compareDifferentPrimitives,
     compareEqualPrimitives,
@@ -133,14 +138,15 @@ const tests = [
     compareNullToObject,
     compareSimilarObjects,
     compareNestedObjects,
-    compareNestedEqualObjects
+    compareNestedEqualObjects,
+    intentionalFail
 ];
 const unitTestSamestuff = {
     title,
     tests,
     runTestsAsynchronously: true
 };
-const tests1 = [
+const testCollections = [
     unitTestSamestuff
 ];
-export { tests1 as tests };
+export { testCollections as testCollections };

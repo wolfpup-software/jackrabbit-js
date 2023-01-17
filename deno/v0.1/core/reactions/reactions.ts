@@ -17,12 +17,6 @@ import {
   START_TEST,
 } from "../utils/constants.ts";
 
-/*
-  All asyncronous logic resides here.
-
-  Syncronous calls are made to the store from the asyncronus logic below.
-*/
-
 type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
 
@@ -40,7 +34,7 @@ const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
   const interval = timeoutInterval === -1 ? TIMEOUT_INTERVAL : timeoutInterval;
   await sleep(interval);
 
-  return [`timed out at: ${timeoutInterval}`];
+  return [`timed out at: ${interval}`];
 };
 
 const createWrappedTest = async (
@@ -79,12 +73,6 @@ const createWrappedTest = async (
   });
 };
 
-function runIsCancelled(logger: LoggerInterface): boolean {
-  return logger.cancelled;
-}
-
-// test ID
-// collection
 async function execTest(
   collections: Collection[],
   logger: LoggerInterface,
@@ -103,7 +91,6 @@ async function execTest(
   );
 
   const testFunc = collections[collectionId].tests[testId];
-
   const startTime = performance.now();
   const assertions = await Promise.race([
     createTimeout(collections[collectionId].timeoutInterval),
@@ -134,6 +121,8 @@ async function execCollection(
     wrappedTests.push(
       createWrappedTest(collections, logger, collectionId, testId),
     );
+
+    testId += 1;
   }
 
   await Promise.all(wrappedTests);
@@ -144,10 +133,10 @@ async function execCollectionOrdered(
   logger: LoggerInterface,
   collectionId: number,
 ) {
+  const numTests = collections[collectionId].tests.length;
   let index = 0;
-  while (index < collections[collectionId].tests.length) {
+  while (index < numTests) {
     if (logger.cancelled) return;
-
     await execTest(collections, logger, collectionId, index);
 
     index += 1;
@@ -162,7 +151,8 @@ async function execRun(collections: Collection[], logger: LoggerInterface) {
   });
 
   let collectionId = 0;
-  while (collectionId < collections.length) {
+  const numCollections = collections.length;
+  while (collectionId < numCollections) {
     if (logger.cancelled) return;
     logger.log(collections, {
       type: START_COLLECTION,

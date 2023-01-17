@@ -1,25 +1,13 @@
-export type {
-  Collection,
-  ImporterInterface,
-  LoggerInterface,
-  Result,
-  StoreAction,
-  StoreDataInterface,
-} from "../core/mod.ts";
+export type { Collection, LoggerAction, LoggerInterface } from "../core/mod.ts";
 
 export {
   CANCEL_RUN,
-  CANCELLED,
+  cancelRun,
   END_COLLECTION,
   END_RUN,
   END_TEST,
-  FAILED,
-  PASSED,
-  PENDING,
-  Runner,
+  execRun,
   START_COLLECTION,
   START_RUN,
   START_TEST,
-  Store,
-  UNSUBMITTED,
 } from "../core/mod.ts";

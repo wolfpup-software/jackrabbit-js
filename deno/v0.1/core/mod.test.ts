@@ -3,8 +3,8 @@
 
 import { unitTestSamestuff } from "./utils/samestuff.test.ts";
 
-const tests = [
+const testCollections = [
   unitTestSamestuff,
 ];
 
-export { tests };
+export { testCollections };

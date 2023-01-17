@@ -7,6 +7,13 @@ A portable test runner.
 Jackrabbit is a portable test runner that logs tests in a json serializable
 format.
 
+Jackrabbit is a demonstration of building a test runner from first principles.
+
+- A testing suite should no the required to build tests
+- Logging is environment specific (local, cli, remote, server)
+
+## Jackrabbit Tests
+
 A test is a context that creates assertions about code.
 
 A function that returns assertions.
@@ -21,7 +28,7 @@ A test collection is a series of tests and some data about how tests should be
 run.
 
 ```JS
-const collection = {
+const myTestCollection = {
   title: "Test All The Things",
   runAsyncronously: true,
   tests: [
@@ -30,25 +37,58 @@ const collection = {
 };
 ```
 
-Test collections are run by 
+Test collections are gathered and exported as list inside a module.
 
-## Why
+```JS
+import { myTestCollection } from "./my_test_collection.ts";
+
+const testCollections = [
+	myTestCollection,
+];
+
+export { testCollections };
+```
+
+## Jackrabbit Logger
+
+Jackrabbit has no preference where results are stored or logged.
+
+A "logger" is provided alongside a series of test collections.
+
+```JS
+import type { Collection, LoggerAction, LoggerInterface } from "./mod.ts";
+
+class Logger implements LoggerInterface {
+	cancelled = false;
+	log(collections: Collection[], action: LoggerAction) {
+		... save to hard drive
+		... send to server
+		... wait until test run is complete
+	}
+}
+```
+
+## Yet another test runner
 
 Testing is a by product of design.
 
-A shape or context or result or structure is expected from a chunk of code.
+Tests are a way of confirming that structures and shapes exist after a given set of operations.
 
-Tests are a way of confirming that structures and shapes exist.
+However, it's difficult to find source material, opionions, or guidance for building a test runners. How the test runner works is rarely talked about.
 
-However, it's difficult to find source material for building a test runners.
+This is suspect.
 
-It's difficult to find opinions about patterns used in test runners.
+Instead, what I've observed (especially in the JS domain) is a philosophically dogmatic approach to tests that pollutes any build system.
 
-Instead, what I've observed is philosophically dogmatic approaches to tests: behavioral, acceptance, etc.
+Jackrabbit is an attempt to demonstract how build a test runner from first principles.
 
-How the test runner works is rarely talked about. Which is suspect.
+It uses a "logger" as a way to track fails and test state. And it uses tests as a functional pipeline to generate state through a "logger".
 
-This an attempt to show how a test runner can be created from first principles.
+ie:
+```
+struct -> functional pipeline -> struct
+logger -> tests -> logger
+```
 
 ## License
 

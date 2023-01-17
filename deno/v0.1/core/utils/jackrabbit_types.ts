@@ -13,16 +13,6 @@ interface Collection {
   timeoutInterval: number;
 }
 
-type TestStatus =
-  | "unsubmitted"
-  | "submitted"
-  | "passed"
-  | "failed";
-
-type Status =
-  | TestStatus
-  | "cancelled";
-
 interface StartRun {
   type: "start_run";
   time: number;
@@ -80,12 +70,4 @@ interface LoggerInterface {
   log(collection: Collection[], action: LoggerAction): void;
 }
 
-export type {
-  Assertions,
-  Collection,
-  LoggerAction,
-  LoggerInterface,
-  Status,
-  Test,
-  TestStatus,
-};
+export type { Assertions, Collection, LoggerAction, LoggerInterface, Test };
