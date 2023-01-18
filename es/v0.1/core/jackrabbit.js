@@ -2,11 +2,6 @@
 // deno-lint-ignore-file
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
-const PENDING = "pending";
-const UNSUBMITTED = "unsubmitted";
-const CANCELLED = "cancelled";
-const PASSED = "passed";
-const FAILED = "failed";
 const START_RUN = "start_run";
 const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";
@@ -25,285 +20,114 @@ const createTimeout = async (timeoutInterval)=>{
     const interval = timeoutInterval === -1 ? 10000 : timeoutInterval;
     await sleep(interval);
     return [
-        `timed out at: ${timeoutInterval}`
+        `timed out at: ${interval}`
     ];
 };
-function runIsCancelled(store) {
-    return store.data.status === CANCELLED;
-}
-async function execRun(store) {
-    const startTime = performance.now();
-    store.dispatch({
-        type: START_RUN,
-        startTime
-    });
-    for (const collectionResult of store.data.collectionResults){
-        if (runIsCancelled(store)) {
-            return;
-        }
-        collectionResult.runTestsAsynchronously ? await execCollection(store, collectionResult) : await execCollectionOrdered(store, collectionResult);
-    }
-    const endTime = performance.now();
-    if (runIsCancelled(store)) {
-        return;
-    }
-    store.dispatch({
-        type: END_RUN,
-        endTime
-    });
-}
-function cancelRun(store) {
-    store.dispatch({
-        type: CANCEL_RUN,
-        endTime: performance.now()
-    });
-}
-async function execTest(store, testResult, timeoutInterval) {
-    if (runIsCancelled(store)) return;
-    const { testResultID  } = testResult;
-    const testFunc = store.data.tests[testResultID];
-    if (testFunc === undefined) return;
-    store.dispatch({
+const createWrappedTest = async (collections, logger, collectionId, testId)=>{
+    if (logger.cancelled) return;
+    logger.log(collections, {
         type: START_TEST,
-        testResultID,
-        startTime: performance.now()
+        testId,
+        collectionId,
+        time: performance.now()
     });
+    const testFunc = collections[collectionId].tests[testId];
+    const startTime = performance.now();
     const assertions = await Promise.race([
-        createTimeout(timeoutInterval),
+        createTimeout(collections[collectionId].timeoutInterval),
         testFunc()
     ]);
-    if (runIsCancelled(store)) return;
-    store.dispatch({
+    const endTime = performance.now();
+    if (logger.cancelled) return;
+    logger.log(collections, {
         type: END_TEST,
-        testResultID,
+        testId,
+        collectionId,
         assertions,
-        endTime: performance.now()
+        endTime,
+        startTime
+    });
+};
+async function execTest(collections, logger, collectionId, testId) {
+    if (logger.cancelled) return;
+    logger.log(collections, {
+        type: START_TEST,
+        time: performance.now(),
+        testId,
+        collectionId
+    });
+    const testFunc = collections[collectionId].tests[testId];
+    const startTime = performance.now();
+    const assertions = await Promise.race([
+        createTimeout(collections[collectionId].timeoutInterval),
+        testFunc()
+    ]);
+    const endTime = performance.now();
+    if (logger.cancelled) return;
+    logger.log(collections, {
+        type: END_TEST,
+        testId,
+        collectionId,
+        assertions,
+        endTime,
+        startTime
     });
 }
-async function execCollection(store, collectionResult) {
-    if (runIsCancelled(store)) return;
-    const { indices , collectionResultID , timeoutInterval  } = collectionResult;
-    const tests = [];
-    let target = indices[0];
-    const dest = indices[1];
-    while(target <= dest){
-        const testResult = store.data.testResults[target];
-        if (testResult !== undefined) {
-            tests.push(execTest(store, testResult, timeoutInterval));
-        }
-        target += 1;
+async function execCollection(collections, logger, collectionId) {
+    const wrappedTests = [];
+    let testId = 0;
+    const length = collections[collectionId].tests.length;
+    while(testId < length){
+        wrappedTests.push(createWrappedTest(collections, logger, collectionId, testId));
+        testId += 1;
     }
-    store.dispatch({
-        type: START_COLLECTION,
-        startTime: performance.now(),
-        collectionResultID
-    });
-    await Promise.all(tests);
-    if (runIsCancelled(store)) return;
-    store.dispatch({
-        type: END_COLLECTION,
-        endTime: performance.now(),
-        collectionResultID
-    });
+    await Promise.all(wrappedTests);
 }
-async function execCollectionOrdered(store, collectionResult) {
-    if (runIsCancelled(store)) return;
-    const { indices , collectionResultID , timeoutInterval  } = collectionResult;
-    performance.now();
-    store.dispatch({
-        type: START_COLLECTION,
-        startTime: performance.now(),
-        collectionResultID
-    });
-    let origin = indices[0];
-    const target = indices[1];
-    while(origin < target){
-        if (runIsCancelled(store)) return;
-        const testResult = store.data.testResults[origin];
-        if (testResult !== undefined) {
-            await execTest(store, testResult, timeoutInterval);
-        }
-        origin += 1;
-    }
-    performance.now();
-    if (runIsCancelled(store)) return;
-    store.dispatch({
-        type: END_COLLECTION,
-        endTime: performance.now(),
-        collectionResultID
-    });
-}
-class Runner {
-    cancel(store) {
-        cancelRun(store);
-    }
-    async run(store) {
-        await execRun(store);
-    }
-}
-function updateResultProperties(storeData) {
-    let testTime = 0;
-    for (const collectionResult of storeData.collectionResults){
-        if (collectionResult.status === FAILED) {
-            storeData.status = FAILED;
-        }
-        testTime += collectionResult.testTime;
-    }
-    if (storeData.status === UNSUBMITTED) {
-        storeData.status = PASSED;
-    }
-    storeData.testTime = testTime;
-}
-function updateCollectionResult(storeData, collectionResult) {
-    let { indices , startTime , endTime  } = collectionResult;
-    let testTime = endTime - startTime;
-    const target = indices[1];
-    let index = indices[0];
-    while(index < target){
-        if (storeData.status === FAILED) {
-            collectionResult.status = FAILED;
-            break;
-        }
+async function execCollectionOrdered(collections, logger, collectionId) {
+    const numTests = collections[collectionId].tests.length;
+    let index = 0;
+    while(index < numTests){
+        if (logger.cancelled) return;
+        await execTest(collections, logger, collectionId, index);
         index += 1;
     }
-    if (collectionResult.status === UNSUBMITTED) {
-        collectionResult.status = PASSED;
-    }
-    collectionResult.testTime = testTime;
 }
-function start_run(storeData, action) {
-    if (action.type !== START_RUN) return;
-    storeData.status = UNSUBMITTED;
-    storeData.startTime = action.startTime;
-}
-function end_run(storeData, action) {
-    if (action.type !== END_RUN) return;
-    if (storeData.status === CANCELLED) return;
-    storeData.endTime = action.endTime;
-    updateResultProperties(storeData);
-}
-function cancel_run(storeData, action) {
-    if (action.type !== CANCEL_RUN) return;
-    storeData.status = CANCELLED;
-    storeData.endTime = action.endTime;
-}
-function start_collection(storeData, action) {
-    if (action.type !== START_COLLECTION) return;
-    const { collectionResultID , startTime  } = action;
-    const collectionResult = storeData.collectionResults[collectionResultID];
-    if (collectionResult === undefined) {
-        return;
-    }
-    collectionResult.status = UNSUBMITTED;
-    collectionResult.startTime = startTime;
-}
-function end_collection(storeData, action) {
-    if (action.type !== END_COLLECTION) return;
-    const { collectionResultID , endTime  } = action;
-    const collectionResult = storeData.collectionResults[collectionResultID];
-    if (collectionResult === undefined) {
-        return;
-    }
-    collectionResult.endTime = endTime;
-    updateCollectionResult(storeData, collectionResult);
-}
-function start_test(storeData, action) {
-    if (action.type !== START_TEST) return;
-    const { testResultID , startTime  } = action;
-    const testResult = storeData.testResults[testResultID];
-    if (testResult === undefined) {
-        return;
-    }
-    testResult.status = UNSUBMITTED;
-    testResult.startTime = startTime;
-}
-function end_test(storeData, action) {
-    if (action.type !== END_TEST) return;
-    const { testResultID  } = action;
-    const testResult = storeData.testResults[testResultID];
-    if (testResult === undefined) {
-        return;
-    }
-    const { assertions , endTime  } = action;
-    testResult.assertions = assertions;
-    testResult.endTime = endTime;
-    testResult.status = assertions.length === 0 ? PASSED : FAILED;
-}
-const reactions = {
-    start_run,
-    end_run,
-    cancel_run,
-    start_collection,
-    end_collection,
-    start_test,
-    end_test
-};
-function createInitialData() {
-    return {
-        tests: [],
-        testResults: [],
-        collectionResults: [],
-        status: UNSUBMITTED,
-        endTime: 0,
-        startTime: 0,
-        testTime: 0
-    };
-}
-const createTestResults = (storeData, tests)=>{
-    const startIndex = storeData.testResults.length;
-    for (const test of tests){
-        const testID = storeData.tests.length;
-        storeData.tests.push(test);
-        const testResultID = storeData.testResults.length;
-        storeData.testResults.push({
-            assertions: [],
-            endTime: 0,
-            name: test.name,
-            startTime: 0,
-            status: PENDING,
-            testResultID,
-            testID
+async function execRun(collections, logger) {
+    if (logger.cancelled) return;
+    logger.log(collections, {
+        type: START_RUN,
+        time: performance.now()
+    });
+    let collectionId = 0;
+    const numCollections = collections.length;
+    while(collectionId < numCollections){
+        if (logger.cancelled) return;
+        logger.log(collections, {
+            type: START_COLLECTION,
+            time: performance.now(),
+            collectionId
         });
-    }
-    const endIndex = storeData.testResults.length;
-    return [
-        startIndex,
-        endIndex
-    ];
-};
-const createCollectionResults = (storeData, collections)=>{
-    for (const collection of collections){
-        const collectionResultID = storeData.collectionResults.length;
-        const { tests , title , runTestsAsynchronously , timeoutInterval  } = collection;
-        const indices = createTestResults(storeData, tests);
-        storeData.collectionResults.push({
-            endTime: 0,
-            testTime: 0,
-            startTime: 0,
-            status: PENDING,
-            collectionResultID,
-            indices,
-            timeoutInterval,
-            runTestsAsynchronously,
-            title
+        collections[collectionId].runTestsAsynchronously ? await execCollection(collections, logger, collectionId) : await execCollectionOrdered(collections, logger, collectionId);
+        if (logger.cancelled) return;
+        logger.log(collections, {
+            type: END_COLLECTION,
+            time: performance.now(),
+            collectionId
         });
+        collectionId += 1;
     }
-};
-class Store {
-    data;
-    logger;
-    constructor(run, logger){
-        this.data = createInitialData();
-        this.logger = logger;
-        createCollectionResults(this.data, run);
-    }
-    dispatch(action) {
-        const reaction = reactions[action.type];
-        if (reaction === undefined) return;
-        reaction(this.data, action);
-        this.logger.log(this.data, action);
-    }
+    if (logger.cancelled) return;
+    logger.log(collections, {
+        type: END_RUN,
+        time: performance.now()
+    });
 }
-export { CANCEL_RUN as CANCEL_RUN, CANCELLED as CANCELLED, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, FAILED as FAILED, PASSED as PASSED, PENDING as PENDING, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST, UNSUBMITTED as UNSUBMITTED };
-export { Runner as Runner };
-export { Store as Store };
+function cancelRun(collections, logger) {
+    if (logger.cancelled) return;
+    logger.log(collections, {
+        type: CANCEL_RUN,
+        time: performance.now()
+    });
+}
+export { CANCEL_RUN as CANCEL_RUN, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST };
+export { cancelRun as cancelRun, execRun as execRun };

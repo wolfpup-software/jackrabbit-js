@@ -7,7 +7,7 @@ const SAFETY = 256;
 
 const samestuff: SameStuff = (source, target, depth = SAFETY) => {
   if (depth < 1) {
-    console.warn("exceeded maximum depth of recursion");
+    console.warn("samestuff: exceeded maximum depth of recursion");
     return false;
   }
 

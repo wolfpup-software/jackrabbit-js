@@ -50,13 +50,15 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
   }
 }
 
-class Config implements ConfigInterface {
-  files: string[] = [];
-  log_style: string = "voiced";
+function createConfig(args: string[]): ConfigInterface {
+  const config: ConfigInterface = {
+    files: [],
+    log_style: "voiced",
+  };
 
-  constructor(args: string) {
-    iterateArgs(this, args);
-  }
+  iterateArgs(config, args);
+
+  return config;
 }
 
-export { Config };
+export { createConfig };

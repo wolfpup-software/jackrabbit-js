@@ -4,7 +4,7 @@
 
 const samestuff = (source, target, depth = 256)=>{
     if (depth < 1) {
-        console.warn("exceeded maximum depth of recursion");
+        console.warn("samestuff: exceeded maximum depth of recursion");
         return false;
     }
     if (source === target) return true;
@@ -140,7 +140,7 @@ const unitTestSamestuff = {
     tests,
     runTestsAsynchronously: true
 };
-const tests1 = [
+const testCollections = [
     unitTestSamestuff
 ];
-export { tests1 as tests };
+export { testCollections as testCollections };

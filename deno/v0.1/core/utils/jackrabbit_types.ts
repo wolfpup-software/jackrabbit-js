@@ -7,85 +7,56 @@ type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
 
 interface Collection {
-  title: string;
   tests: Test[];
-  runTestsAsynchronously: boolean;
-  timeoutInterval: number;
-}
-
-type TestStatus =
-  | "unsubmitted"
-  | "pending"
-  | "passed"
-  | "failed";
-
-type Status =
-  | TestStatus
-  | "cancelled";
-
-interface TestResult {
-  testResultID: number;
-  testID: number;
-  assertions: Assertions;
-  endTime: number;
-  name: string;
-  startTime: number;
-  status: TestStatus;
-}
-
-interface CollectionResult {
-  collectionResultID: number;
-  endTime: number;
   title: string;
-  indices: number[];
-  startTime: number;
-  status: Status;
   runTestsAsynchronously: boolean;
   timeoutInterval: number;
-  testTime: number;
 }
 
 interface StartRun {
   type: "start_run";
-  startTime: number;
+  time: number;
 }
 
 interface EndRun {
   type: "end_run";
-  endTime: number;
+  time: number;
 }
 
 interface CancelRun {
   type: "cancel_run";
-  endTime: number;
+  time: number;
 }
 
 interface StartCollection {
   type: "start_collection";
-  collectionResultID: number;
-  startTime: number;
+  collectionId: number;
+  time: number;
 }
 
 interface EndCollection {
   type: "end_collection";
-  collectionResultID: number;
-  endTime: number;
+  collectionId: number;
+  time: number;
 }
 
 interface StartTest {
   type: "start_test";
-  testResultID: number;
-  startTime: number;
+  testId: number;
+  collectionId: number;
+  time: number;
 }
 
 interface EndTest {
   type: "end_test";
-  testResultID: number;
+  testId: number;
+  collectionId: number;
+  startTime: number;
   endTime: number;
   assertions: string[];
 }
 
-type StoreAction =
+type LoggerAction =
   | StartRun
   | EndRun
   | CancelRun
@@ -94,56 +65,9 @@ type StoreAction =
   | StartTest
   | EndTest;
 
-interface StoreDataInterface {
-  tests: Test[];
-  testResults: TestResult[];
-  collectionResults: CollectionResult[];
-  endTime: number;
-  startTime: number;
-  status: Status;
-  testTime: number;
-}
-
-type Reaction = (storeData: StoreDataInterface, action: StoreAction) => void;
-type Reactions = Record<StoreAction["type"], Reaction>;
-
-type AsyncReaction = (
-  storeData: StoreDataInterface,
-  action: StoreAction,
-) => Promise<void>;
-type AsyncReactions = Record<StoreAction["type"], AsyncReaction>;
-
-interface StoreInterface {
-  data: StoreDataInterface;
-  dispatch(action: StoreAction): void;
-}
-
-interface RunnerInterface {
-  run(store: StoreInterface): Promise<void>;
-  cancel(store: StoreInterface): void;
-}
-
 interface LoggerInterface {
-  log(data: StoreDataInterface, action: StoreAction): void;
+  cancelled: boolean;
+  log(collection: Collection[], action: LoggerAction): void;
 }
 
-interface ImporterInterface {
-  load: (filename: string) => Promise<Collection[]>;
-}
-
-export type {
-  Assertions,
-  AsyncReactions,
-  Collection,
-  CollectionResult,
-  ImporterInterface,
-  LoggerInterface,
-  Reactions,
-  RunnerInterface,
-  StoreAction,
-  StoreDataInterface,
-  StoreInterface,
-  Test,
-  TestResult,
-  TestStatus,
-};
+export type { Assertions, Collection, LoggerAction, LoggerInterface, Test };
