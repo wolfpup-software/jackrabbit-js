@@ -7,10 +7,9 @@ A portable test runner.
 Jackrabbit is a portable test runner that logs tests in a json serializable
 format.
 
-Jackrabbit is a demonstration of building a test runner from first principles.
-
-- A testing suite should no the required to build tests
-- Logging is environment specific (local, cli, remote, server)
+Jackrabbit is designed with the following expectations:
+- A testing suite should not be required to write tests
+- Logging is contextual
 
 ## Jackrabbit Tests
 
@@ -68,19 +67,32 @@ class Logger implements LoggerInterface {
 }
 ```
 
+## Jackrabbit Run
+
+Test collections and a Logger 
+
+```
+import { Logger } from "./logger.ts";
+import { testCollections } from "./test_collections.ts";
+import { execRun } from "./jackrabbit/mod.ts";
+
+
+execRun(testCollections, Logger);
+```
+
 ## Yet another test runner
 
-Testing is a by product of design.
+Testing is a byproduct of design.
 
 Tests are a way of confirming that structures and shapes exist after a given set of operations.
 
-However, it's difficult to find source material, opionions, or guidance for building a test runners. How the test runner works is rarely talked about.
+However, it's difficult to find source material or guidance for building a test runners. How the test runner works is rarely talked about.
 
 This is suspect.
 
-Instead, what I've observed (especially in the JS domain) is a philosophically dogmatic approach to tests that pollutes any build system.
+Instead, what I've observed (especially in the JS domain) is a philosophically dogmatic approach to tests that pollutes any / every build system.
 
-Jackrabbit is an attempt to demonstract how build a test runner from first principles.
+Jackrabbit is an attempt to abstract a test runner from first principles.
 
 It uses a "logger" as a way to track fails and test state. And it uses tests as a functional pipeline to generate state through a "logger".
 
