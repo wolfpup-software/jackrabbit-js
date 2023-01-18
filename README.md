@@ -17,7 +17,7 @@ A test is a context that creates assertions about code.
 
 A function that returns assertions.
 
-```JS
+```TS
 function testTheThings() {
   return ["test failed!"];
 }
@@ -26,7 +26,7 @@ function testTheThings() {
 A test collection is a series of tests and some data about how tests should be
 run.
 
-```JS
+```TS
 const myTestCollection = {
   title: "Test All The Things",
   runAsyncronously: true,
@@ -38,7 +38,7 @@ const myTestCollection = {
 
 Test collections are gathered and exported as list inside a module.
 
-```JS
+```TS
 import { myTestCollection } from "./my_test_collection.ts";
 
 const testCollections = [
@@ -54,7 +54,7 @@ Jackrabbit has no preference where results are stored or logged.
 
 A "logger" is provided alongside a series of test collections.
 
-```JS
+```TS
 import type { Collection, LoggerAction, LoggerInterface } from "./mod.ts";
 
 class Logger implements LoggerInterface {
@@ -71,7 +71,7 @@ class Logger implements LoggerInterface {
 
 Test collections and a Logger 
 
-```
+```TS
 import { Logger } from "./logger.ts";
 import { testCollections } from "./test_collections.ts";
 import { execRun } from "./jackrabbit/mod.ts";
@@ -90,7 +90,7 @@ However, it's difficult to find source material or guidance for building a test 
 
 This is suspect.
 
-Instead, what I've observed (especially in the JS domain) is a philosophically dogmatic approach to tests that pollutes any / every build system.
+Instead, what I've observed (especially in the JS domain) is a philosophically dogmatic approach to testing that pollutes any / every build system.
 
 Jackrabbit is an attempt to abstract a test runner from first principles.
 
