@@ -158,7 +158,7 @@ const tests = [
   compareSimilarObjects,
   compareNestedObjects,
   compareNestedEqualObjects,
-  intentionalFail,
+  // intentionalFail,
 ];
 
 const unitTestSamestuff = {

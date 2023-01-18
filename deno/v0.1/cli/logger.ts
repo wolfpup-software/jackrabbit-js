@@ -22,7 +22,6 @@ class Logger implements LoggerInterface {
   failed: boolean = false;
 
   startTime: number = -1;
-  endTime: number = -1;
   testTime: number = 0;
 
   constructor(config: ConfigInterface) {
@@ -40,11 +39,11 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === END_RUN) {
-      this.endTime = action.time;
     }
 
     if (action.type === END_TEST) {
-      this.testTime += action.endTime = action.startTime;
+      this.testTime += action.endTime - action.startTime;
+
       if (action.assertions.length) {
         this.failed = true;
         console.log(
@@ -61,8 +60,8 @@ class Logger implements LoggerInterface {
     if (action.type === END_RUN) {
       console.log(`
 start time: ${this.startTime}
-end time: ${this.endTime}
-overhead: ${this.endTime - this.startTime}
+end time: ${action.time}
+overhead: ${action.time - this.startTime}
 duration: ${this.testTime}
 
 status: ${getStatus(this.cancelled, this.failed)}

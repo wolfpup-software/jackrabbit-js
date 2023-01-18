@@ -125,11 +125,6 @@ const compareNestedEqualObjects = ()=>{
     }
     return assertions;
 };
-const intentionalFail = ()=>{
-    return [
-        "fail fail fail"
-    ];
-};
 const tests = [
     compareDifferentPrimitives,
     compareEqualPrimitives,
@@ -138,8 +133,7 @@ const tests = [
     compareNullToObject,
     compareSimilarObjects,
     compareNestedObjects,
-    compareNestedEqualObjects,
-    intentionalFail
+    compareNestedEqualObjects
 ];
 const unitTestSamestuff = {
     title,

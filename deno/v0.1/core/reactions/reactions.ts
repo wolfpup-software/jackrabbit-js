@@ -182,6 +182,7 @@ async function execRun(collections: Collection[], logger: LoggerInterface) {
 }
 
 function cancelRun(collections: Collection[], logger: LoggerInterface) {
+  if (logger.cancelled) return;
   logger.log(collections, {
     type: CANCEL_RUN,
     time: performance.now(),

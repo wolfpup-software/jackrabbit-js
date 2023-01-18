@@ -123,6 +123,7 @@ async function execRun(collections, logger) {
     });
 }
 function cancelRun(collections, logger) {
+    if (logger.cancelled) return;
     logger.log(collections, {
         type: CANCEL_RUN,
         time: performance.now()
