@@ -69,7 +69,7 @@ class Logger implements LoggerInterface {
 
 ## Jackrabbit Run
 
-Test collections and a Logger 
+Test collections and a Logger are provided to `execRun`.
 
 ```TS
 import { Logger } from "./logger.ts";
