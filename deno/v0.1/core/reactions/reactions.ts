@@ -37,42 +37,6 @@ const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
   return [`timed out at: ${interval}`];
 };
 
-const createWrappedTest = async (
-  collections: Collection[],
-  logger: LoggerInterface,
-  collectionId: number,
-  testId: number,
-) => {
-  if (logger.cancelled) return;
-  logger.log(
-    collections,
-    {
-      type: START_TEST,
-      testId,
-      collectionId,
-      time: performance.now(),
-    },
-  );
-
-  const testFunc = collections[collectionId].tests[testId];
-  const startTime = performance.now();
-  const assertions = await Promise.race([
-    createTimeout(collections[collectionId].timeoutInterval),
-    testFunc(),
-  ]);
-  const endTime = performance.now();
-
-  if (logger.cancelled) return;
-  logger.log(collections, {
-    type: END_TEST,
-    testId,
-    collectionId,
-    assertions,
-    endTime,
-    startTime,
-  });
-};
-
 async function execTest(
   collections: Collection[],
   logger: LoggerInterface,
@@ -119,7 +83,7 @@ async function execCollection(
   const length = collections[collectionId].tests.length;
   while (testId < length) {
     wrappedTests.push(
-      createWrappedTest(collections, logger, collectionId, testId),
+      execTest(collections, logger, collectionId, testId),
     );
 
     testId += 1;
