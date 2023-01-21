@@ -94,7 +94,7 @@ const logger = new Logger();
 startRun(testCollections, logger);
 ```
 
-To cancel tests, `test collections` and `logger` are provided to the `startRun` function.
+To cancel tests, `test collections` and `logger` are provided to the `cancelRun` function.
 
 ```TS
 import { cancelRun } from "./jackrabbit/mod.ts";
