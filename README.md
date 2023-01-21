@@ -82,7 +82,7 @@ class Logger implements LoggerInterface {
 
 ## Jackrabbit Run
 
-`Test collections` and a `logger` are provided to `startRun` function.
+To begin a test run, `test collections` and a `logger` are provided to `startRun` function.
 
 ```TS
 import { startRun } from "./jackrabbit/mod.ts";
