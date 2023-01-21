@@ -1,4 +1,4 @@
-// Jackrabbit CLI for Deno
+// Example Jackrabbit CLI for Deno
 
 export type { ConfigInterface } from "./config.ts";
 
