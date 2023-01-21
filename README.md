@@ -82,15 +82,24 @@ class Logger implements LoggerInterface {
 
 ## Jackrabbit Run
 
-Test collections and a `logger` are provided to `execRun`.
+`Test collections` and a `logger` are provided to `startRun` function.
 
 ```TS
-import { Logger } from "./logger.ts";
+import { startRun } from "./jackrabbit/mod.ts";
 import { testCollections } from "./test_collections.ts";
-import { execRun } from "./jackrabbit/mod.ts";
+import { Logger } from "./logger.ts";
 
+const logger = new Logger();
 
-execRun(testCollections, Logger);
+startRun(testCollections, logger);
+```
+
+To cancel tests, `test collections` and `logger` are provided to the `startRun` function.
+
+```TS
+import { cancelRun } from "./jackrabbit/mod.ts";
+
+cancelRun(testCollections, logger);
 ```
 
 ## License
