@@ -38,9 +38,6 @@ class Logger implements LoggerInterface {
       this.startTime = action.time;
     }
 
-    if (action.type === END_RUN) {
-    }
-
     if (action.type === END_TEST) {
       this.testTime += action.endTime - action.startTime;
 

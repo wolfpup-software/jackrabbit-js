@@ -1,6 +1,3 @@
-// brian taylor vann
-// samestuff tests
-
 import { samestuff } from "./samestuff.ts";
 
 const title = "samestuff";

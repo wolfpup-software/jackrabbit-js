@@ -1,6 +1,3 @@
-// brian taylor vann
-// jackrabbit
-
 export type {
   Collection,
   LoggerInterface,
@@ -17,4 +14,4 @@ export {
   START_TEST,
 } from "./utils/constants.ts";
 
-export { cancelRun, execRun } from "./reactions/reactions.ts";
+export { cancelRun, startRun } from "./run_steps/run_steps.ts";

@@ -1,6 +1,3 @@
-// brian taylor vann
-// jackrabbit types
-
 type Assertions = string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;

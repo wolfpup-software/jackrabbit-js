@@ -1,4 +1,3 @@
-// run types
 const START_RUN = "start_run";
 const END_RUN = "end_run";
 const CANCEL_RUN = "cancel_run";

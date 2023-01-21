@@ -1,6 +1,3 @@
-// brian taylor vann
-// actions
-
 import type {
   Assertions,
   Collection,
@@ -107,7 +104,7 @@ async function execCollectionOrdered(
   }
 }
 
-async function execRun(collections: Collection[], logger: LoggerInterface) {
+async function startRun(collections: Collection[], logger: LoggerInterface) {
   if (logger.cancelled) return;
   logger.log(collections, {
     type: START_RUN,
@@ -153,4 +150,4 @@ function cancelRun(collections: Collection[], logger: LoggerInterface) {
   });
 }
 
-export { cancelRun, execRun };
+export { cancelRun, startRun };
