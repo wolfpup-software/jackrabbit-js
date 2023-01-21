@@ -4,17 +4,9 @@ type Reaction = (config: ConfigInterface, value?: string) => void;
 type Reactions = Record<string, Reaction>;
 
 const reactions: Reactions = {
-  "--log": logConfig,
-  "-l": logConfig,
   "--file": fileConfig,
   "-f": fileConfig,
 };
-
-function logConfig(config: ConfigInterface, value?: string) {
-  if (value === undefined) return;
-
-  config.log_style = value;
-}
 
 function fileConfig(config: ConfigInterface, value?: string) {
   if (value === undefined) return;
@@ -23,25 +15,21 @@ function fileConfig(config: ConfigInterface, value?: string) {
   config.files = [...config.files, ...files];
 }
 
-function saveResultsConfig(config: ConfigInterface, value?: string) {
-  if (value === undefined) return;
-
-  config.save_file = value;
-}
-
 function iterateArgs(config: ConfigInterface, args: string[]) {
   let index = 0;
   while (index < args.length) {
     const flag = args[index];
     const reaction = reactions[flag];
     if (reaction === undefined) {
-      console.error(`unrecognized argument flag: ${flag}`);
+      console.log(`unrecognized argument flag: ${flag}`);
+      Deno.exit(1);
       break;
     }
 
     const value = args[index + 1];
     if (reactions[value]) {
-      console.error(`unrecognized argument value: ${value}`);
+      console.log(`flag passed as value: ${value}`);
+      Deno.exit(2);
       break;
     }
 
@@ -50,15 +38,12 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
   }
 }
 
-function createConfig(args: string[]): ConfigInterface {
-  const config: ConfigInterface = {
-    files: [],
-    log_style: "voiced",
-  };
+class Config implements ConfigInterface {
+  files: string[] = [];
 
-  iterateArgs(config, args);
-
-  return config;
+  constructor(args: string) {
+    iterateArgs(this, args);
+  }
 }
 
-export { createConfig };
+export { Config };

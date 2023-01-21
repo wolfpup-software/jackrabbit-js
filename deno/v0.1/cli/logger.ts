@@ -9,16 +9,9 @@ import {
   START_RUN,
 } from "./deps.ts";
 
-function getStatus(cancelled: boolean, failed: boolean) {
-  if (cancelled) return "CANCELLED";
-  if (failed) return "FAILED";
-  return "SUCCESS";
-}
-
 class Logger implements LoggerInterface {
   config: ConfigInterface;
 
-  cancelled: boolean = false;
   failed: boolean = false;
 
   startTime: number = -1;
@@ -29,13 +22,13 @@ class Logger implements LoggerInterface {
   }
 
   log(collections: Collection[], action: LoggerAction) {
-    if (action.type === CANCEL_RUN) {
-      this.cancelled = true;
-      console.log("CANCELLED: test run cancelled");
-    }
-
     if (action.type === START_RUN) {
       this.startTime = action.time;
+    }
+
+    if (action.type === CANCEL_RUN) {
+      console.log("CANCELLED: test run cancelled");
+      Deno.exit(3);
     }
 
     if (action.type === END_TEST) {
@@ -55,14 +48,20 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === END_RUN) {
+      const status = this.failed ? "FAILED" : "PASSED";
+
       console.log(`
 start time: ${this.startTime}
 end time: ${action.time}
 overhead: ${action.time - this.startTime}
 duration: ${this.testTime}
 
-status: ${getStatus(this.cancelled, this.failed)}
+status: ${status}
       `);
+
+      if (this.failed) {
+        Deno.exit(4);
+      }
     }
   }
 }

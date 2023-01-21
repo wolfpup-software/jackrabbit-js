@@ -10,7 +10,7 @@
 
 import type { ImporterInterface } from "./cli/mod.ts";
 
-import { createConfig, Logger, run } from "./cli/mod.ts";
+import { Config, Logger, run } from "./cli/mod.ts";
 
 class Importer implements ImporterInterface {
   async load(filename: string): Promise<Collection[]> {
@@ -19,7 +19,7 @@ class Importer implements ImporterInterface {
   }
 }
 
-const config = createConfig(Deno.args);
+const config = new Config(Deno.args);
 const importer = new Importer();
 const logger = new Logger(config);
 
