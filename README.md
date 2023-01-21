@@ -2,17 +2,19 @@
 
 A portable test runner.
 
-## About
-
-Tests are a way of confirming that structures and shapes exist after a given set of operations. They are a byproduct of design. But our tests also affect the design of software, builds, and development environments.
-
-Jackrabbit is designed with the following expectations:
-- A testing suite should not be required to write tests
+Jackrabbit was built with the following expectations:
+- A test suite should not be required to write tests
 - Logging test results is environment specific (cli, local, remote)
 
-Jackrabbit is an attempt to abstract a test runner from first principles. It allows developers to compose test runners tailored to their projects rather than configure test runners to project specifications.
+## About
 
-It uses a `logger` as a way to track test state and it uses `test collections` as a pipeline to provide test state to a `logger`.
+Tests are a way of confirming results after a given set of operations. They are a byproduct of design. But tests also affect the design of software, builds, and development environments.
+
+Consequently, it's unreasonable for one test framework to support all tests and environments.  Some results are sent to the command line, others are saved in memory.
+
+Jackrabbit was desinged without any environment in mind. Developers compose test runners tailored to their projects rather than configure test runners to project specifications.
+
+Jackrabbit uses a `logger` as a way to track test state and it uses `test collections` as a kind of pipeline to provide test state to the `logger`.
 
 ie:
 ```
@@ -47,15 +49,17 @@ const myTestCollection = {
     testAllTheThings,
   ],
 };
+
+export { myTestCollection };
 ```
 
-`Test collections` are gathered as list inside a module. This list is later used as a pipeline to generate test state through a `logger`.
+`Test collections` are gathered as a list inside a module. The list is used as a kind of pipeline to that sends test state to a `logger`.
 
 ```TS
 import { myTestCollection } from "./my_test_collection.ts";
 
 const testCollections = [
-	myTestCollection,
+  myTestCollection,
 ];
 
 export { testCollections };
@@ -65,27 +69,30 @@ export { testCollections };
 
 Jackrabbit has no preference where results are stored or logged. Developers are expected to provide a `logger` context.
 
-The `logger` is provided alongside the `test collections` to `execRun`.
+The `logger` is provided alongside the `test collections` to `startRun`.
 
 ```TS
+// logger.ts
+
 import type { Collection, LoggerAction, LoggerInterface } from "./mod.ts";
 
 class Logger implements LoggerInterface {
-	cancelled = false;
-	log(collections: Collection[], action: LoggerAction) {
-		... save to hard drive
-		... send to server
-		... wait until test run is complete
+  cancelled = false;
+  log(collections: Collection[], action: LoggerAction) {
+    ... save to hard drive
+    ... send to server
+    ... wait until test run is complete
 	}
 }
 ```
 
 ## Jackrabbit Run
 
-To begin a test run, `test collections` and a `logger` are provided to `startRun` function.
+To begin a test run, pass `test collections` and a `logger` to the `startRun` function.
 
 ```TS
 import { startRun } from "./jackrabbit/mod.ts";
+
 import { testCollections } from "./test_collections.ts";
 import { Logger } from "./logger.ts";
 
@@ -94,7 +101,7 @@ const logger = new Logger();
 startRun(testCollections, logger);
 ```
 
-To cancel tests, `test collections` and `logger` are provided to the `cancelRun` function.
+To cancel tests, pass `test collections` and `logger` to the `cancelRun` function.
 
 ```TS
 import { cancelRun } from "./jackrabbit/mod.ts";

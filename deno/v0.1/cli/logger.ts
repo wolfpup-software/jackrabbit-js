@@ -1,5 +1,4 @@
 import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
-import type { ConfigInterface } from "./cli_types.ts";
 
 import {
   CANCEL_RUN,
@@ -10,16 +9,10 @@ import {
 } from "./deps.ts";
 
 class Logger implements LoggerInterface {
-  config: ConfigInterface;
-
   failed: boolean = false;
 
   startTime: number = -1;
   testTime: number = 0;
-
-  constructor(config: ConfigInterface) {
-    this.config = config;
-  }
 
   log(collections: Collection[], action: LoggerAction) {
     if (action.type === START_RUN) {

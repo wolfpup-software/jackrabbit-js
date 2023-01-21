@@ -21,6 +21,6 @@ class Importer implements ImporterInterface {
 
 const config = new Config(Deno.args);
 const importer = new Importer();
-const logger = new Logger(config);
+const logger = new Logger();
 
 run(config, importer, logger);
