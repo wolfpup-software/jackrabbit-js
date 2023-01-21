@@ -67,7 +67,7 @@ async function execCollectionOrdered(collections, logger, collectionId) {
         index += 1;
     }
 }
-async function execRun(collections, logger) {
+async function startRun(collections, logger) {
     if (logger.cancelled) return;
     logger.log(collections, {
         type: START_RUN,
@@ -105,4 +105,4 @@ function cancelRun(collections, logger) {
     });
 }
 export { CANCEL_RUN as CANCEL_RUN, END_COLLECTION as END_COLLECTION, END_RUN as END_RUN, END_TEST as END_TEST, START_COLLECTION as START_COLLECTION, START_RUN as START_RUN, START_TEST as START_TEST };
-export { cancelRun as cancelRun, execRun as execRun };
+export { cancelRun as cancelRun, startRun as startRun };

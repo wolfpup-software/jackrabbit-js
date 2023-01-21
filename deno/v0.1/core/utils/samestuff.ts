@@ -1,6 +1,3 @@
-// brian taylor vann
-// samestuff
-
 type SameStuff = (source: unknown, target: unknown, depth?: number) => boolean;
 
 const SAFETY = 256;

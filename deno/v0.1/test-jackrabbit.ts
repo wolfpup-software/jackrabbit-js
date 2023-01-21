@@ -1,12 +1,11 @@
 /*
   jackrabbit cli
 
-  An example of how to make a cli for other projects.
+  An example of how to build a cli with jackrabbit.
 
-  Developers should have control over:
-  	- imports
-  	- logs (callbacks)
-  	- how tests are run
+  Developers must define:
+  	- importer
+  	- logger
 */
 
 import type { ImporterInterface } from "./cli/mod.ts";
