@@ -8,7 +8,7 @@ Jackrabbit was built with the following expectations:
 
 ## About
 
-Tests are a way of confirming results after a given set of operations. They are a byproduct of design. But tests also affect the design of software, builds, and development environments.
+Tests confirm results after a given set of operations. They are a byproduct of design. But tests also affect the design of software, builds, and development environments.
 
 Consequently, it's unreasonable for one test framework to support all tests and environments.  Some results are sent to the command line, others are saved in memory.
 

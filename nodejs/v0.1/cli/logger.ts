@@ -51,10 +51,10 @@ duration: ${this.testTime}
 
 status: ${status}
       `);
-      
-      // send results
-      
-      // send end server
+
+      if (this.failed) {
+        Deno.exit(4);
+      }
     }
   }
 }
