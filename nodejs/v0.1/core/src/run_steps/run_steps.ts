@@ -12,7 +12,7 @@ import {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-} from "../utils/constants.ts";
+} from "../utils/constants.js";
 
 type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;

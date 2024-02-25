@@ -12,6 +12,6 @@ export {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-} from "./utils/constants.ts";
+} from "./utils/constants.js";
 
-export { cancelRun, startRun } from "./run_steps/run_steps.ts";
+export { cancelRun, startRun } from "./run_steps/run_steps.js";

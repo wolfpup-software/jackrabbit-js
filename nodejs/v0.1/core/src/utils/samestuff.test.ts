@@ -1,4 +1,4 @@
-import { samestuff } from "./samestuff.ts";
+import { samestuff } from "./samestuff.js";
 
 const title = "samestuff";
 const runTestsAsynchronously = true;

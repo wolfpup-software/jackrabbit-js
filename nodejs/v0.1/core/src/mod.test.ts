@@ -1,4 +1,4 @@
-import { unitTestSamestuff } from "./utils/samestuff.test.ts";
+import { unitTestSamestuff } from "./utils/samestuff.test.js";
 
 const testCollections = [
   unitTestSamestuff,
