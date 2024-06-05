@@ -8,10 +8,6 @@ Jackrabbit was built with the following expectations:
 
 ## About
 
-Tests confirm results after a given set of operations. They are a byproduct of design. But tests also affect the design of software, builds, and development environments.
-
-Consequently, it's unreasonable for one test framework to support all tests and environments.  Some results are sent to the command line, others are saved in memory.
-
 Jackrabbit was desinged without any environment in mind. Developers compose test runners tailored to their projects rather than configure test runners to project specifications.
 
 Jackrabbit uses a `logger` as a way to track test state and it uses `test collections` as a kind of pipeline to provide test state to the `logger`.
