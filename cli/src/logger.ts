@@ -6,7 +6,7 @@ import {
   END_RUN,
   END_TEST,
   START_RUN,
-} from "./deps.ts";
+} from "./deps.js";
 
 class Logger implements LoggerInterface {
   failed: boolean = false;
@@ -20,8 +20,7 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === CANCEL_RUN) {
-      console.log("CANCELLED: test run cancelled");
-      Deno.exit(3);
+      throw new Error(`CANCELLED: test run cancelled`);
     }
 
     if (action.type === END_TEST) {
@@ -53,7 +52,7 @@ status: ${status}
       `);
 
       if (this.failed) {
-        Deno.exit(4);
+        throw new Error(`FAILED: test run failed`);
       }
     }
   }

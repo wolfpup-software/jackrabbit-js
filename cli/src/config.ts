@@ -22,15 +22,13 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
     const reaction = reactions[flag];
     if (reaction === undefined) {
       console.log(`unrecognized argument flag: ${flag}`);
-      Deno.exit(1);
+      throw new Error(`unrecognized argument: ${flag}`);
       break;
     }
 
     const value = args[index + 1];
     if (reactions[value]) {
-      console.log(`flag passed as value: ${value}`);
-      Deno.exit(2);
-      break;
+      throw new Error(`flag passed as value: ${value}`);
     }
 
     reaction(config, value);

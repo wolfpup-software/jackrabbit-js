@@ -1,6 +1,7 @@
 {
     "workspaces": [
-        "core"
+        "core",
+        "cli"
     ],
     "scripts": {
         "build": "npm run --workspaces build",

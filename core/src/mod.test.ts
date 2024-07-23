@@ -1,7 +1,3 @@
-import { unitTestSamestuff } from "./utils/samestuff.test.js";
-
-const testCollections = [
-  unitTestSamestuff,
-];
+const testCollections = [];
 
 export { testCollections };

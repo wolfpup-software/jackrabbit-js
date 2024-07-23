@@ -1,4 +1,4 @@
-export type { Collection, LoggerAction, LoggerInterface } from "../core/mod.ts";
+export type { Collection, LoggerAction, LoggerInterface } from "../../core/dist/mod.js";
 
 export {
   CANCEL_RUN,
@@ -9,4 +9,4 @@ export {
   START_RUN,
   START_TEST,
   startRun,
-} from "../core/mod.ts";
+} from "../../core/dist/mod.js";

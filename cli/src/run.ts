@@ -1,7 +1,7 @@
 import type { ConfigInterface, ImporterInterface } from "./cli_types.ts";
 import type { LoggerInterface } from "./deps.ts";
 
-import { startRun } from "./deps.ts";
+import { startRun } from "./deps.js";
 
 async function run(
   config: ConfigInterface,
