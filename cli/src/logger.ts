@@ -10,7 +10,8 @@ import {
 
 class Logger implements LoggerInterface {
   failed: boolean = false;
-
+  cancelled: boolean = false;
+  
   startTime: number = -1;
   testTime: number = 0;
 

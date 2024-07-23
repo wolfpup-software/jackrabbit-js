@@ -23,7 +23,6 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
     if (reaction === undefined) {
       console.log(`unrecognized argument flag: ${flag}`);
       throw new Error(`unrecognized argument: ${flag}`);
-      break;
     }
 
     const value = args[index + 1];
@@ -39,7 +38,7 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
 class Config implements ConfigInterface {
   files: string[] = [];
 
-  constructor(args: string) {
+  constructor(args: string[]) {
     iterateArgs(this, args);
   }
 }

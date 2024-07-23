@@ -1,7 +1,7 @@
 import type { ConfigInterface, ImporterInterface } from "./cli_types.ts";
 import type { LoggerInterface } from "./deps.ts";
 
-import { startRun } from "./deps.js";
+// import { startRun } from "./deps.js";
 
 async function run(
   config: ConfigInterface,
@@ -10,7 +10,7 @@ async function run(
 ) {
   for (const file of config.files) {
     const collections = await importer.load(file);
-    await startRun(collections, logger);
+    // await startRun(collections, logger);
   }
 }
 

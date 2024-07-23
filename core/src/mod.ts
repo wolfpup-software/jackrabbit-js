@@ -1,5 +1,6 @@
 export type {
   Collection,
+  LoggerAction,
   LoggerInterface,
   Test,
 } from "./jackrabbit_types.js";

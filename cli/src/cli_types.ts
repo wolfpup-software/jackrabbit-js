@@ -1,4 +1,4 @@
-import { Collection } from "./deps.ts";
+import type { Collection } from "./deps.ts";
 
 interface ConfigInterface {
   files: string[];

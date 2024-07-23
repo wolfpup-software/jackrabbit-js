@@ -8,5 +8,4 @@ export {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-  startRun,
 } from "../../core/dist/mod.js";
