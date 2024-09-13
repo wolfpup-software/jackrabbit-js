@@ -5,7 +5,7 @@ interface ConfigInterface {
 }
 
 interface ImporterInterface {
-  load(string): Promise<Collection[]>;
+  load(url: string): Promise<Collection[]>;
 }
 
 export type { ConfigInterface, ImporterInterface };

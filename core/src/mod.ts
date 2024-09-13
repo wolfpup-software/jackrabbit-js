@@ -15,4 +15,4 @@ export {
   START_TEST,
 } from "./constants.js";
 
-export { Jackrabbit } from "./jackrabbit.js";
+export { startRun, cancelRun } from "./run_steps.js";

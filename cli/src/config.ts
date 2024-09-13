@@ -3,6 +3,7 @@ import type { ConfigInterface } from "./cli_types.ts";
 type Reaction = (config: ConfigInterface, value?: string) => void;
 type Reactions = Record<string, Reaction>;
 
+// map
 const reactions: Reactions = {
   "--file": fileConfig,
   "-f": fileConfig,
@@ -21,7 +22,6 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
     const flag = args[index];
     const reaction = reactions[flag];
     if (reaction === undefined) {
-      console.log(`unrecognized argument flag: ${flag}`);
       throw new Error(`unrecognized argument: ${flag}`);
     }
 
