@@ -8,4 +8,6 @@ export {
   START_COLLECTION,
   START_RUN,
   START_TEST,
+  startRun,
+  cancelRun,
 } from "../../core/dist/mod.js";

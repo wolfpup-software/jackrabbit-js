@@ -17,7 +17,7 @@ function fileConfig(config: ConfigInterface, value?: string) {
 }
 
 function iterateArgs(config: ConfigInterface, args: string[]) {
-  let index = 0;
+  let index = 2;
   while (index < args.length) {
     const flag = args[index];
     const reaction = reactions[flag];

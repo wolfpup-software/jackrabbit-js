@@ -1,31 +1,19 @@
-// Example Jackrabbit CLI for NodeJS
+import type { ImporterInterface } from "./cli.js";
 
-// get args
+import { Config } from "./config.js";
+import { run } from "./cli.js";
+import { Collection } from "./deps.js";
 
-// pass args to config
 
-// create a jackrabbit instance
+const config = new Config(process.argv);
 
-// start tests
-
-import type { ConfigInterface, ImporterInterface } from "./cli_types.ts";
-import type { LoggerInterface } from "./deps.ts";
-
-import { Logger } from "./logger.js";
-
-async function run(
-  config: ConfigInterface,
-  importer: ImporterInterface,
-  logger: LoggerInterface = new Logger(),
-) {
-  for (const file of config.files) {
-    const collections = await importer.load(file);
-    // await startRun(collections, logger);
+class Importer implements ImporterInterface {
+  async load(uri: string): Promise<Collection[]> {
+    const {collections} = await import(uri);
+    return collections;
   }
 }
 
-export type { ImporterInterface } from "./cli_types.ts";
+const importer = new Importer();
 
-export { Logger } from "./logger.js";
-export { Config } from "./config.js";
-export { run };
+await run(config, importer);

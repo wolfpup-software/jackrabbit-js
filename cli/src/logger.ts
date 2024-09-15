@@ -2,7 +2,6 @@ import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
 
 import {
   CANCEL_RUN,
-  END_COLLECTION,
   END_RUN,
   END_TEST,
   START_RUN,
@@ -53,7 +52,8 @@ status: ${status}
       `);
 
       if (this.failed) {
-        throw new Error(`FAILED: test run failed`);
+        process.exit();
+        // throw new Error(`FAILED: test run failed`);
       }
     }
   }
