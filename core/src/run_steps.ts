@@ -2,7 +2,7 @@ import type {
   Assertions,
   Collection,
   LoggerInterface,
-} from "../utils/jackrabbit_types.ts";
+} from "./jackrabbit_types.js";
 
 import {
   CANCEL_RUN,
@@ -12,7 +12,7 @@ import {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-} from "../utils/constants.ts";
+} from "./constants.js";
 
 type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
@@ -104,7 +104,7 @@ async function execCollectionOrdered(
   }
 }
 
-async function startRun(collections: Collection[], logger: LoggerInterface) {
+async function startRun(logger: LoggerInterface, collections: Collection[]) {
   if (logger.cancelled) return;
   logger.log(collections, {
     type: START_RUN,
@@ -142,7 +142,7 @@ async function startRun(collections: Collection[], logger: LoggerInterface) {
   });
 }
 
-function cancelRun(collections: Collection[], logger: LoggerInterface) {
+function cancelRun(logger: LoggerInterface, collections: Collection[]) {
   if (logger.cancelled) return;
   logger.log(collections, {
     type: CANCEL_RUN,
@@ -150,4 +150,4 @@ function cancelRun(collections: Collection[], logger: LoggerInterface) {
   });
 }
 
-export { cancelRun, startRun };
+export { startRun, cancelRun };

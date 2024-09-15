@@ -1,0 +1,3 @@
+const testCollections = [];
+
+export { testCollections };

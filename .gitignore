@@ -1,8 +1,2 @@
-# Do not save keys, ever
-*.crt
-*.env
-*.json
-*.key
-*.pem
-
-!tsconfig.json
+node_modules/
+dist/

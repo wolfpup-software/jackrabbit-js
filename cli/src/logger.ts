@@ -2,15 +2,15 @@ import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
 
 import {
   CANCEL_RUN,
-  END_COLLECTION,
   END_RUN,
   END_TEST,
   START_RUN,
-} from "./deps.ts";
+} from "./deps.js";
 
 class Logger implements LoggerInterface {
   failed: boolean = false;
-
+  cancelled: boolean = false;
+  
   startTime: number = -1;
   testTime: number = 0;
 
@@ -20,8 +20,7 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === CANCEL_RUN) {
-      console.log("CANCELLED: test run cancelled");
-      Deno.exit(3);
+      throw new Error(`CANCELLED: test run cancelled`);
     }
 
     if (action.type === END_TEST) {
@@ -29,13 +28,12 @@ class Logger implements LoggerInterface {
 
       if (action.assertions.length) {
         this.failed = true;
-        console.log(
-          "FAILED:",
-          action.collectionId,
-          collections[action.collectionId].title,
-          action.testId,
-          collections[action.collectionId].tests[action.testId].name,
-        );
+        console.log(`
+FAILED:
+Collection ID: ${action.collectionId}
+Collection Title: ${collections[action.collectionId].title}
+Test ID: ${action.testId}
+Test Title: ${collections[action.collectionId].tests[action.testId].name}`);
         console.log(action.assertions);
       }
     }
@@ -53,7 +51,8 @@ status: ${status}
       `);
 
       if (this.failed) {
-        Deno.exit(4);
+        process.exit();
+        // throw new Error(`FAILED: test run failed`);
       }
     }
   }

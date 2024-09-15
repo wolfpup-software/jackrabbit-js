@@ -3,6 +3,7 @@ import type { ConfigInterface } from "./cli_types.ts";
 type Reaction = (config: ConfigInterface, value?: string) => void;
 type Reactions = Record<string, Reaction>;
 
+// map
 const reactions: Reactions = {
   "--file": fileConfig,
   "-f": fileConfig,
@@ -16,21 +17,17 @@ function fileConfig(config: ConfigInterface, value?: string) {
 }
 
 function iterateArgs(config: ConfigInterface, args: string[]) {
-  let index = 0;
+  let index = 2;
   while (index < args.length) {
     const flag = args[index];
     const reaction = reactions[flag];
     if (reaction === undefined) {
-      console.log(`unrecognized argument flag: ${flag}`);
-      Deno.exit(1);
-      break;
+      throw new Error(`unrecognized argument: ${flag}`);
     }
 
     const value = args[index + 1];
     if (reactions[value]) {
-      console.log(`flag passed as value: ${value}`);
-      Deno.exit(2);
-      break;
+      throw new Error(`flag passed as value: ${value}`);
     }
 
     reaction(config, value);
@@ -41,7 +38,7 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
 class Config implements ConfigInterface {
   files: string[] = [];
 
-  constructor(args: string) {
+  constructor(args: string[]) {
     iterateArgs(this, args);
   }
 }

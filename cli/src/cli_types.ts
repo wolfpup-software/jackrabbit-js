@@ -1,11 +1,11 @@
-import { Collection } from "./deps.ts";
+import type { Collection } from "./deps.ts";
 
 interface ConfigInterface {
   files: string[];
 }
 
 interface ImporterInterface {
-  load(string): Promise<Collection[]>;
+  load(url: string): Promise<Collection[]>;
 }
 
 export type { ConfigInterface, ImporterInterface };

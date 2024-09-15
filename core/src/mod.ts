@@ -1,8 +1,9 @@
 export type {
   Collection,
+  LoggerAction,
   LoggerInterface,
   Test,
-} from "./utils/jackrabbit_types.ts";
+} from "./jackrabbit_types.js";
 
 export {
   CANCEL_RUN,
@@ -12,6 +13,6 @@ export {
   START_COLLECTION,
   START_RUN,
   START_TEST,
-} from "./utils/constants.ts";
+} from "./constants.js";
 
-export { cancelRun, startRun } from "./run_steps/run_steps.ts";
+export { startRun, cancelRun } from "./run_steps.js";
