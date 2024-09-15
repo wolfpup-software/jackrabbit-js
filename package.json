@@ -7,7 +7,7 @@
     "scripts": {
         "build": "npm run --workspaces build",
         "fmt": "npx prettier --write ./",
-        "test": "node ./cli/dist/mod.js --file ../../tests/dist/mod.js"
+        "test": "node ./cli/dist/mod.js --file ./tests/dist/mod.js"
     },
     "devDependencies": {
         "@types/node": "^22.5.5",

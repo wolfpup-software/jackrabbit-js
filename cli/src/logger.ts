@@ -28,13 +28,12 @@ class Logger implements LoggerInterface {
 
       if (action.assertions.length) {
         this.failed = true;
-        console.log(
-          "FAILED:",
-          action.collectionId,
-          collections[action.collectionId].title,
-          action.testId,
-          collections[action.collectionId].tests[action.testId].name,
-        );
+        console.log(`
+FAILED:
+Collection ID: ${action.collectionId}
+Collection Title: ${collections[action.collectionId].title}
+Test ID: ${action.testId}
+Test Title: ${collections[action.collectionId].tests[action.testId].name}`);
         console.log(action.assertions);
       }
     }
