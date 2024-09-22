@@ -9,6 +9,9 @@
         "fmt": "npx prettier --write ./",
         "test": "node ./cli/dist/mod.js --file ./tests/dist/mod.js"
     },
+    "bin": {
+        "todos": "./cli/dist/mod.js"
+    },
     "devDependencies": {
         "@types/node": "^22.5.5",
         "prettier": "^3.3.1",
