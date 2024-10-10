@@ -6,7 +6,7 @@
 	"main": "dist/mod.js",
 	"scripts": {
 		"build": "tsc --build",
-		"cli": "node dist/mod.js"
+		"cli": "node ./dist/mod.js"
 	},
 	"author": "wolfpup",
 	"license": "BSD-3-Clause"

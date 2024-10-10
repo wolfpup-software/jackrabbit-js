@@ -1,4 +1,5 @@
 {
+    "name": "jackrabbit",
     "workspaces": [
         "core",
         "cli",
