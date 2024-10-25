@@ -3,6 +3,7 @@
     "workspaces": [
         "core",
         "cli",
+        "nodejs_cli",
         "tests"
     ],
     "scripts": {

@@ -1,0 +1,16 @@
+{
+	"name": "nodejs_cli",
+	"version": "0.1.0",
+	"description": "",
+	"type": "module",
+	"main": "dist/mod.js",
+	"scripts": {
+		"build": "tsc --build",
+		"cli": "node ./dist/mod.js"
+	},
+	"bin": {
+		"jackrabbit": "bin/mod.js"
+	},
+	"author": "wolfpup",
+	"license": "BSD-3-Clause"
+}

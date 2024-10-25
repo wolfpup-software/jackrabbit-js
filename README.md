@@ -1,6 +1,6 @@
 # Jackrabbit
 
-A portable test runner.
+A test runner without dependencies
 
 ## Jackrabbit Tests
 
@@ -14,9 +14,9 @@ function testTheStuff() {
 }
 ```
 
-## Run tests in nodejs
+Assertions are simply an array of strings, with each string describing a failure.
 
-## Run tests in a browser
+Tests without assertions, return an empty array (or undefined).
 
 ## License
 
