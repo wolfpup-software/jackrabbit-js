@@ -51,8 +51,7 @@ status: ${status}
       `);
 
       if (this.failed) {
-        process.exit();
-        // throw new Error(`FAILED: test run failed`);
+        throw new Error(`test run failed`);
       }
     }
   }

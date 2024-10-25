@@ -15,8 +15,6 @@ async function run(
   }
 }
 
-export type { ImporterInterface } from "./cli_types.ts";
-
 export { Logger } from "./logger.js";
 export { Config } from "./config.js";
 export { run };
