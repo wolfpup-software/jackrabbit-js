@@ -1,16 +1,11 @@
 import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
 
-import {
-  CANCEL_RUN,
-  END_RUN,
-  END_TEST,
-  START_RUN,
-} from "./deps.js";
+import { CANCEL_RUN, END_RUN, END_TEST, START_RUN } from "./deps.js";
 
 class Logger implements LoggerInterface {
   failed: boolean = false;
   cancelled: boolean = false;
-  
+
   startTime: number = -1;
   testTime: number = 0;
 
