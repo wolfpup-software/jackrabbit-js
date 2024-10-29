@@ -1,1 +1,1 @@
-export { Config, Importer, run } from "../../cli/dist/mod.js";
+export { Config, Importer, JackrabbitError, run } from "../../cli/dist/mod.js";
