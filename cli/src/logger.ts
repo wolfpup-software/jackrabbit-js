@@ -2,6 +2,8 @@ import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
 
 import { CANCEL_RUN, END_RUN, END_TEST, START_RUN } from "./deps.js";
 
+import { JackrabbitError } from "./cli_types.js";
+
 class Logger implements LoggerInterface {
   failed: boolean = false;
   cancelled: boolean = false;
@@ -15,7 +17,7 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === CANCEL_RUN) {
-      throw new Error(`CANCELLED: test run cancelled`);
+      throw new Error(`Test run cancelled`);
     }
 
     if (action.type === END_TEST) {
@@ -25,31 +27,26 @@ class Logger implements LoggerInterface {
         this.failed = true;
         console.log(`
 FAILED:
-Collection ID: ${action.collectionId}
-Collection Title: ${collections[action.collectionId].title}
-Test ID: ${action.testId}
-Test Title: ${collections[action.collectionId].tests[action.testId].name}`);
-        console.log(action.assertions);
+${collections[action.collectionId].title}
+  \u{2717} ${collections?.[action.collectionId].tests?.[action.testId].name}
+    ${action.assertions}`);
       }
     }
 
     if (action.type === END_RUN) {
-      const status = this.failed ? "FAILED" : "PASSED";
-
+      const status = this.failed ? "\u{2717} failed" : "\u{2714} passed";
+      const overhead = action.time - this.startTime;
       console.log(`
-start time: ${this.startTime}
-end time: ${action.time}
-overhead: ${action.time - this.startTime}
-duration: ${this.testTime}
-
-status: ${status}
-      `);
+RESULTS:
+  ${status}
+    duration: ${this.testTime.toFixed(4)} mS
+    overhead: ${overhead.toFixed(4)} mS`);
 
       if (this.failed) {
-        throw new Error(`test run failed`);
+        throw new JackrabbitError(`Test run failed`);
       }
     }
   }
 }
 
-export { Logger };
+export { JackrabbitError, Logger };
