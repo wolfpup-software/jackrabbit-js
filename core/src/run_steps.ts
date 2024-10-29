@@ -41,15 +41,12 @@ async function execTest(
   testId: number,
 ) {
   if (logger.cancelled) return;
-  logger.log(
-    collections,
-    {
-      type: START_TEST,
-      time: performance.now(),
-      testId,
-      collectionId,
-    },
-  );
+  logger.log(collections, {
+    type: START_TEST,
+    time: performance.now(),
+    testId,
+    collectionId,
+  });
 
   const testFunc = collections[collectionId].tests[testId];
   const startTime = performance.now();
@@ -79,9 +76,7 @@ async function execCollection(
   let testId = 0;
   const length = collections[collectionId].tests.length;
   while (testId < length) {
-    wrappedTests.push(
-      execTest(collections, logger, collectionId, testId),
-    );
+    wrappedTests.push(execTest(collections, logger, collectionId, testId));
 
     testId += 1;
   }

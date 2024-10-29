@@ -1,4 +1,8 @@
-export type { Collection, LoggerAction, LoggerInterface } from "../../core/dist/mod.js";
+export type {
+  Collection,
+  LoggerAction,
+  LoggerInterface,
+} from "../../core/dist/mod.js";
 
 export {
   CANCEL_RUN,

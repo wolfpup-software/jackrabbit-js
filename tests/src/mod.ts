@@ -1,17 +1,13 @@
 function testTheStuff() {
-	return ["this test failed!"];
+  return ["this test failed!"];
 }
 
 let collection = {
-	title: "Demo_test",
-	runAsynchronously: false,
-	tests: [
-		testTheStuff,
-	]
-}
+  title: "Demo_test",
+  runAsynchronously: false,
+  tests: [testTheStuff],
+};
 
-let collections = [
-	collection
-]
+let collections = [collection];
 
-export { collections }
+export { collections };
