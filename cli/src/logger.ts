@@ -17,9 +17,13 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === CANCEL_RUN) {
-      throw new Error(`Test run cancelled`);
+      logAssertions(collections, this.#fails);
+      logCancelled(this.#startTime, this.#testTime, action.time);
+
+      throw new JackrabbitError(`Test run cancelled`);
     }
 
+    //  add to fails
     if (action.type === END_TEST && action.assertions.length) {
       this.#testTime += action.endTime - action.startTime;
       this.#failed = true;
@@ -33,17 +37,8 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === END_RUN) {
-      // print the fails
-
-      // print results
-
-      const status = this.#failed ? "\u{2717} failed" : "\u{2714} passed";
-      const overhead = action.time - this.#startTime;
-      console.log(`
-RESULTS:
-  ${status}
-    duration: ${this.#testTime.toFixed(4)} mS
-    overhead: ${overhead.toFixed(4)} mS`);
+      logAssertions(collections, this.#fails);
+      logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 
       if (this.#failed) {
         throw new JackrabbitError(`Test run failed`);
@@ -52,12 +47,39 @@ RESULTS:
   }
 }
 
-function logAssertions() {}
-function logResults() {}
+function logAssertions(
+  collections: Collection[],
+  fails: Map<number, number[]>,
+) {
+  //
+  // console.log(`
+  //   ${collections[action.collectionId].title}
+  //     \u{2717} ${collections?.[action.collectionId].tests?.[action.testId].name}
+  //         ${action.assertions}`);
+}
 
-// console.log(`
-//   ${collections[action.collectionId].title}
-//     \u{2717} ${collections?.[action.collectionId].tests?.[action.testId].name}
-//         ${action.assertions}`);
+function logCancelled(startTime: number, testTime: number, time: number) {
+  const overhead = time - startTime;
+  console.log(`
+RESULTS:
+cancelled
+  duration: ${testTime.toFixed(4)} mS
+  overhead: ${overhead.toFixed(4)} mS`);
+}
+
+function logResults(
+  failed: boolean,
+  startTime: number,
+  testTime: number,
+  time: number,
+) {
+  const status = failed ? "\u{2717} failed" : "\u{2714} passed";
+  const overhead = time - startTime;
+  console.log(`
+RESULTS:
+${status}
+  duration: ${testTime.toFixed(4)} mS
+  overhead: ${overhead.toFixed(4)} mS`);
+}
 
 export { JackrabbitError, Logger };
