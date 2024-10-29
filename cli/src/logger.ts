@@ -5,7 +5,7 @@ import { CANCEL_RUN, END_RUN, END_TEST, START_RUN } from "./deps.js";
 import { JackrabbitError } from "./cli_types.js";
 
 class Logger implements LoggerInterface {
-  #fails: Map<number, number[]> = new Map();
+  #fails: Map<number, Set<number>> = new Map();
   #failed: boolean = false;
   cancelled: boolean = false;
   #startTime: number = -1;
@@ -30,9 +30,9 @@ class Logger implements LoggerInterface {
 
       let assertions = this.#fails.get(action.collectionId);
       if (assertions) {
-        assertions.push(action.testId);
+        assertions.add(action.testId);
       } else {
-        this.#fails.set(action.collectionId, [action.testId]);
+        this.#fails.set(action.collectionId, new Set([action.testId]));
       }
     }
 
@@ -49,13 +49,20 @@ class Logger implements LoggerInterface {
 
 function logAssertions(
   collections: Collection[],
-  fails: Map<number, number[]>,
+  fails: Map<number, Set<number>>,
 ) {
-  //
-  // console.log(`
-  //   ${collections[action.collectionId].title}
-  //     \u{2717} ${collections?.[action.collectionId].tests?.[action.testId].name}
-  //         ${action.assertions}`);
+  for (let [index, collection] of collections.entries()) {
+    let failedTests = fails.get(index);
+    if (failedTests === undefined) continue;
+
+    console.log(collection.title);
+
+    for (let [index, test] of collection.tests.entries()) {
+      if (!failedTests.has(index)) continue;
+
+      console.log(`\u{2717} ${test.name}`);
+    }
+  }
 }
 
 function logCancelled(startTime: number, testTime: number, time: number) {
@@ -78,8 +85,8 @@ function logResults(
   console.log(`
 RESULTS:
 ${status}
-  duration: ${testTime.toFixed(4)} mS
-  overhead: ${overhead.toFixed(4)} mS`);
+    duration: ${testTime.toFixed(4)} mS
+    overhead: ${overhead.toFixed(4)} mS`);
 }
 
 export { JackrabbitError, Logger };

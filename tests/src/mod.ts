@@ -1,5 +1,5 @@
 function testTheStuff() {
-  return [];
+  return ["this test failed!"];
 }
 
 let collection = {
