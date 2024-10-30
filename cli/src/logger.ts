@@ -1,7 +1,5 @@
 import type { Collection, LoggerAction, LoggerInterface } from "./deps.js";
 
-import { CANCEL_RUN, END_RUN, END_TEST, START_RUN } from "./deps.js";
-
 import { JackrabbitError } from "./cli_types.js";
 
 // N / N tests passed
@@ -16,11 +14,11 @@ class Logger implements LoggerInterface {
   #testTime: number = 0;
 
   log(collections: Collection[], action: LoggerAction) {
-    if (action.type === START_RUN) {
+    if (action.type === "start_run") {
       this.#startTime = action.time;
     }
 
-    if (action.type === CANCEL_RUN) {
+    if (action.type === "cancel_run") {
       logAssertions(collections, this.assertions);
       logCancelled(this.#startTime, this.#testTime, action.time);
 
@@ -28,7 +26,7 @@ class Logger implements LoggerInterface {
     }
 
     //  add to fails
-    if (action.type === END_TEST && action.assertions.length) {
+    if (action.type === "end_test" && action.assertions.length) {
       this.#testTime += action.endTime - action.startTime;
       this.#failed = true;
 
@@ -40,7 +38,7 @@ class Logger implements LoggerInterface {
       }
     }
 
-    if (action.type === END_RUN) {
+    if (action.type === "end_run") {
       logAssertions(collections, this.assertions);
       logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 

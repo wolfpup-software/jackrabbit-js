@@ -4,15 +4,6 @@ import type {
   LoggerInterface,
 } from "./jackrabbit_types.js";
 
-import {
-  END_COLLECTION,
-  END_RUN,
-  END_TEST,
-  START_COLLECTION,
-  START_RUN,
-  START_TEST,
-} from "./constants.js";
-
 type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
 type Sleep = (time: number) => Promise<void>;
 
@@ -41,7 +32,7 @@ async function execTest(
 ) {
   if (logger.cancelled) return;
   logger.log(collections, {
-    type: START_TEST,
+    type: "start_test",
     time: performance.now(),
     testId,
     collectionId,
@@ -57,7 +48,7 @@ async function execTest(
 
   if (logger.cancelled) return;
   logger.log(collections, {
-    type: END_TEST,
+    type: "end_test",
     testId,
     collectionId,
     assertions,
@@ -101,7 +92,7 @@ async function execCollectionOrdered(
 async function startRun(logger: LoggerInterface, collections: Collection[]) {
   if (logger.cancelled) return;
   logger.log(collections, {
-    type: START_RUN,
+    type: "start_run",
     time: performance.now(),
   });
 
@@ -110,7 +101,7 @@ async function startRun(logger: LoggerInterface, collections: Collection[]) {
   while (collectionId < numCollections) {
     if (logger.cancelled) return;
     logger.log(collections, {
-      type: START_COLLECTION,
+      type: "start_collection",
       time: performance.now(),
       collectionId,
     });
@@ -121,7 +112,7 @@ async function startRun(logger: LoggerInterface, collections: Collection[]) {
 
     if (logger.cancelled) return;
     logger.log(collections, {
-      type: END_COLLECTION,
+      type: "end_collection",
       time: performance.now(),
       collectionId,
     });
@@ -131,7 +122,7 @@ async function startRun(logger: LoggerInterface, collections: Collection[]) {
 
   if (logger.cancelled) return;
   logger.log(collections, {
-    type: END_RUN,
+    type: "end_run",
     time: performance.now(),
   });
 }
