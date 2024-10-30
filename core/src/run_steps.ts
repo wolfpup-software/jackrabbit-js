@@ -5,7 +5,6 @@ import type {
 } from "./jackrabbit_types.js";
 
 import {
-  CANCEL_RUN,
   END_COLLECTION,
   END_RUN,
   END_TEST,
@@ -140,7 +139,7 @@ async function startRun(logger: LoggerInterface, collections: Collection[]) {
 function cancelRun(logger: LoggerInterface, collections: Collection[]) {
   if (logger.cancelled) return;
   logger.log(collections, {
-    type: CANCEL_RUN,
+    type: "cancel_run",
     time: performance.now(),
   });
 }

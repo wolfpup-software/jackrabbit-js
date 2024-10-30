@@ -3,7 +3,7 @@
 import { Config, Importer, JackrabbitError, run } from "./deps.js";
 
 const config = new Config(process.argv);
-const importer = new Importer();
+const importer = new Importer(process.cwd());
 
 try {
   await run(config, importer);

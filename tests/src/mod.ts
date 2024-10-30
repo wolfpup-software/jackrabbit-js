@@ -1,9 +1,11 @@
 function testTheStuff() {
   return ["this test failed!"];
+  // return [];
+
 }
 
 let collection = {
-  title: "Demo_test",
+  title: import.meta.url,
   runAsynchronously: false,
   tests: [testTheStuff],
 };

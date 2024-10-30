@@ -1,11 +1,15 @@
-import type { Collection, LoggerAction, LoggerInterface } from "./deps.ts";
+import type { Collection, LoggerAction, LoggerInterface } from "./deps.js";
 
 import { CANCEL_RUN, END_RUN, END_TEST, START_RUN } from "./deps.js";
 
 import { JackrabbitError } from "./cli_types.js";
 
+// N / N tests passed
+// 
+
+// need to retain {number: assertions}
 class Logger implements LoggerInterface {
-  #fails: Map<number, Set<number>> = new Map();
+  assertions: Map<number, Map<number, LoggerAction>> = new Map();
   #failed: boolean = false;
   cancelled: boolean = false;
   #startTime: number = -1;
@@ -17,7 +21,7 @@ class Logger implements LoggerInterface {
     }
 
     if (action.type === CANCEL_RUN) {
-      logAssertions(collections, this.#fails);
+      logAssertions(collections, this.assertions);
       logCancelled(this.#startTime, this.#testTime, action.time);
 
       throw new JackrabbitError(`Test run cancelled`);
@@ -28,16 +32,16 @@ class Logger implements LoggerInterface {
       this.#testTime += action.endTime - action.startTime;
       this.#failed = true;
 
-      let assertions = this.#fails.get(action.collectionId);
+      let assertions = this.assertions.get(action.collectionId);
       if (assertions) {
-        assertions.add(action.testId);
+        assertions.set(action.testId, action);
       } else {
-        this.#fails.set(action.collectionId, new Set([action.testId]));
+        this.assertions.set(action.collectionId, new Map([[action.testId, action]]));
       }
     }
 
     if (action.type === END_RUN) {
-      logAssertions(collections, this.#fails);
+      logAssertions(collections, this.assertions);
       logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 
       if (this.#failed) {
@@ -47,20 +51,30 @@ class Logger implements LoggerInterface {
   }
 }
 
+// file:///home/taylor/workspace/jackrabbit-js/tests/dist/mod.js
+//   ✗ testTheStuff
+
 function logAssertions(
   collections: Collection[],
-  fails: Map<number, Set<number>>,
+  fails: Map<number, Map<number, LoggerAction>>,
 ) {
   for (let [index, collection] of collections.entries()) {
-    let failedTests = fails.get(index);
-    if (failedTests === undefined) continue;
+    console.log(`${collection.title}`);
 
-    console.log(collection.title);
+    let failedTests = fails.get(index);
+    if (failedTests === undefined) {
+      // print ✔ 1/1 tests passed
+      console.log(`\u{2714} ${collection.title}`);
+      continue;
+    }
+
 
     for (let [index, test] of collection.tests.entries()) {
-      if (!failedTests.has(index)) continue;
+      let action = failedTests.get(index);
+      if (undefined === action || action.type !== "end_test") continue;
 
-      console.log(`\u{2717} ${test.name}`);
+      console.log(`  ${test.name}
+    ${action.assertions}`);
     }
   }
 }
@@ -80,13 +94,21 @@ function logResults(
   testTime: number,
   time: number,
 ) {
-  const status = failed ? "\u{2717} failed" : "\u{2714} passed";
+  const status = failed ? yellow("\u{2717} failed") : blue("\u{2714} passed");
   const overhead = time - startTime;
   console.log(`
 RESULTS:
 ${status}
     duration: ${testTime.toFixed(4)} mS
     overhead: ${overhead.toFixed(4)} mS`);
+}
+
+function blue(text: string) {
+  return `\x1b[44m\x1b[39m${text}\x1b[0m`
+}
+
+function yellow(text: string) {
+  return `\x1b[43m\x1b[39m${text}\x1b[0m`
 }
 
 export { JackrabbitError, Logger };
