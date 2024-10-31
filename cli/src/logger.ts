@@ -66,8 +66,7 @@ function logAssertions(
     }
 
     let numTestsPassed = numTests - failedTests.size;
-    let marker = numTestsPassed ? "!" : "x";
-    console.log(`${marker} ${numTestsPassed}/${numTests} tests passed`);
+    console.log(`! ${numTestsPassed}/${numTests} tests passed`);
 
     for (let [index, test] of collection.tests.entries()) {
       let action = failedTests.get(index);
