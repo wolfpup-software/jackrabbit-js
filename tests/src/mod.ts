@@ -1,13 +1,13 @@
 function testTheStuff() {
   return ["this test failed!"];
-  // return [];
-
 }
+
+function testTheOtherStuff() {}
 
 let collection = {
   title: import.meta.url,
   runAsynchronously: false,
-  tests: [testTheStuff],
+  tests: [testTheStuff, testTheOtherStuff],
 };
 
 let collections = [collection];

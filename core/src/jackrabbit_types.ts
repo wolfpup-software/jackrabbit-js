@@ -1,4 +1,4 @@
-type Assertions = string[];
+type Assertions = undefined | string | string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
@@ -50,7 +50,7 @@ interface EndTest {
   collectionId: number;
   startTime: number;
   endTime: number;
-  assertions: string[];
+  assertions: Assertions;
 }
 
 type LoggerAction =
