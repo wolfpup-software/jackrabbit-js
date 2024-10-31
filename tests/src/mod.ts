@@ -1,15 +1,3 @@
-function testTheStuff() {
-  return ["this test failed!"];
-}
+import * as LilTests from "./tests.js";
 
-function testTheOtherStuff() {}
-
-let collection = {
-  title: import.meta.url,
-  runAsynchronously: false,
-  tests: [testTheStuff, testTheOtherStuff],
-};
-
-let collections = [collection];
-
-export { collections };
+export const testCollections = [LilTests];
