@@ -9,7 +9,8 @@ try {
   await run(config, importer);
 } catch (e: unknown) {
   if (e instanceof Error && !(e instanceof JackrabbitError)) {
-    console.log(`Error:
+    console.log(`
+Error:
 ${e.name}
 ${e.message}
 ${e.stack}`);

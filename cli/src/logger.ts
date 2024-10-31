@@ -3,7 +3,7 @@ import type { Collection, LoggerAction, LoggerInterface } from "./deps.js";
 import { JackrabbitError } from "./cli_types.js";
 
 class Logger implements LoggerInterface {
-  assertions: Map<number, Map<number, LoggerAction>> = new Map();
+  #assertions: Map<number, Map<number, LoggerAction>> = new Map();
   #failed: boolean = false;
   cancelled: boolean = false;
   #startTime: number = -1;
@@ -15,7 +15,7 @@ class Logger implements LoggerInterface {
     }
 
     if ("cancel_run" === action.type) {
-      logAssertions(collections, this.assertions);
+      logAssertions(collections, this.#assertions);
       logCancelled(this.#startTime, this.#testTime, action.time);
 
       throw new JackrabbitError(`Test run cancelled`);
@@ -25,14 +25,15 @@ class Logger implements LoggerInterface {
     if ("end_test" === action.type && action?.assertions) {
       if (Array.isArray(action.assertions) && action.assertions.length === 0)
         return;
+
       this.#testTime += action.endTime - action.startTime;
       this.#failed = true;
 
-      let assertions = this.assertions.get(action.collectionId);
+      let assertions = this.#assertions.get(action.collectionId);
       if (assertions) {
         assertions.set(action.testId, action);
       } else {
-        this.assertions.set(
+        this.#assertions.set(
           action.collectionId,
           new Map([[action.testId, action]]),
         );
@@ -40,7 +41,7 @@ class Logger implements LoggerInterface {
     }
 
     if ("end_run" === action.type) {
-      logAssertions(collections, this.assertions);
+      logAssertions(collections, this.#assertions);
       logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 
       if (this.#failed) {

@@ -4,25 +4,22 @@ import type {
   LoggerInterface,
 } from "./jackrabbit_types.js";
 
-type CreateTimeout = (requestedInterval: number) => Promise<Assertions>;
-type Sleep = (time: number) => Promise<void>;
-
 const TIMEOUT_INTERVAL = 10000;
 
-const sleep: Sleep = (time: number) => {
+function sleep(time: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
     }, time);
   });
-};
+}
 
-const createTimeout: CreateTimeout = async (timeoutInterval: number) => {
+async function createTimeout(timeoutInterval: number): Promise<Assertions> {
   const interval = timeoutInterval === -1 ? TIMEOUT_INTERVAL : timeoutInterval;
   await sleep(interval);
 
   return [`timed out at: ${interval}`];
-};
+}
 
 async function execTest(
   collections: Collection[],
