@@ -17,7 +17,7 @@ function fileConfig(config: ConfigInterface, value?: string) {
 }
 
 function iterateArgs(config: ConfigInterface, args: string[]) {
-  let index = 2;
+  let index = 0;
   while (index < args.length) {
     const flag = args[index];
     const reaction = reactions[flag];
@@ -25,12 +25,7 @@ function iterateArgs(config: ConfigInterface, args: string[]) {
       throw new Error(`unrecognized argument: ${flag}`);
     }
 
-    const value = args[index + 1];
-    if (reactions[value]) {
-      throw new Error(`flag passed as value: ${value}`);
-    }
-
-    reaction(config, value);
+    reaction(config, args[index + 1]);
     index += 2;
   }
 }
