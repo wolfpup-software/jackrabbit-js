@@ -1,7 +1,8 @@
 import type {
   Assertions,
-  Collection,
   LoggerInterface,
+  Options,
+  TestModule,
 } from "./jackrabbit_types.js";
 
 const TIMEOUT_INTERVAL = 10000;
@@ -22,7 +23,7 @@ async function createTimeout(timeoutInterval: number): Promise<Assertions> {
 }
 
 async function execTest(
-  collections: Collection[],
+  collections: TestModule,
   logger: LoggerInterface,
   collectionId: number,
   testId: number,
@@ -55,7 +56,7 @@ async function execTest(
 }
 
 async function execCollection(
-  collections: Collection[],
+  collections: TestModule,
   logger: LoggerInterface,
   collectionId: number,
 ) {
@@ -72,7 +73,7 @@ async function execCollection(
 }
 
 async function execCollectionOrdered(
-  collections: Collection[],
+  collections: TestModule,
   logger: LoggerInterface,
   collectionId: number,
 ) {
@@ -86,29 +87,30 @@ async function execCollectionOrdered(
   }
 }
 
-async function startRun(logger: LoggerInterface, collections: Collection[]) {
+async function startRun(logger: LoggerInterface, testModules: TestModule) {
   if (logger.cancelled) return;
-  logger.log(collections, {
+  const { testCollection, options } = testModules;
+  logger.log(testModules, {
     type: "start_run",
     time: performance.now(),
   });
 
   let collectionId = 0;
-  const numCollections = collections.length;
+  const numCollections = testCollection.length;
   while (collectionId < numCollections) {
     if (logger.cancelled) return;
-    logger.log(collections, {
+    logger.log(testModules, {
       type: "start_collection",
       time: performance.now(),
       collectionId,
     });
 
-    collections[collectionId].runTestsAsynchronously
-      ? await execCollection(collections, logger, collectionId)
-      : await execCollectionOrdered(collections, logger, collectionId);
+    details.runAsynchronously
+      ? await execCollection(testModules, logger, collectionId)
+      : await execCollectionOrdered(testModules, logger, collectionId);
 
     if (logger.cancelled) return;
-    logger.log(collections, {
+    logger.log(testModules, {
       type: "end_collection",
       time: performance.now(),
       collectionId,
@@ -118,15 +120,15 @@ async function startRun(logger: LoggerInterface, collections: Collection[]) {
   }
 
   if (logger.cancelled) return;
-  logger.log(collections, {
+  logger.log(testModules, {
     type: "end_run",
     time: performance.now(),
   });
 }
 
-function cancelRun(logger: LoggerInterface, collections: Collection[]) {
+function cancelRun(logger: LoggerInterface, testModule: TestModule) {
   if (logger.cancelled) return;
-  logger.log(collections, {
+  logger.log(testModule, {
     type: "cancel_run",
     time: performance.now(),
   });

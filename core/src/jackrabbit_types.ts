@@ -3,11 +3,14 @@ type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
 
-interface Collection {
-  tests: Test[];
-  title: string;
-  runTestsAsynchronously: boolean;
+interface Options {
+  title: string,
+  runAsynchronously: boolean;
   timeoutInterval: number;
+}
+
+interface TestModule {
+  testCollection: Test[], options: Options,
 }
 
 interface StartRun {
@@ -64,7 +67,7 @@ type LoggerAction =
 
 interface LoggerInterface {
   cancelled: boolean;
-  log(collection: Collection[], action: LoggerAction): void;
+  log(testModules: TestModule[], action: LoggerAction): void;
 }
 
-export type { Assertions, Collection, LoggerAction, LoggerInterface, Test };
+export type { Assertions, LoggerAction, LoggerInterface, Test, Options, TestModule};
