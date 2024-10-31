@@ -23,29 +23,30 @@ async function createTimeout(timeoutInterval: number): Promise<Assertions> {
 }
 
 async function execTest(
-  collections: TestModule,
+  testModules: TestModule[],
   logger: LoggerInterface,
   collectionId: number,
   testId: number,
 ) {
   if (logger.cancelled) return;
-  logger.log(collections, {
+  logger.log(testModules, {
     type: "start_test",
     time: performance.now(),
     testId,
     collectionId,
   });
 
-  const testFunc = collections[collectionId].tests[testId];
+  const { testCollection, options } = testModules[collectionId];
+  const testFunc = testCollection[testId];
   const startTime = performance.now();
   const assertions = await Promise.race([
-    createTimeout(collections[collectionId].timeoutInterval),
+    createTimeout(options.timeoutInterval),
     testFunc(),
   ]);
   const endTime = performance.now();
 
   if (logger.cancelled) return;
-  logger.log(collections, {
+  logger.log(testModules, {
     type: "end_test",
     testId,
     collectionId,
@@ -56,15 +57,17 @@ async function execTest(
 }
 
 async function execCollection(
-  collections: TestModule,
+  testModules: TestModule[],
   logger: LoggerInterface,
   collectionId: number,
 ) {
+  const { testCollection } = testModules[collectionId];
+
   const wrappedTests = [];
   let testId = 0;
-  const length = collections[collectionId].tests.length;
+  const length = testCollection.length;
   while (testId < length) {
-    wrappedTests.push(execTest(collections, logger, collectionId, testId));
+    wrappedTests.push(execTest(testModules, logger, collectionId, testId));
 
     testId += 1;
   }
@@ -73,30 +76,32 @@ async function execCollection(
 }
 
 async function execCollectionOrdered(
-  collections: TestModule,
+  testModules: TestModule[],
   logger: LoggerInterface,
   collectionId: number,
 ) {
-  const numTests = collections[collectionId].tests.length;
+  const { testCollection } = testModules[collectionId];
+
+  const numTests = testCollection.length;
   let index = 0;
   while (index < numTests) {
     if (logger.cancelled) return;
-    await execTest(collections, logger, collectionId, index);
+    await execTest(testModules, logger, collectionId, index);
 
     index += 1;
   }
 }
 
-async function startRun(logger: LoggerInterface, testModules: TestModule) {
+async function startRun(logger: LoggerInterface, testModules: TestModule[]) {
   if (logger.cancelled) return;
-  const { testCollection, options } = testModules;
+
   logger.log(testModules, {
     type: "start_run",
     time: performance.now(),
   });
 
   let collectionId = 0;
-  const numCollections = testCollection.length;
+  const numCollections = testModules.length;
   while (collectionId < numCollections) {
     if (logger.cancelled) return;
     logger.log(testModules, {
@@ -105,7 +110,9 @@ async function startRun(logger: LoggerInterface, testModules: TestModule) {
       collectionId,
     });
 
-    details.runAsynchronously
+    const { options } = testModules[collectionId];
+
+    options.runAsynchronously
       ? await execCollection(testModules, logger, collectionId)
       : await execCollectionOrdered(testModules, logger, collectionId);
 
@@ -126,9 +133,9 @@ async function startRun(logger: LoggerInterface, testModules: TestModule) {
   });
 }
 
-function cancelRun(logger: LoggerInterface, testModule: TestModule) {
+function cancelRun(logger: LoggerInterface, testModules: TestModule[]) {
   if (logger.cancelled) return;
-  logger.log(testModule, {
+  logger.log(testModules, {
     type: "cancel_run",
     time: performance.now(),
   });

@@ -4,13 +4,14 @@ type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
 
 interface Options {
-  title: string,
+  title: string;
   runAsynchronously: boolean;
   timeoutInterval: number;
 }
 
 interface TestModule {
-  testCollection: Test[], options: Options,
+  testCollection: Test[];
+  options: Options;
 }
 
 interface StartRun {
@@ -70,4 +71,11 @@ interface LoggerInterface {
   log(testModules: TestModule[], action: LoggerAction): void;
 }
 
-export type { Assertions, LoggerAction, LoggerInterface, Test, Options, TestModule};
+export type {
+  Assertions,
+  LoggerAction,
+  LoggerInterface,
+  Test,
+  Options,
+  TestModule,
+};
