@@ -10,10 +10,16 @@ async function run(
   logger: LoggerInterface = new Logger(),
 ) {
   for (const file of config.files) {
-    const collections = await importer.load(file);
-    await startRun(logger, collections);
+    const testModules = await importer.load(file);
+
+    // verify tests and details
+
+    await startRun(logger, testModules);
   }
 }
+
+// create details object
+// title
 
 export { Logger } from "./logger.js";
 export { Config } from "./config.js";

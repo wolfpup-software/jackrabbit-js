@@ -1,4 +1,4 @@
-import type { Collection, LoggerAction, LoggerInterface } from "./deps.js";
+import type { TestModule, LoggerAction, LoggerInterface } from "./deps.js";
 
 import { JackrabbitError } from "./cli_types.js";
 
@@ -9,13 +9,13 @@ class Logger implements LoggerInterface {
   #startTime: number = -1;
   #testTime: number = 0;
 
-  log(collections: Collection[], action: LoggerAction) {
+  log(testModules: TestModule[], action: LoggerAction) {
     if ("start_run" === action.type) {
       this.#startTime = action.time;
     }
 
     if ("cancel_run" === action.type) {
-      logAssertions(collections, this.#assertions);
+      logAssertions(testModules, this.#assertions);
       logCancelled(this.#startTime, this.#testTime, action.time);
 
       throw new JackrabbitError(`Test run cancelled`);
@@ -29,19 +29,19 @@ class Logger implements LoggerInterface {
       this.#testTime += action.endTime - action.startTime;
       this.#failed = true;
 
-      let assertions = this.#assertions.get(action.collectionId);
+      let assertions = this.#assertions.get(action.moduleId);
       if (assertions) {
         assertions.set(action.testId, action);
       } else {
         this.#assertions.set(
-          action.collectionId,
+          action.moduleId,
           new Map([[action.testId, action]]),
         );
       }
     }
 
     if ("end_run" === action.type) {
-      logAssertions(collections, this.#assertions);
+      logAssertions(testModules, this.#assertions);
       logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 
       if (this.#failed) {
@@ -52,13 +52,15 @@ class Logger implements LoggerInterface {
 }
 
 function logAssertions(
-  collections: Collection[],
+  testModules: TestModule[],
   fails: Map<number, Map<number, LoggerAction>>,
 ) {
-  for (let [index, collection] of collections.entries()) {
-    console.log(`${collection.title}`);
+  for (let [index, module] of testModules.entries()) {
+    const { tests, options } = module;
 
-    let numTests = collection.tests.length;
+    console.log(`${options.title}`);
+
+    let numTests = tests.length;
 
     let failedTests = fails.get(index);
     if (undefined === failedTests) {
@@ -69,7 +71,7 @@ function logAssertions(
     let numTestsPassed = numTests - failedTests.size;
     console.log(`! ${numTestsPassed}/${numTests} tests passed`);
 
-    for (let [index, test] of collection.tests.entries()) {
+    for (let [index, test] of tests.entries()) {
       let action = failedTests.get(index);
       if (undefined === action || action.type !== "end_test") continue;
 

@@ -10,7 +10,7 @@ interface Options {
 }
 
 interface TestModule {
-  testCollection: Test[];
+  tests: Test[];
   options: Options;
 }
 
@@ -29,29 +29,29 @@ interface CancelRun {
   time: number;
 }
 
-interface StartCollection {
-  type: "start_collection";
-  collectionId: number;
+interface StartModule {
+  type: "start_module";
+  moduleId: number;
   time: number;
 }
 
-interface EndCollection {
-  type: "end_collection";
-  collectionId: number;
+interface EndModule {
+  type: "end_module";
+  moduleId: number;
   time: number;
 }
 
 interface StartTest {
   type: "start_test";
   testId: number;
-  collectionId: number;
+  moduleId: number;
   time: number;
 }
 
 interface EndTest {
   type: "end_test";
   testId: number;
-  collectionId: number;
+  moduleId: number;
   startTime: number;
   endTime: number;
   assertions: Assertions;
@@ -61,8 +61,8 @@ type LoggerAction =
   | StartRun
   | EndRun
   | CancelRun
-  | StartCollection
-  | EndCollection
+  | StartModule
+  | EndModule
   | StartTest
   | EndTest;
 

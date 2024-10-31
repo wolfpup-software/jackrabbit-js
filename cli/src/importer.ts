@@ -1,5 +1,4 @@
-import type { ImporterInterface } from "./cli_types.js";
-import type { Collection } from "./deps.js";
+import type { ImporterInterface, TestModule } from "./cli_types.js";
 
 class Importer implements ImporterInterface {
   #cwd: string;
@@ -8,7 +7,7 @@ class Importer implements ImporterInterface {
     this.#cwd = cwd;
   }
 
-  async load(uri: string): Promise<Collection[]> {
+  async load(uri: string): Promise<TestModule[]> {
     let uri_updated = uri;
 
     let absolute = uri.startsWith("/");
@@ -16,8 +15,9 @@ class Importer implements ImporterInterface {
       uri_updated = this.#cwd + "/" + uri;
     }
 
-    const { collections } = await import(uri_updated);
-    return collections;
+    const { testModules } = await import(uri_updated);
+    // verify here
+    return testModules;
   }
 }
 

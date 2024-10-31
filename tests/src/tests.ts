@@ -25,7 +25,7 @@ export const tests = [
 ];
 
 // export optional test details
-export const details = {
+export const options = {
   title: import.meta.url,
   runAsyncronously: true,
 };
