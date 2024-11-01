@@ -2,21 +2,25 @@
 
 A test runner without dependencies
 
-## Jackrabbit Tests
+## Nodejs
 
-### Tests
+### Install
 
-In Jackrabbit, a `test` looks like the following:
+Install jackrabbit with npm via github.
 
-```TS
-function testTheStuff() {
-  return ["this test failed!"];
-}
+```sh
+npm install --save-dev https://github.com/wolfpup-software/jackrabbit-js
 ```
 
-Assertions are simply an array of strings, with each string describing a failure.
+### Write tests
 
-Tests without assertions, return an empty array (or undefined).
+See [this guide](./JACKRABBIT.md) to write tests.
+
+### Run Test Collections
+
+```sh
+jackrabbit --file ./path/to/test/collection
+```
 
 ## License
 

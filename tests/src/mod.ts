@@ -1,13 +1,3 @@
-function testTheStuff() {
-  return ["this test failed!"];
-}
+import * as LilTests from "./tests.js";
 
-let collection = {
-  title: "Demo_test",
-  runAsynchronously: false,
-  tests: [testTheStuff],
-};
-
-let collections = [collection];
-
-export { collections };
+export const testModules = [LilTests];

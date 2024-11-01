@@ -1,13 +1,17 @@
-type Assertions = string[];
+type Assertions = undefined | string | string[];
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
 
-interface Collection {
-  tests: Test[];
+interface Options {
   title: string;
-  runTestsAsynchronously: boolean;
+  runAsynchronously: boolean;
   timeoutInterval: number;
+}
+
+interface TestModule {
+  tests: Test[];
+  options: Options;
 }
 
 interface StartRun {
@@ -25,46 +29,53 @@ interface CancelRun {
   time: number;
 }
 
-interface StartCollection {
-  type: "start_collection";
-  collectionId: number;
+interface StartModule {
+  type: "start_module";
+  moduleId: number;
   time: number;
 }
 
-interface EndCollection {
-  type: "end_collection";
-  collectionId: number;
+interface EndModule {
+  type: "end_module";
+  moduleId: number;
   time: number;
 }
 
 interface StartTest {
   type: "start_test";
   testId: number;
-  collectionId: number;
+  moduleId: number;
   time: number;
 }
 
 interface EndTest {
   type: "end_test";
   testId: number;
-  collectionId: number;
+  moduleId: number;
   startTime: number;
   endTime: number;
-  assertions: string[];
+  assertions: Assertions;
 }
 
 type LoggerAction =
   | StartRun
   | EndRun
   | CancelRun
-  | StartCollection
-  | EndCollection
+  | StartModule
+  | EndModule
   | StartTest
   | EndTest;
 
 interface LoggerInterface {
   cancelled: boolean;
-  log(collection: Collection[], action: LoggerAction): void;
+  log(testModules: TestModule[], action: LoggerAction): void;
 }
 
-export type { Assertions, Collection, LoggerAction, LoggerInterface, Test };
+export type {
+  Assertions,
+  LoggerAction,
+  LoggerInterface,
+  Test,
+  Options,
+  TestModule,
+};

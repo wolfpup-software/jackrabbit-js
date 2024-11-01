@@ -1,19 +1,23 @@
-import type { ImporterInterface } from "./cli_types.ts";
-import type { Collection } from "./deps.ts";
-
-let cwd = process.cwd();
+import type { ImporterInterface, TestModule } from "./cli_types.js";
 
 class Importer implements ImporterInterface {
-  async load(uri: string): Promise<Collection[]> {
+  #cwd: string;
+
+  constructor(cwd: string) {
+    this.#cwd = cwd;
+  }
+
+  async load(uri: string): Promise<TestModule[]> {
     let uri_updated = uri;
 
     let absolute = uri.startsWith("/");
     if (!absolute) {
-      uri_updated = cwd + "/" + uri;
+      uri_updated = this.#cwd + "/" + uri;
     }
 
-    const { collections } = await import(uri_updated);
-    return collections;
+    const { testModules } = await import(uri_updated);
+    // verify here
+    return testModules;
   }
 }
 
