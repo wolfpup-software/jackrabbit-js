@@ -1,23 +1,12 @@
 # Jackrabbit
 
-A test runner without dependencies
-
-## Abstract
-
 Jackrabbit decouples tests from test runners.
 
 This lets developers focus on testing their code rather than investing time in esoteric domain knowledge.
 
 If a developer understands Javascript modules and POJOs, they are ready to write Jackrabbit tests.
 
-No more:
-
-- versioning
-- assertion libraries
-- dependency injections
-- BDD syntax
-
-Jackrabbit provides a test runner, but developers could create their own test runner and never change their tests.
+Jackrabbit provides a test runner. However, developers could use their own test runner and never need to change their tests.
 
 ## Jackrabbit Tests
 
@@ -33,14 +22,14 @@ type Assertions = string[] | string | undefined;
 
 ### Tests
 
-Tests are just functions.
+Tests are functions that return assertions.
 
-A `pass` is any assertion equal to an empty array or undefined. Any other return value will be a `fail`.
+Any assertion equal to an empty array or undefined is a `pass`. Any other return value will be a `fail`.
 
-So `failing` `tests` looks like the following:
+So tests that `fail` looks like the following:
 
 ```TS
-// myTests.ts
+// my-tests.ts
 
 function testStuffAndFail() {
 	return "this test failed!";
@@ -51,10 +40,10 @@ function testMoreStuffAndFail() {
 }
 ```
 
-And `passing` tests look like:
+And tests that `pass` tests look like:
 
 ```TS
-// myTests.ts
+// my-tests.ts
 
 function testStuffAndPass() {
 	return;
@@ -67,10 +56,10 @@ async function testMoreStuffAndPass() {
 
 ### Export tests
 
-Test files should export their tests! Tests will be executed in sequential order (unless otherwise specified)
+A test module should export their tests. Tests will be executed in sequential order (unless otherwise specified).
 
 ```TS
-// myTests.ts
+// my-tests.ts
 
 export const tests = [
 	testStuffAndFail,
@@ -80,31 +69,31 @@ export const tests = [
 ];
 ```
 
-### Details
+### Options
 
-You can export a pojo called details to describe a test:
+Export a pojo called options to affect test behavior:
 
 ```TS
-// myTests.ts
+// my-tests.ts
 
-export const details = {
+export const options = {
 	title: import.meta.url,
 	runAsyncronously: true,
 }
 ```
 
-### Test Collections
+### Test Modules
 
-Finally, a test collection is a module that imports
+Finally, a module collects all relavent test modules.
 
 ```TS
-// testCollection.ts
+// mod.test.ts
 
 import * as MyTests from "./my-tests.js";
 
-export const testCollection = [
-	myTests
-]
+export const testModules = [
+	MyTests
+];
 ```
 
 ## License
