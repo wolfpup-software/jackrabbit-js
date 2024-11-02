@@ -18,9 +18,6 @@ async function run(
   }
 }
 
-// create details object
-// title
-
 export { Logger } from "./logger.js";
 export { Config } from "./config.js";
 export { run };

@@ -58,7 +58,8 @@ function logAssertions(
   for (let [index, module] of testModules.entries()) {
     const { tests, options } = module;
 
-    console.log(`${options.title}`);
+    console.log(`
+${options.title}`);
 
     let numTests = tests.length;
 
@@ -69,7 +70,7 @@ function logAssertions(
     }
 
     let numTestsPassed = numTests - failedTests.size;
-    console.log(`! ${numTestsPassed}/${numTests} tests passed`);
+    console.log(`${numTestsPassed}/${numTests} tests passed`);
 
     for (let [index, test] of tests.entries()) {
       let action = failedTests.get(index);

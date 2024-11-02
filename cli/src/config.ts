@@ -3,17 +3,14 @@ import type { ConfigInterface } from "./cli_types.ts";
 type Reaction = (config: ConfigInterface, value?: string) => void;
 type Reactions = Record<string, Reaction>;
 
-// map
 const reactions: Reactions = {
   "--file": fileConfig,
   "-f": fileConfig,
 };
 
-function fileConfig(config: ConfigInterface, value?: string) {
-  if (value === undefined) return;
-
-  const files = value.split(",");
-  config.files = [...config.files, ...files];
+function fileConfig(config: ConfigInterface, file?: string) {
+  if (file === undefined) return;
+  config.files.push(file);
 }
 
 function iterateArgs(config: ConfigInterface, args: string[]) {
