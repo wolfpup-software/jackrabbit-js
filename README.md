@@ -2,7 +2,7 @@
 
 A test runner without dependencies.
 
-## Abstract
+## Basics
 
 A `test` is a function that returns assertions.
 
@@ -12,7 +12,7 @@ A `test collection` is javascript module that exports an array of `test modules`
 
 A test runner (jackrabbit) loads `test modules` and logs test results.
 
-## Jackrabbit tests
+## Tests
 
 See [this guide](./JACKRABBIT.md) to create jackrabbit tests.
 
