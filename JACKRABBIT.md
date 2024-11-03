@@ -1,30 +1,18 @@
-# Jackrabbit
+# Jackrabbit Tests
 
-Jackrabbit decouples tests from test runners.
+## Assertions
 
-This lets developers focus on testing their code rather than investing time in esoteric domain knowledge.
-
-If a developer understands Javascript modules and POJOs, they are ready to write Jackrabbit tests.
-
-Jackrabbit provides a test runner. However, developers could use their own test runner and never need to change their tests.
-
-## Jackrabbit Tests
-
-### Assertions
-
-Jackrabbit tests are simply functions that return assertions.
-
-An assertion is defined by the following:
+An assertion is defined by the following types:
 
 ```TS
 type Assertions = string[] | string | undefined;
 ```
 
-### Tests
+## Tests
 
 Tests are functions that return assertions.
 
-Any assertion equal to an empty array or undefined is a `pass`. Any other return value will be a `fail`.
+An empty array or an undefined value is considered a `pass`. Any other return value is a `fail`.
 
 So tests that `fail` looks like the following:
 
@@ -54,9 +42,9 @@ async function testMoreStuffAndPass() {
 }
 ```
 
-### Export tests
+## Export tests
 
-A test module should export their tests. Tests will be executed in sequential order (unless otherwise specified).
+A `test module` should export their tests. Tests will be executed in sequential order (unless specified otherwise).
 
 ```TS
 // my-tests.ts
@@ -69,9 +57,9 @@ export const tests = [
 ];
 ```
 
-### Options
+## Options
 
-Export a pojo called options to affect test behavior:
+Export a pojo called `options` to affect test behavior:
 
 ```TS
 // my-tests.ts
@@ -82,9 +70,9 @@ export const options = {
 }
 ```
 
-### Test Modules
+## Test Collections
 
-Finally, a module collects all relavent test modules.
+A `test collection` is a javascript module that exports all relavent test modules into one collection.
 
 ```TS
 // mod.test.ts
@@ -95,6 +83,8 @@ export const testModules = [
 	MyTests
 ];
 ```
+
+Jackrabbit consumes `test collections` to provide test results.
 
 ## License
 

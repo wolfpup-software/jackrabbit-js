@@ -1,7 +1,6 @@
 import type {
   Assertions,
   LoggerInterface,
-  Options,
   TestModule,
 } from "./jackrabbit_types.js";
 
@@ -19,7 +18,7 @@ async function createTimeout(timeoutInterval: number): Promise<Assertions> {
   const interval = timeoutInterval === -1 ? TIMEOUT_INTERVAL : timeoutInterval;
   await sleep(interval);
 
-  return [`timed out at: ${interval}`];
+  return `timed out at: ${interval}`;
 }
 
 async function execTest(
@@ -62,17 +61,15 @@ async function execCollection(
   logger: LoggerInterface,
   moduleId: number,
 ) {
+  if (logger.cancelled) return;
   const { tests } = testModules[moduleId];
 
   const wrappedTests = [];
-  let testId = 0;
-  const length = tests.length;
-  while (testId < length) {
+  for (let testId = 0; testId < tests.length; testId++) {
     wrappedTests.push(execTest(testModules, logger, moduleId, testId));
-
-    testId += 1;
   }
 
+  if (logger.cancelled) return;
   await Promise.all(wrappedTests);
 }
 
@@ -83,27 +80,20 @@ async function execCollectionOrdered(
 ) {
   const { tests } = testModules[moduleId];
 
-  const numTests = tests.length;
-  let index = 0;
-  while (index < numTests) {
+  for (let index = 0; index < tests.length; index++) {
     if (logger.cancelled) return;
     await execTest(testModules, logger, moduleId, index);
-
-    index += 1;
   }
 }
 
 async function startRun(logger: LoggerInterface, testModules: TestModule[]) {
   if (logger.cancelled) return;
-
   logger.log(testModules, {
     type: "start_run",
     time: performance.now(),
   });
 
-  let moduleId = 0;
-  const numCollections = testModules.length;
-  while (moduleId < numCollections) {
+  for (let [moduleId, testModule] of testModules.entries()) {
     if (logger.cancelled) return;
     logger.log(testModules, {
       type: "start_module",
@@ -111,7 +101,7 @@ async function startRun(logger: LoggerInterface, testModules: TestModule[]) {
       moduleId,
     });
 
-    const { options } = testModules[moduleId];
+    const { options } = testModule;
     options?.runAsynchronously
       ? await execCollection(testModules, logger, moduleId)
       : await execCollectionOrdered(testModules, logger, moduleId);
@@ -122,8 +112,6 @@ async function startRun(logger: LoggerInterface, testModules: TestModule[]) {
       time: performance.now(),
       moduleId,
     });
-
-    moduleId += 1;
   }
 
   if (logger.cancelled) return;
