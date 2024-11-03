@@ -1,6 +1,5 @@
 {
   "name": "nodejs_cli",
-  "version": "0.1.0",
   "description": "",
   "type": "module",
   "main": "bin/mod.js",
@@ -10,10 +9,7 @@
   "bin": {
     "jackrabbit": "bin/mod.js"
   },
-  "files": [
-    "bin/*.ts",
-    "bin/*.js"
-  ],
   "author": "wolfpup",
+  "version": "0.1.0",
   "license": "BSD-3-Clause"
 }

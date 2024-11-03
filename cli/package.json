@@ -1,17 +1,12 @@
 {
   "name": "cli",
-  "version": "0.1.0",
   "description": "",
   "type": "module",
   "main": "dist/mod.js",
   "scripts": {
-    "build": "tsc --build",
-    "cli": "node ./dist/mod.js"
+    "build": "tsc --build"
   },
-  "files": [
-    "dist/*.ts",
-    "dist/*.js"
-  ],
   "author": "wolfpup",
+  "version": "0.1.0",
   "license": "BSD-3-Clause"
 }
