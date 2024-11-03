@@ -11,9 +11,7 @@ async function run(
 ) {
   for (const file of config.files) {
     const testModules = await importer.load(file);
-
-    // verify tests and details
-
+    
     await startRun(logger, testModules);
   }
 }
