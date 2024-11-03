@@ -1,1 +1,2 @@
-!dist/
+# necessary to survive the radically unthoughtful development journey
+# npm decided to deploy
