@@ -10,6 +10,7 @@
   "bin": {
     "jackrabbit": "bin/mod.js"
   },
+  "files": ["bin/"],
   "author": "wolfpup",
   "license": "BSD-3-Clause"
 }
