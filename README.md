@@ -1,5 +1,7 @@
 # Jackrabbit
 
+Tests without dependencies.
+
 A test runner without dependencies.
 
 ## Basics
