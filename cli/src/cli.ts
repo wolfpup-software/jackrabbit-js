@@ -11,7 +11,7 @@ async function run(
 ) {
   for (const file of config.files) {
     const testModules = await importer.load(file);
-    
+
     await startRun(logger, testModules);
   }
 }
