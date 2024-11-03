@@ -9,7 +9,8 @@
     "cli": "node ./dist/mod.js"
   },
   "files": [
-    "dist/"
+    "dist/*.ts",
+    "dist/*.js"
   ],
   "author": "wolfpup",
   "license": "BSD-3-Clause"

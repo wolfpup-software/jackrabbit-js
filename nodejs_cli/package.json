@@ -11,7 +11,8 @@
     "jackrabbit": "bin/mod.js"
   },
   "files": [
-    "bin/"
+    "dist/*.ts",
+    "dist/*.js"
   ],
   "author": "wolfpup",
   "license": "BSD-3-Clause"
