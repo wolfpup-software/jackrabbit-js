@@ -8,5 +8,8 @@
   "main": "dist/mod.js",
   "scripts": {
     "build": "tsc --build"
-  }
+  },
+  "files": [
+    "dist/"
+  ]
 }

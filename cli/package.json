@@ -8,6 +8,9 @@
     "build": "tsc --build",
     "cli": "node ./dist/mod.js"
   },
+  "files": [
+    "dist/"
+  ],
   "author": "wolfpup",
   "license": "BSD-3-Clause"
 }
