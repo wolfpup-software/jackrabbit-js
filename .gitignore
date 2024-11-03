@@ -1,5 +1,9 @@
 node_modules/
 dist/
-bin/
+
+# keep binary files
+# alternatively chmod +x everywhere?
+*/bin/*
+!*/bin/mod.js
 
 *.tsbuildinfo
