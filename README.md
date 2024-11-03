@@ -1,5 +1,7 @@
 # Jackrabbit
 
+Tests without dependencies.
+
 A test runner without dependencies.
 
 ## Basics
@@ -34,7 +36,7 @@ jackrabbit --file ./path/to/test/collection/mod.ts
 
 ## On Decoupling tests from test runners
 
-Jackrabbit was inspired years of unnecessary pain caused by dogmatic BDD from corporate impact chasers.
+Jackrabbit was inspired years of unnecessary pain caused by dogmatic BDD practices gifted to us by cargo cult corporate impact chasers.
 
 Jackrabbit decouples tests from test runners.
 
