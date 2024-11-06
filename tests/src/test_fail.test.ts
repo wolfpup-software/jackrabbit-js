@@ -14,9 +14,13 @@ async function testMoreStuffAndFailAsync() {
   return ["this test also failed!"];
 }
 
-
 // export tests
-export const tests = [testStuffAndFail, testMoreStuffAndFail, testStuffAndFailAsync, testMoreStuffAndFailAsync];
+export const tests = [
+  testStuffAndFail,
+  testMoreStuffAndFail,
+  testStuffAndFailAsync,
+  testMoreStuffAndFailAsync,
+];
 
 // export optional test details
 export const options = {

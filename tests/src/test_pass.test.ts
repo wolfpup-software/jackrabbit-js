@@ -7,15 +7,20 @@ function testMoreStuffAndPass() {
 }
 
 async function testStuffAndPassAsync(): Promise<undefined> {
-	return;
-  }
-  
-  async function testMoreStuffAndPassAsync(): Promise<[]> {
-	return [];
-  }
+  return;
+}
+
+async function testMoreStuffAndPassAsync(): Promise<[]> {
+  return [];
+}
 
 // export tests
-export const tests = [testStuffAndPass, testMoreStuffAndPass, testStuffAndPassAsync, testMoreStuffAndPassAsync];
+export const tests = [
+  testStuffAndPass,
+  testMoreStuffAndPass,
+  testStuffAndPassAsync,
+  testMoreStuffAndPassAsync,
+];
 
 // export optional test details
 export const options = {
