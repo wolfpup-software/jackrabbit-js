@@ -1,4 +1,4 @@
-import type { TestModule } from "./deps.ts";
+import type { TestModule } from "../../core/dist/mod.ts";
 
 interface ConfigInterface {
   files: string[];
@@ -10,6 +10,6 @@ interface ImporterInterface {
 
 class JackrabbitError extends Error {}
 
-export type { ConfigInterface, ImporterInterface, TestModule };
+export type { ConfigInterface, ImporterInterface };
 
 export { JackrabbitError };

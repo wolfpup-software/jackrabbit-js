@@ -1,4 +1,8 @@
-import type { TestModule, LoggerAction, LoggerInterface } from "./deps.js";
+import type {
+  LoggerAction,
+  LoggerInterface,
+  TestModule,
+} from "../../core/dist/mod.js";
 
 import { JackrabbitError } from "./cli_types.js";
 
@@ -59,7 +63,7 @@ function logAssertions(
     const { tests, options } = module;
 
     console.log(`
-${options.title}`);
+${options?.title ?? `test index: ${index}`}`);
 
     let numTests = tests.length;
 

@@ -1,5 +1,3 @@
-// A basic Jackrabbit test
-
 function testStuffAndFail() {
   return "this test failed!";
 }
@@ -8,24 +6,23 @@ function testMoreStuffAndFail() {
   return ["this test also failed!"];
 }
 
-function testStuffAndPass() {
-  return;
+async function testStuffAndFailAsync() {
+  return "this test failed!";
 }
 
-async function testMoreStuffAndPass() {
-  return [];
+async function testMoreStuffAndFailAsync() {
+  return ["this test also failed!"];
 }
 
 // export tests
 export const tests = [
   testStuffAndFail,
   testMoreStuffAndFail,
-  testStuffAndPass,
-  testMoreStuffAndPass,
+  testStuffAndFailAsync,
+  testMoreStuffAndFailAsync,
 ];
 
 // export optional test details
 export const options = {
   title: import.meta.url,
-  runAsyncronously: true,
 };

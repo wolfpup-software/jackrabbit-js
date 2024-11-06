@@ -1,4 +1,5 @@
-import type { ImporterInterface, TestModule } from "./cli_types.js";
+import type { TestModule } from "../../core/dist/mod.ts";
+import type { ImporterInterface } from "./cli_types.ts";
 
 class Importer implements ImporterInterface {
   #cwd: string;

@@ -86,6 +86,14 @@ export const testModules = [
 
 Jackrabbit consumes `test collections` to provide test results.
 
+## On Decoupling tests from test runners
+
+Jackrabbit decouples tests from test runners.
+
+If a developer understands Javascript modules and POJOs, they can immediately write Jackrabbit tests.
+
+Developers can bring their own test runner and never change their tests.
+
 ## License
 
 BSD 3-Clause License

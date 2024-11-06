@@ -1,7 +1,7 @@
 import type { ConfigInterface, ImporterInterface } from "./cli_types.ts";
-import type { LoggerInterface } from "./deps.ts";
+import type { LoggerInterface } from "../../core/dist/mod.ts";
 
-import { startRun } from "./deps.js";
+import { startRun } from "../../core/dist/mod.js";
 import { Logger } from "./logger.js";
 
 async function run(
@@ -16,6 +16,4 @@ async function run(
   }
 }
 
-export { Logger } from "./logger.js";
-export { Config } from "./config.js";
 export { run };
