@@ -59,7 +59,7 @@ function logAssertions(
     const { tests, options } = module;
 
     console.log(`
-${options.title}`);
+${options?.title ?? `test index: ${index}`}`);
 
     let numTests = tests.length;
 

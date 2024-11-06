@@ -4,9 +4,9 @@ type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
 
 interface Options {
-  title: string;
-  runAsynchronously: boolean;
-  timeoutInterval: number;
+  title?: string;
+  runAsynchronously?: boolean;
+  timeoutInterval?: number;
 }
 
 interface TestModule {
