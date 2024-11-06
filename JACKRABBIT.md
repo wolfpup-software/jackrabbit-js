@@ -42,7 +42,9 @@ async function testMoreStuffAndPass() {
 }
 ```
 
-## Export tests
+## Test Modules
+
+### Export Tests
 
 A `test module` should export their tests. Tests will be executed in sequential order (unless specified otherwise).
 
@@ -57,16 +59,25 @@ export const tests = [
 ];
 ```
 
-## Options
+### Export Test Options
 
 Export a pojo called `options` to affect test behavior:
 
 ```TS
 // my-tests.ts
 
+interface Options {
+  title?: string;
+  runAsynchronously?: boolean;
+  timeoutInterval?: number;
+}
+
+...
+
 export const options = {
 	title: import.meta.url,
 	runAsyncronously: true,
+	timeoutInterval: 3000,
 }
 ```
 
@@ -84,7 +95,13 @@ export const testModules = [
 ];
 ```
 
-Jackrabbit consumes `test collections` to provide test results.
+## Run Test Collections
+
+Jackrabbit is a test runner logs the results of `test collections`.
+
+```sh
+npx jackrabbit --file ./mod.test.ts
+```
 
 ## On Decoupling tests from test runners
 

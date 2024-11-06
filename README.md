@@ -33,7 +33,7 @@ npm install --save-dev https://github.com/wolfpup-software/jackrabbit-js
 ### Run Test Collections
 
 ```sh
-jackrabbit --file ./path/to/test/collection/mod.ts
+npx jackrabbit --file ./path/to/test/collection/mod.ts
 ```
 
 ## License
