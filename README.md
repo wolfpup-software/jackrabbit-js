@@ -36,14 +36,6 @@ npm install --save-dev https://github.com/wolfpup-software/jackrabbit-js
 jackrabbit --file ./path/to/test/collection/mod.ts
 ```
 
-## On Decoupling tests from test runners
-
-If a developer understands Javascript modules and POJOs, they can immediately write Jackrabbit tests rather than invest in esoteric domain knowledge.
-
-Jackrabbit provides a test runner. However, developers could use their own test runner and never need to change their tests.
-
-Jackrabbit decouples tests from test runners.
-
 ## License
 
 BSD 3-Clause License

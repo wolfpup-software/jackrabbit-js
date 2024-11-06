@@ -1,4 +1,8 @@
-import type { TestModule, LoggerAction, LoggerInterface } from "./deps.js";
+import type {
+  LoggerAction,
+  LoggerInterface,
+  TestModule,
+} from "../../core/dist/mod.js";
 
 import { JackrabbitError } from "./cli_types.js";
 
