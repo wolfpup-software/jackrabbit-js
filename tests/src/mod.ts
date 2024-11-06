@@ -1,28 +1,26 @@
 import * as FailTests from "./test_fail.test.js";
-import * as PassTests from "./test_fail.test.js";
+import * as PassTests from "./test_pass.test.js";
 
 import type {
   LoggerAction,
   LoggerInterface,
-  Test,
-  Options,
   TestModule,
 } from "../../core/dist/mod.js";
 
-import { startRun, cancelRun } from "../../core/dist/mod.js";
+import { startRun } from "../../core/dist/mod.js";
 
 class TestLogger implements LoggerInterface {
   cancelled: boolean;
-  #failed: boolean;
+  has_failed: boolean = false;
 
   log(_testModule: TestModule[], action: LoggerAction) {
     if (hasTestFailed(action)) {
-      this.#failed = true;
+      this.has_failed = true;
     }
   }
 
   get result(): boolean {
-    return this.#failed;
+    return this.has_failed;
   }
 }
 
@@ -36,18 +34,38 @@ function hasTestFailed(action: LoggerAction) {
   return true;
 }
 
-// test logger
-// look for end collection fail
+// Test pass and fail behavior
 
 const failTestModules = [FailTests];
-
 const passTestModules = [PassTests];
-// create logger and run for fail tests
-// create logger and run for pass tests
 
-// test fail tests fail
 
-// test pass tests pass
+async function testsFail() {
+	let logger = new TestLogger();
+	await startRun(logger, failTestModules);
 
-// finally export test modules
-export const testModules = [];
+	if (!logger.has_failed) return "fail tests failed to fail";
+}
+
+async function testsPass() {
+	let logger = new TestLogger();
+	await startRun(logger, passTestModules);
+
+	if (logger.has_failed) return "passing tests failed to pass";
+}
+
+const tests = [
+	testsFail,
+	testsPass,
+]
+
+const options = {
+	title: import.meta.url,
+};
+
+const testModule = {
+	tests,
+	options,
+}
+
+export const testModules = [testModule];
