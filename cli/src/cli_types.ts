@@ -8,8 +8,4 @@ interface ImporterInterface {
   load(url: string): Promise<TestModule[]>;
 }
 
-class JackrabbitError extends Error {}
-
 export type { ConfigInterface, ImporterInterface };
-
-export { JackrabbitError };
