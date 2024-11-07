@@ -1,5 +1,4 @@
 node_modules/
-dist/
 
 # keep binary files
 # alternatively chmod +x everywhere?
