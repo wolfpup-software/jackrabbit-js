@@ -9,7 +9,7 @@ const logger = new Logger();
 try {
   await run(config, importer, logger);
   if (!logger.failed) {
-    process.exit(0);
+    process.exit(1);
   }
 } catch (e: unknown) {
   if (e instanceof Error) {
