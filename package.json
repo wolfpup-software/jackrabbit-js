@@ -7,8 +7,7 @@
     "tests"
   ],
   "scripts": {
-    "prepare": "npm run --workspaces prepare",
-    "install": "npm run --workspaces install",
+    "install": "npm run build",
     "build": "npm run --workspaces build",
     "fmt": "npx prettier --write ./",
     "test": "npx jackrabbit --file ./tests/dist/mod.js"
