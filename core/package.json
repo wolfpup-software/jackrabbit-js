@@ -4,6 +4,8 @@
   "type": "module",
   "main": "dist/mod.js",
   "scripts": {
+    "prepare": "exit 0",
+    "install": "exit 0",
     "build": "npx tsc --build"
   },
   "author": "wolfpup",

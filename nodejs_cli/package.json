@@ -4,6 +4,8 @@
   "type": "module",
   "main": "bin/mod.js",
   "scripts": {
+    "prepare": "exit 0",
+    "install": "exit 0",
     "build": "npx tsc --build"
   },
   "bin": {
