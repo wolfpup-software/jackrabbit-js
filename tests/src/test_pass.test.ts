@@ -1,28 +1,28 @@
 function testStuffAndPass(): undefined {
-  return;
+	return;
 }
 
 function testMoreStuffAndPass() {
-  return [];
+	return [];
 }
 
 async function testStuffAndPassAsync(): Promise<undefined> {
-  return;
+	return;
 }
 
 async function testMoreStuffAndPassAsync(): Promise<[]> {
-  return [];
+	return [];
 }
 
 // export tests
 export const tests = [
-  testStuffAndPass,
-  testMoreStuffAndPass,
-  testStuffAndPassAsync,
-  testMoreStuffAndPassAsync,
+	testStuffAndPass,
+	testMoreStuffAndPass,
+	testStuffAndPassAsync,
+	testMoreStuffAndPassAsync,
 ];
 
 // export optional test details
 export const options = {
-  title: import.meta.url,
+	title: import.meta.url,
 };

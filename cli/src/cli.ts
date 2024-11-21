@@ -5,15 +5,15 @@ import { startRun } from "../../core/dist/mod.js";
 import { Logger } from "./logger.js";
 
 async function run(
-  config: ConfigInterface,
-  importer: ImporterInterface,
-  logger: LoggerInterface = new Logger(),
+	config: ConfigInterface,
+	importer: ImporterInterface,
+	logger: LoggerInterface = new Logger(),
 ) {
-  for (const file of config.files) {
-    const testModules = await importer.load(file);
+	for (const file of config.files) {
+		const testModules = await importer.load(file);
 
-    await startRun(logger, testModules);
-  }
+		await startRun(logger, testModules);
+	}
 }
 
 export { run };

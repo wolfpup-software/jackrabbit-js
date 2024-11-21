@@ -2,26 +2,26 @@ import type { TestModule } from "../../core/dist/mod.ts";
 import type { ImporterInterface } from "./cli_types.ts";
 
 class Importer implements ImporterInterface {
-  #cwd: string;
+	#cwd: string;
 
-  constructor(cwd: string) {
-    this.#cwd = cwd;
-  }
+	constructor(cwd: string) {
+		this.#cwd = cwd;
+	}
 
-  async load(uri: string): Promise<TestModule[]> {
-    let uri_updated = uri;
+	async load(uri: string): Promise<TestModule[]> {
+		let uri_updated = uri;
 
-    let absolute = uri.startsWith("/");
-    if (!absolute) {
-      uri_updated = this.#cwd + "/" + uri;
-    }
+		let absolute = uri.startsWith("/");
+		if (!absolute) {
+			uri_updated = this.#cwd + "/" + uri;
+		}
 
-    const { testModules } = await import(uri_updated);
+		const { testModules } = await import(uri_updated);
 
-    // verify here
+		// verify here
 
-    return testModules;
-  }
+		return testModules;
+	}
 }
 
 export { Importer };

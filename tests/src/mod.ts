@@ -10,28 +10,28 @@ const failTestModules = [FailTests];
 const passTestModules = [PassTests];
 
 async function testsFail() {
-  let logger = new TestLogger();
-  await startRun(logger, failTestModules);
+	let logger = new TestLogger();
+	await startRun(logger, failTestModules);
 
-  if (!logger.has_failed) return "fail tests failed to fail";
+	if (!logger.has_failed) return "fail tests failed to fail";
 }
 
 async function testsPass() {
-  let logger = new TestLogger();
-  await startRun(logger, passTestModules);
+	let logger = new TestLogger();
+	await startRun(logger, passTestModules);
 
-  if (logger.has_failed) return "passing tests failed to pass";
+	if (logger.has_failed) return "passing tests failed to pass";
 }
 
 const tests = [testsFail, testsPass];
 
 const options = {
-  title: import.meta.url,
+	title: import.meta.url,
 };
 
 const testModule = {
-  tests,
-  options,
+	tests,
+	options,
 };
 
 export const testModules = [testModule];

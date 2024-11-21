@@ -1,19 +1,19 @@
 {
-  "name": "jackrabbit",
-  "workspaces": [
-    "core",
-    "cli",
-    "nodejs_cli",
-    "tests"
-  ],
-  "scripts": {
-    "build": "npm run --workspaces build",
-    "format": "npx prettier --write ./",
-    "test": "npx jackrabbit --file ./tests/dist/mod.js"
-  },
-  "devDependencies": {
-    "@types/node": "^22.5.5",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5"
-  }
+	"name": "jackrabbit",
+	"workspaces": [
+		"core",
+		"cli",
+		"nodejs_cli",
+		"tests"
+	],
+	"scripts": {
+		"build": "npm run --workspaces build",
+		"format": "npx prettier --write ./",
+		"test": "npx jackrabbit --file ./tests/dist/mod.js"
+	},
+	"devDependencies": {
+		"@types/node": "^22.5.5",
+		"prettier": "^3.3.1",
+		"typescript": "^5.4.5"
+	}
 }
