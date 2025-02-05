@@ -2,12 +2,12 @@
 	"name": "nodejs_cli",
 	"description": "",
 	"type": "module",
-	"main": "bin/mod.js",
+	"main": "dist/mod.js",
 	"scripts": {
 		"build": "npx tsc --build"
 	},
 	"bin": {
-		"jackrabbit": "bin/mod.js"
+		"jackrabbit": "dist/mod.js"
 	},
 	"author": "wolfpup",
 	"version": "0.1.0",
