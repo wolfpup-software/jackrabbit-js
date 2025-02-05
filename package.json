@@ -6,11 +6,14 @@
 		"nodejs_cli",
 		"tests"
 	],
+	"bin": {
+		"jackrabbit": "./nodejs_cli/dist/mod.js"
+	},
 	"scripts": {
 		"prepare": "npm run build",
 		"build": "npm run --workspaces build",
 		"format": "npx prettier --write ./",
-		"test": "node nodejs_cli/dist/mod.js --file ./tests/dist/mod.js"
+		"test": "npx jackrabbit --file ./tests/dist/mod.js"
 	},
 	"devDependencies": {
 		"@types/node": "^22.5.5",
