@@ -7,7 +7,7 @@
 		"tests"
 	],
 	"scripts": {
-		"prepare": "npm run build && npm run install nodejs_cli",
+		"prepare": "npm run build && npm run install_nodejs_cli",
 		"install_nodjs_cli": "npm install nodejs_cli",
 		"build": "npm run --workspaces build",
 		"format": "npx prettier --write ./",
