@@ -15,4 +15,4 @@ jobs:
       - name: Install
         run: npm ci
       - name: Test
-        run: npm run test
+        run: npm run install_test_dependencies && npm run test
