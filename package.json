@@ -7,12 +7,14 @@
 		"tests"
 	],
 	"scripts": {
+		"prepare": "npm run build",
 		"build": "npm run --workspaces build",
 		"format": "npx prettier --write ./",
-		"test": "npx jackrabbit --file ./tests/dist/mod.js"
+		"test": "node nodejs_cli/dist/mod.js --file ./tests/dist/mod.js"
 	},
 	"devDependencies": {
 		"@types/node": "^22.5.5",
+		"nodejs_cli": "^0.1.0",
 		"prettier": "^3.3.1",
 		"typescript": "^5.4.5"
 	}
