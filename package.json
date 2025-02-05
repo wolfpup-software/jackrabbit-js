@@ -7,7 +7,7 @@
 		"tests"
 	],
 	"scripts": {
-		"prepare": "npm run build",
+		"prepare": "npm run build && npm install nodejs_cli",
 		"build": "npm run --workspaces build",
 		"format": "npx prettier --write ./",
 		"test": "npx jackrabbit --file ./tests/dist/mod.js"
@@ -16,5 +16,8 @@
 		"@types/node": "^22.5.5",
 		"prettier": "^3.3.1",
 		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"nodejs_cli": "^0.1.0"
 	}
 }
