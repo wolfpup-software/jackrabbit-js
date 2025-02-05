@@ -10,7 +10,8 @@
 		"prepare": "npm run build",
 		"build": "npm run --workspaces build",
 		"format": "npx prettier --write ./",
-		"test": "npx jackrabbit --file ./tests/dist/mod.js"
+		"test": "npx jackrabbit --file ./tests/dist/mod.js",
+		"add_jackrabbit_to_npx_for_tests": "npm install nodejs_cli"
 	},
 	"devDependencies": {
 		"@types/node": "^22.5.5",
