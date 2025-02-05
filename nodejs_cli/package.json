@@ -6,9 +6,6 @@
 	"scripts": {
 		"build": "npx tsc --build"
 	},
-	"bin": {
-		"jackrabbit": "dist/mod.js"
-	},
 	"author": "wolfpup",
 	"version": "0.1.0",
 	"license": "BSD-3-Clause"
