@@ -15,4 +15,4 @@ jobs:
       - name: Install
         run: npm ci
       - name: Test
-        run: npm run add_jackrabbit_to_npx_for_tests && npm run test
+        run: npm run test
