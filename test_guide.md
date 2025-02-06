@@ -15,7 +15,7 @@ Tests are functions that return assertions.
 Tests `pass` when they return the `undefined` primitive or an empty array.
 
 ```TS
-// my_tests.ts
+// my_library.tests.ts
 
 function testStuffAndPass() {
 	return;
@@ -26,12 +26,12 @@ async function testMoreStuffAndPass() {
 }
 ```
 
-A test will `fail` when a test returns a string or an array of strings.
+Any other value will cause a test to `fail`.
 
 So tests that `fail` look like:
 
 ```TS
-// my_tests.ts
+// my_library.tests.ts
 
 function testStuffAndFail() {
 	return "this test failed!";
@@ -51,7 +51,7 @@ Test Modules are javascript `modules`.
 Test Modules export their tests in an array called `tests`.
 
 ```TS
-// my-library.tests.ts
+// my_library.tests.ts
 
 export const tests = [
 	testStuffAndPass,
@@ -66,7 +66,7 @@ export const tests = [
 Export a pojo named `options` with the following properties to affect test behavior:
 
 ```TS
-// my-library.tests.ts
+// my_library.tests.ts
 
 interface Options {
   title?: string;
@@ -74,7 +74,6 @@ interface Options {
   timeoutInterval?: number;
 }
 
-...
 export const options = {
 	title: import.meta.url,
 	runAsyncronously: true,
@@ -82,16 +81,16 @@ export const options = {
 }
 ```
 
-Tests in a test module will be executed in sequential order, unless `runAsyncronously` is `true`.
+Tests will run sequentially, unless `runAsyncronously` is `true`.
 
 ## Test Collections
 
-A `test collection` is a javascript module that exports all relavent test modules into one collection called `testModules`.
+A `test collection` is a javascript module that exports a list of all relavent test modules called `testModules`.
 
 ```TS
 // mod.test.ts
 
-import * as MyTests from "./my-library.tests.ts";
+import * as MyTests from "./my_library.tests.ts";
 
 export const testModules = [
 	MyTests
@@ -100,7 +99,7 @@ export const testModules = [
 
 ## Run Test Collections
 
-Jackrabbit is a test runner logs the results of `test collections`.
+Jackrabbit logs the results of `test collections`.
 
 ```sh
 npx jackrabbit --file ./mod.test.ts

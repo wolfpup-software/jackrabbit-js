@@ -9,6 +9,7 @@ import { TestLogger } from "./test_logger.js";
 const failTestModules = [FailTests];
 const passTestModules = [PassTests];
 
+// jackrabbit test run won't pass failing tests
 async function testsFail() {
 	let logger = new TestLogger();
 	await startRun(logger, failTestModules);
@@ -16,6 +17,7 @@ async function testsFail() {
 	if (!logger.has_failed) return "fail tests failed to fail";
 }
 
+// jackrabbit test run won't fail passing tests
 async function testsPass() {
 	let logger = new TestLogger();
 	await startRun(logger, passTestModules);
