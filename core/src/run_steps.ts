@@ -2,7 +2,7 @@ import type {
 	Assertions,
 	LoggerInterface,
 	TestModule,
-} from "./jackrabbit_types.js";
+} from "./jackrabbit_types.ts";
 
 const TIMEOUT_INTERVAL = 10000;
 

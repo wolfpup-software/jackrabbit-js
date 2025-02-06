@@ -1,4 +1,8 @@
-type Assertions = undefined | string | string[];
+interface Stringable {
+	toString: Object["toString"];
+}
+
+type Assertions = Stringable | Stringable[] | undefined;
 type SyncTest = () => Assertions;
 type AsyncTest = () => Promise<Assertions>;
 type Test = SyncTest | AsyncTest;
