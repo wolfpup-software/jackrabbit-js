@@ -4,6 +4,6 @@ export type {
 	Test,
 	Options,
 	TestModule,
-} from "./jackrabbit_types.js";
+} from "./jackrabbit_types.ts";
 
 export { startRun, cancelRun } from "./run_steps.js";
