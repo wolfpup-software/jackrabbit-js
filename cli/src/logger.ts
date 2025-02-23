@@ -73,8 +73,10 @@ ${options?.title ?? `test index: ${index}`}`);
 			let action = failedTests.get(index);
 			if (undefined === action || action.type !== "end_test") continue;
 
-			console.log(`  ${test.name}
-    ${action.assertions}`);
+			console.log(`
+${test.name}
+${action.assertions}
+`);
 		}
 	}
 }
