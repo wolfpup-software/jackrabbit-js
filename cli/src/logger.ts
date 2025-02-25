@@ -53,31 +53,34 @@ function logAssertions(
 	fails: Map<number, Map<number, LoggerAction>>,
 ) {
 	for (let [index, module] of testModules.entries()) {
-		const { tests, options } = module;
-
-		console.log(`
-${options?.title ?? `test index: ${index}`}`);
-
-		let numTests = tests.length;
-
 		let failedTests = fails.get(index);
-		if (undefined === failedTests) {
-			console.log(`${numTests}/${numTests} tests passed`);
-			continue;
-		}
+		if (undefined === failedTests) continue;
 
-		let numTestsPassed = numTests - failedTests.size;
-		console.log(`${numTestsPassed}/${numTests} tests passed`);
-
+		const { tests, options } = module;
+		console.log(options?.title ?? `test index: ${index}`);
+		
 		for (let [index, test] of tests.entries()) {
 			let action = failedTests.get(index);
-			if (undefined === action || action.type !== "end_test") continue;
+			if (action.type !== "end_test") continue;
 
 			console.log(`
 ${test.name}
-${action.assertions}
-`);
+${action.assertions}`);
 		}
+	}
+
+	// then just print the results
+	for (let [index, module] of testModules.entries()) {
+		let numFailedTests = fails.get(index)?.size ?? 0;
+
+		const { tests, options } = module;
+
+		console.log(`${options?.title ?? `test index: ${index}`}`);
+		
+		let numTests = tests.length;	
+		let numTestsPassed = numTests - numFailedTests;
+		
+		console.log(`${numTestsPassed}/${numTests} tests passed`);
 	}
 }
 
