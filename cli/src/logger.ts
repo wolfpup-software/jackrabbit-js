@@ -58,7 +58,7 @@ function logAssertions(
 
 		const { tests, options } = module;
 		console.log(options?.title ?? `test index: ${index}`);
-		
+
 		for (let [index, test] of tests.entries()) {
 			let action = failedTests.get(index);
 			if (action.type !== "end_test") continue;
@@ -76,10 +76,10 @@ ${action.assertions}`);
 		const { tests, options } = module;
 
 		console.log(`${options?.title ?? `test index: ${index}`}`);
-		
-		let numTests = tests.length;	
+
+		let numTests = tests.length;
 		let numTestsPassed = numTests - numFailedTests;
-		
+
 		console.log(`${numTestsPassed}/${numTests} tests passed`);
 	}
 }
