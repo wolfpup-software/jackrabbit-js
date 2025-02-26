@@ -27,7 +27,13 @@ class Logger implements LoggerInterface {
 		if ("cancel_run" === action.type) {
 			this.#cancelled = true;
 			logAssertions(testModules, this.#assertions);
-			logCancelled(this.#startTime, this.#testTime, action.time);
+			logResults(
+				this.#failed,
+				this.#cancelled,
+				this.#startTime,
+				this.#testTime,
+				action.time,
+			);
 		}
 
 		//  add to fails
@@ -51,7 +57,13 @@ class Logger implements LoggerInterface {
 
 		if ("end_run" === action.type) {
 			logAssertions(testModules, this.#assertions);
-			logResults(this.#failed, this.#startTime, this.#testTime, action.time);
+			logResults(
+				this.#failed,
+				this.#cancelled,
+				this.#startTime,
+				this.#testTime,
+				action.time,
+			);
 		}
 	}
 }
@@ -92,24 +104,21 @@ function logAssertions(
 	}
 }
 
-function logCancelled(startTime: number, testTime: number, time: number) {
-	const overhead = time - startTime;
-	console.log(`
-Results:
-cancelled
-  duration: ${testTime.toFixed(4)} mS
-  overhead: ${overhead.toFixed(4)} mS`);
-}
-
 function logResults(
 	failed: boolean,
+	cancelled: boolean,
 	startTime: number,
 	testTime: number,
 	time: number,
 ) {
-	const status_with_color = failed
+	let status_with_color = failed
 		? yellow("\u{2717} failed")
 		: blue("\u{2714} passed");
+
+	if (cancelled) {
+		status_with_color = gray("\u{2717} cancelled");
+	}
+
 	const overhead = time - startTime;
 	console.log(`
 Results:
@@ -118,12 +127,18 @@ ${status_with_color}
   overhead: ${overhead.toFixed(4)} mS`);
 }
 
+// 39 - default foreground color
+// 49 - default background color
 function blue(text: string) {
-	return `\x1b[44m\x1b[39m${text}\x1b[0m`;
+	return `\x1b[44m\x1b[97m${text}\x1b[0m`;
 }
 
 function yellow(text: string) {
-	return `\x1b[43m\x1b[39m${text}\x1b[0m`;
+	return `\x1b[43m\x1b[97m${text}\x1b[0m`;
+}
+
+function gray(text: string) {
+	return `\x1b[100m\x1b[97m${text}\x1b[0m`;
 }
 
 export { Logger };
