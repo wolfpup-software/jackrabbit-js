@@ -6,10 +6,18 @@ import type {
 
 class Logger implements LoggerInterface {
 	#assertions: Map<number, Map<number, LoggerAction>> = new Map();
-	failed: boolean = false;
-	cancelled: boolean = false;
+	#cancelled: boolean;
+	#failed: boolean = false;
 	#startTime: number = -1;
 	#testTime: number = 0;
+
+	get failed() {
+		return this.#failed;
+	}
+
+	get cancelled() {
+		return this.#cancelled;
+	}
 
 	log(testModules: TestModule[], action: LoggerAction) {
 		if ("start_run" === action.type) {
@@ -17,7 +25,7 @@ class Logger implements LoggerInterface {
 		}
 
 		if ("cancel_run" === action.type) {
-			this.cancelled = true;
+			this.#cancelled = true;
 			logAssertions(testModules, this.#assertions);
 			logCancelled(this.#startTime, this.#testTime, action.time);
 		}
@@ -28,7 +36,7 @@ class Logger implements LoggerInterface {
 				return;
 
 			this.#testTime += action.endTime - action.startTime;
-			this.failed = true;
+			this.#failed = true;
 
 			let assertions = this.#assertions.get(action.moduleId);
 			if (assertions) {
@@ -43,7 +51,7 @@ class Logger implements LoggerInterface {
 
 		if ("end_run" === action.type) {
 			logAssertions(testModules, this.#assertions);
-			logResults(this.failed, this.#startTime, this.#testTime, action.time);
+			logResults(this.#failed, this.#startTime, this.#testTime, action.time);
 		}
 	}
 }
@@ -64,8 +72,8 @@ function logAssertions(
 			if (action.type !== "end_test") continue;
 
 			console.log(`
-${test.name}
-${action.assertions}`);
+  ${test.name}
+    ${action.assertions}`);
 		}
 	}
 
@@ -80,7 +88,7 @@ ${action.assertions}`);
 		let numTests = tests.length;
 		let numTestsPassed = numTests - numFailedTests;
 
-		console.log(`${numTestsPassed}/${numTests} tests passed`);
+		console.log(`  ${numTestsPassed}/${numTests} tests passed`);
 	}
 }
 
@@ -99,13 +107,15 @@ function logResults(
 	testTime: number,
 	time: number,
 ) {
-	const status = failed ? yellow("\u{2717} failed") : blue("\u{2714} passed");
+	const status_with_color = failed
+		? yellow("\u{2717} failed")
+		: blue("\u{2714} passed");
 	const overhead = time - startTime;
 	console.log(`
 Results:
-${status}
-    duration: ${testTime.toFixed(4)} mS
-    overhead: ${overhead.toFixed(4)} mS`);
+${status_with_color}
+  duration: ${testTime.toFixed(4)} mS
+  overhead: ${overhead.toFixed(4)} mS`);
 }
 
 function blue(text: string) {

@@ -71,7 +71,8 @@ type LoggerAction =
 	| EndTest;
 
 interface LoggerInterface {
-	cancelled: boolean;
+	readonly failed: boolean;
+	readonly cancelled: boolean;
 	log(testModules: TestModule[], action: LoggerAction): void;
 }
 

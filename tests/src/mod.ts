@@ -14,7 +14,7 @@ async function testsFail() {
 	let logger = new TestLogger();
 	await startRun(logger, failTestModules);
 
-	if (!logger.has_failed) return "fail tests failed to fail";
+	if (!logger.failed) return "fail tests failed to fail";
 }
 
 // jackrabbit test run won't fail passing tests
@@ -22,7 +22,7 @@ async function testsPass() {
 	let logger = new TestLogger();
 	await startRun(logger, passTestModules);
 
-	if (logger.has_failed) return "passing tests failed to pass";
+	if (logger.failed) return "passing tests failed to pass";
 }
 
 const tests = [testsFail, testsPass];
