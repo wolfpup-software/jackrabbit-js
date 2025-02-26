@@ -6,11 +6,11 @@ import type {
 
 class TestLogger implements LoggerInterface {
 	cancelled: boolean;
-	has_failed: boolean = false;
+	failed: boolean = false;
 
 	log(_testModule: TestModule[], action: LoggerAction) {
 		if (hasTestFailed(action)) {
-			this.has_failed = true;
+			this.failed = true;
 		}
 	}
 }

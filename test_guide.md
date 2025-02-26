@@ -1,13 +1,5 @@
 # Jackrabbit Tests
 
-## Assertions
-
-In jackrabbit, an assertion can be a string, an array of strings, or the `undefined` primitive.
-
-```TS
-type Assertions = string | string[] | undefined;
-```
-
 ## Tests
 
 Tests are functions that return assertions.
@@ -46,7 +38,7 @@ function testMoreStuffAndFail() {
 
 Test Modules are javascript `modules`.
 
-## Export Tests
+### Export Tests
 
 Test Modules export their tests in an array called `tests`.
 
@@ -61,9 +53,23 @@ export const tests = [
 ];
 ```
 
-### Export Test Options
+### Export Options
 
-Export a pojo named `options` with the following properties to affect test behavior:
+Exporting an `options` pojo is not required.
+
+But exporting an `options` pojo with the following properties will affect test behavior:
+
+```TS
+export const options = {
+	title: import.meta.url,
+	runAsyncronously: true,
+	timeoutInterval: 3000,
+}
+```
+
+All properteis are optional.
+
+Tests will run sequentially unless `runAsyncronously` is `true`.
 
 ```TS
 // my_library.tests.ts
@@ -73,15 +79,7 @@ interface Options {
   runAsynchronously?: boolean;
   timeoutInterval?: number;
 }
-
-export const options = {
-	title: import.meta.url,
-	runAsyncronously: true,
-	timeoutInterval: 3000,
-}
 ```
-
-Tests will run sequentially, unless `runAsyncronously` is `true`.
 
 ## Test Collections
 
